@@ -4,6 +4,12 @@
 
 { pkgs, ... }:
 
+let
+  hotkeysCodes = {
+    brightnessUp = 225;
+    brightnessDown = 224;
+  };
+in
 {
   imports =
     [
@@ -211,8 +217,8 @@
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 224 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
-      { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
+      { keys = [ hotkeysCodes.brightnessDown ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      { keys = [ hotkeysCodes.brightnessUp ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
     ];
   };
 
