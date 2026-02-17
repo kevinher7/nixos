@@ -122,12 +122,18 @@ in
   # services.printing.enable = true;
 
   # Enable sound.
-  # services.pulseaudio.enable = true;
-  # OR
-  # services.pipewire = {
-  #   enable = true;
-  #   pulse.enable = true;
-  # };
+  security.rtkit.enable = true;
+
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
+  # Add this for standalone WM setups
+  # Source: https://github.com/NixOS/nixpkgs/issues/390071
+  environment.pathsToLink = [ "/share/wireplumber" ];
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;
