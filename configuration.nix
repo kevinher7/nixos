@@ -4,6 +4,12 @@
 
 { pkgs, ... }:
 
+let
+  hotkeysCodes = {
+    brightnessUp = 225;
+    brightnessDown = 224;
+  };
+in
 {
   imports =
     [
@@ -131,13 +137,14 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.kevin = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
       tree
     ];
   };
 
   programs.firefox.enable = true;
+  programs.light.enable = true;
 
   programs.xss-lock = {
     enable = true;
@@ -205,6 +212,14 @@
       enable = true;
       userServices = true;
     };
+  };
+
+  services.actkbd = {
+    enable = true;
+    bindings = [
+      { keys = [ hotkeysCodes.brightnessDown ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      { keys = [ hotkeysCodes.brightnessUp ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
+    ];
   };
 
   # Open ports in the firewall.
