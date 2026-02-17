@@ -104,10 +104,8 @@ keys = [
     Key([mod, "shift"], "f", lazy.spawn("pcmanfm")),
     Key([mod], "d", lazy.spawn("rofi -show drun")),
     Key([mod, "control"], "l", lazy.spawn("xsecurelock")),
-    # Fullscreen Control
-    Key(
-        [], "XF86FullScreen", lazy.window.toggle_fullscreen(), desc="Toggle fullscreen"
-    ),
+    # Show Windows Control
+    Key([], "XF86LaunchA", lazy.spawn("rofi -show window"), desc="Show all windows"),
     # Brightness Control
     Key(
         [],
