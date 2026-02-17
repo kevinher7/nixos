@@ -104,6 +104,21 @@ keys = [
     Key([mod, "shift"], "f", lazy.spawn("pcmanfm")),
     Key([mod], "d", lazy.spawn("rofi -show drun")),
     Key([mod, "control"], "l", lazy.spawn("xsecurelock")),
+    # Brightness Control
+    Key([], "XF86MonBrightnessDown", lazy.spawn("light -U 10")),
+    Key([], "XF86MonBrightnessUp", lazy.spawn("light -A 10")),
+    # Audio Control
+    Key(
+        [],
+        "XF86AudioRaiseVolume",
+        lazy.spawn("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"),
+    ),
+    Key(
+        [],
+        "XF86AudioLowerVolume",
+        lazy.spawn("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
+    ),
+    Key([], "XF86AudioMute", lazy.spawn("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")),
 ]
 
 # Add key bindings to switch VTs in Wayland.
