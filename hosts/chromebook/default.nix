@@ -2,6 +2,10 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/system.nix
+    ../../modules/display
+    ../../modules/input
+    ../../modules/networking.nix
   ];
 
   # Use the systemd-boot EFI boot loader.
