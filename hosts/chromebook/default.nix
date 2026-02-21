@@ -13,8 +13,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "beans-btw";
-  networking.networkManager.enable = true;
 
   time.timeZone = "Asia/Tokyo";
-
 }
