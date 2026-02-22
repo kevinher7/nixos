@@ -1,5 +1,9 @@
 {
   programs.nixvim = {
+    enable = true;
+
+    defaultEditor = true;
+    luaLoader.enable = true;
 
     colorschemes.catppuccin = {
       enable = true;
