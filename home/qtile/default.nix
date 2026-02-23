@@ -1,4 +1,7 @@
-{ ... }:
+{ config, ... }:
 {
-  home.file.".config/qtile/config.py".source = ./config.py;
+  xdg.configFile."qtile" = {
+    source = config.lib.file.mkOutOfStoreSymlink "/home/kevin/nixos-config/config/qtile";
+    recursive = true;
+  };
 }
