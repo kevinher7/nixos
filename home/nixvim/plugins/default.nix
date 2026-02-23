@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ ... }:
+{
   imports = [
     ./telescope.nix
     ./lsp.nix
@@ -12,12 +13,6 @@
   ];
 
   programs.nixvim = {
-    colorschemes = {
-      catppuccin = {
-        enable = true;
-      };
-    };
-
     plugins = {
       transparent.enable = true;
       web-devicons.enable = true;

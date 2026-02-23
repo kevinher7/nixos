@@ -1,5 +1,10 @@
 { pkgs, ... }:
 {
+  imports = [
+    ./plugins
+    ./keymappings.nix
+  ];
+
   home.packages = with pkgs; [
     # Nixvim
     ripgrep
