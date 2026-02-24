@@ -20,23 +20,36 @@
       fonts.default_size = lib.mkForce "10pt";
 
       # Dark Mode
-      colors.webpage.darkmode.enabled = true;
-      colors.webpage.darkmode.algorithm = "lightness-cielab";
-      colors.webpage.darkmode.policy.images = "never";
+      colors = {
+        webpage = {
+          darkmode = {
+            e.enabled = true;
+            algorithm = "lightness-cielab";
+            policy.images = "never";
+          };
+        };
+      };
 
-      tabs.indicator.width = 0;
-      tabs.width = "7%";
+      tabs = {
+        indicator.width = 0;
+        width = "7%";
+      };
+
       window.transparent = true;
 
-      # Privacy
-      content.blocking.enabled = true;
-      content.canvas_reading = false;
-      content.geolocation = false;
-      content.webrtc_ip_handling_policy = "default-public-interface-only";
-      content.cookies.accept = "all";
-      content.cookies.store = true;
 
-      content.javascript.clipboard = "access";
+      content = {
+        # Privacy
+        blocking.enabled = true;
+        canvas_reading = false;
+        geolocation = false;
+        webrtc_ip_handling_policy = "default-public-interface-only";
+        cookies.accept = "all";
+        cookies.store = true;
+
+        # Copy without Permission
+        javascript.clipboard = "access";
+      };
     };
 
     keyBindings = {

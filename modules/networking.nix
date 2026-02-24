@@ -8,15 +8,18 @@ _:
     allowedUDPPorts = [ 5353 ];
   };
 
-  services.tailscale.enable = true;
-  services.openssh.enable = true;
+  services = {
+    tailscale.enable = true;
+    openssh.enable = true;
 
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    publish = {
+    avahi = {
       enable = true;
-      userServices = true;
+      nssmdns4 = true;
+      publish = {
+        enable = true;
+        userServices = true;
+      };
     };
   };
+
 }
