@@ -35,6 +35,8 @@
       content.webrtc_ip_handling_policy = "default-public-interface-only";
       content.cookies.accept = "all";
       content.cookies.store = true;
+
+      content.javascript.clipboard = "access";
     };
 
     keyBindings = {
@@ -52,7 +54,6 @@
         "right": 9
       }
 
-      # config.set("colors.webpage.darkmode.enabled", False, "file://*")
       # config.set("content.webgl", False, "*")
     '';
 
