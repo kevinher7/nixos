@@ -1,12 +1,15 @@
 { pkgs, ... }:
 {
-  programs.firefox.enable = true;
-  programs.light.enable = true;
+  programs = {
 
-  programs.xss-lock = {
-    enable = true;
-    lockerCommand = "xsecurelock";
+    firefox.enable = true;
+    light.enable = true;
+
+    xss-lock = {
+      enable = true;
+      lockerCommand = "xsecurelock";
+    };
+
+    gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
   };
-
-  programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
 }

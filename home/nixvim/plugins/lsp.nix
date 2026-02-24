@@ -50,12 +50,24 @@
         };
 
         servers = {
+          nixd = {
+            enable = true;
+
+            settings = {
+              nixd = {
+                statix = {
+                  enable = true;
+                };
+              };
+            };
+          };
+
           ruff = {
             enable = true;
             filetypes = [ "python" ];
           };
+
           clangd.enable = true; # C & C++
-          nixd.enable = true;
           tinymist.enable = true; # Typst
         };
       };
