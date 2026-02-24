@@ -20,7 +20,8 @@
     rofi
     xsecurelock
     papirus-icon-theme
- ];
+    statix
+  ];
 
   environment.sessionVariables = {
     MOZ_USE_XINPUT2 = "1";
