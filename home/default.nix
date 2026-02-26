@@ -8,6 +8,7 @@
     ./nixvim
     ./qtile
     ./programs
+    ./rquickshare.nix
   ];
 
   programs.home-manager.enable = true;

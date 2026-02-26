@@ -17,6 +17,11 @@
             desc = "Clean hlsearch";
           };
       }
+      {
+        mode = [ "n" "v" ];
+        key = "<leader>y";
+        action = "\"+y";
+      }
       # Telescope
       {
         action = ":Telescope live_grep<CR>";
@@ -44,6 +49,18 @@
           noremap = true;
           desc = "[S]earch [k]eymaps";
         };
+      }
+      {
+        mode = "n";
+        key = "]h";
+        action = "<cmd>Gitsigns next_hunk<CR>";
+        options = { desc = "Next Git [h]unk"; };
+      }
+      {
+        mode = "n";
+        key = "[h";
+        action = "<cmd>Gitsigns prev_hunk<CR>";
+        options = { desc = "Previous Git [h]unk"; };
       }
     ];
   };

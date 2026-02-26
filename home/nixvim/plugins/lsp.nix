@@ -20,6 +20,7 @@
             python = [ "ruff_format" ];
             c = [ "clang_format" ];
             nix = [ "nixpkgs_fmt" ];
+            typst = [ "typstyle" ];
           };
         };
       };
@@ -52,19 +53,24 @@
         servers = {
           nixd = {
             enable = true;
+          };
 
-            settings = {
-              nixd = {
-                statix = {
-                  enable = true;
-                };
-              };
-            };
+          statix = {
+            enable = true;
           };
 
           ruff = {
             enable = true;
             filetypes = [ "python" ];
+            extraOptions.on_attach.__raw = ''
+              function(client, bufnr)
+                client.server_capabilities.documentFormattingProvider = false
+              end
+            '';
+          };
+
+          ty = {
+            enable = true;
           };
 
           clangd.enable = true; # C & C++

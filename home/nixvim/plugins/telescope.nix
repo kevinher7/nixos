@@ -10,6 +10,8 @@
           "^__pycache__/"
           "^output/"
           "^data/"
+          "%.png"
+          "%.jpg"
         ];
 
         set_env.COLORTERM = "truecolor";

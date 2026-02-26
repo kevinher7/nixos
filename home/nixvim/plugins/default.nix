@@ -10,6 +10,7 @@
     ./blink-cmp.nix
     ./lualine.nix
     ./nvim-autopairs.nix
+    ./which-key.nix
   ];
 
   programs.nixvim = {
