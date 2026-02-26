@@ -50,6 +50,18 @@
           desc = "[S]earch [k]eymaps";
         };
       }
+      {
+        mode = "n";
+        key = "]h";
+        action = "<cmd>Gitsigns next_hunk<CR>";
+        options = { desc = "Next Git [h]unk"; };
+      }
+      {
+        mode = "n";
+        key = "[h";
+        action = "<cmd>Gitsigns prev_hunk<CR>";
+        options = { desc = "Previous Git [h]unk"; };
+      }
     ];
   };
 }

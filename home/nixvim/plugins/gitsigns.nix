@@ -12,6 +12,7 @@
             topdelete.text = "‾";
             untracked.text = "┆";
           };
+          current_line_blame = true;
         };
       };
       # TODO: Implement keymaps for in-editor git tracking
