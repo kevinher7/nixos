@@ -99,7 +99,7 @@ def get_volume_icon():
         muted = "[MUTED]" in output
 
         if muted or vol == 0:
-            return "  Mute"
+            return "   M "
         elif vol < 30:
             return f"  {vol}%"
         else:
@@ -347,17 +347,18 @@ screens = [
                     update_interval=5,
                 ),
                 widget.StatusNotifier(
-                    **widget_defaults,
+                    font="JetBrainsMono Nerd Font",
+                    fontsize=13,
+                    padding=10,
                     icon_theme="Papirus-Dark",
                     background=colors[2],
                 ),
                 widget.Battery(
-                    font="JetBrainsMono Nerd Font",
-                    fontsize=13,
-                    padding=10,
+                    font="JetBrainsMono Nerd Font Bold",
+                    fontsize=14,
+                    padding=4,
                     align="center",
                     background=colors[0],
-                    foreground=colors[2],
                     format="{char} {percent:1.0%}",
                     charge_char="󰂄",
                     discharge_char="󰁹",
@@ -371,10 +372,11 @@ screens = [
                 widget.GenPollText(
                     font="JetBrainsMono Nerd Font",
                     func=lambda: get_volume_icon(),
-                    fontsize=16,
-                    padding=16,
+                    fontsize=14,
+                    padding=8,
                     align="center",
-                    update_interval=0.5,
+                    background=colors[0],
+                    update_interval=0.3,
                 ),
                 widget.Clock(
                     **widget_defaults,
