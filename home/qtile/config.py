@@ -24,6 +24,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import subprocess
+import re
 
 from libqtile import hook, bar, layout, qtile, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
@@ -37,7 +38,74 @@ terminal = guess_terminal()
 @hook.subscribe.startup_once
 def autostart():
     # Using subprocess.Popen so it doesn't block Qtile startup
+    subprocess.Popen(["pasystray"])
     subprocess.Popen(["fcitx5", "-d"])
+
+
+def get_wifi_icon():
+    try:
+        # Try using iwconfig for percentage-based quality
+        result = subprocess.run(
+            ["iwconfig", "wlp0s12f0"], capture_output=True, text=True
+        )
+
+        # Look for "Link Quality=67/70" or "Signal level=-45 dBm"
+        quality_match = re.search(r"Link Quality=(\d+)/(\d+)", result.stdout)
+        signal_match = re.search(r"Signal level=(-\d+) dBm", result.stdout)
+
+        if quality_match:
+            quality = int(quality_match.group(1))
+            max_quality = int(quality_match.group(2))
+            percentage = (quality / max_quality) * 100
+
+            if percentage >= 75:
+                return "󰤨"
+            elif percentage >= 50:
+                return "󰤥"
+            elif percentage >= 25:
+                return "󰤢"
+            else:
+                return "󰤟"
+
+        elif signal_match:
+            signal_dbm = int(signal_match.group(1))
+
+            if signal_dbm >= -50:
+                return "󰤨"
+            elif signal_dbm >= -60:
+                return "󰤥"
+            elif signal_dbm >= -70:
+                return "󰤢"
+            else:
+                return "󰤟"
+
+        # Check if interface is up but not connected
+        if "no wireless" in result.stdout.lower():
+            return "󰤭"
+
+        return "󰤭"
+
+    except Exception:
+        return "󰤫"
+
+
+def get_volume_icon():
+    try:
+        output = subprocess.getoutput("wpctl get-volume @DEFAULT_AUDIO_SINK@")
+        # Output looks like: "Volume: 0.45" or "Volume: 0.45 [MUTED]"
+
+        parts = output.split()
+        vol = int(float(parts[1]) * 100)  # Convert 0.45 to 45
+        muted = "[MUTED]" in output
+
+        if muted or vol == 0:
+            return "  Mute"
+        elif vol < 30:
+            return f"  {vol}%"
+        else:
+            return f"  {vol}%"
+    except Exception:
+        return "  --"
 
 
 keys = [
@@ -189,7 +257,10 @@ layouts = [
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
     # layout.Matrix(),
-    layout.MonadTall(),
+    layout.MonadTall(
+        font="JetBrainsMono NF Bold",
+        fontsize=10,
+    ),
     layout.Max(),
     # layout.MonadWide(),
     # layout.RatioTile(),
@@ -227,7 +298,7 @@ colors = [
 ]
 
 widget_defaults = dict(
-    font="JetBrainsMono NF Bold",
+    font="JetBrainsMono Nerd Font",
     fontsize=13,
     padding=5,
 )
@@ -264,36 +335,46 @@ screens = [
                     background=colors[0],
                     foreground=colors[3],
                 ),
-                # widget.Chord(
-                #     chords_colors={
-                #        "launch": tuple(colors[0]),
-                #     },
-                #     name_transform=lambda name: name.upper(),
-                # ),
-                # NB Systray is incompatible with Wayland, consider using StatusNotifier instead
+                # Wifi Widget
+                widget.GenPollText(
+                    font="JetBrainsMono Nerd Font",
+                    fontsize=16,
+                    padding=16,
+                    align="center",
+                    background=colors[0],
+                    foreground=colors[2],
+                    func=lambda: get_wifi_icon(),
+                    update_interval=5,
+                ),
                 widget.StatusNotifier(
                     **widget_defaults,
                     icon_theme="Papirus-Dark",
                     background=colors[2],
                 ),
-                # widget.Systray(
-                #     **widget_defaults,
-                #     background=colors[2],
-                # ),
                 widget.Battery(
-                    **widget_defaults,
+                    font="JetBrainsMono Nerd Font",
+                    fontsize=13,
+                    padding=10,
+                    align="center",
                     background=colors[0],
-                    foreground=colors[3],
+                    foreground=colors[2],
+                    format="{char} {percent:1.0%}",
+                    charge_char="󰂄",
+                    discharge_char="󰁹",
+                    empty_char="󰂎",
+                    full_char="󰁹",
+                    unknown_char="󰂃",
+                    update_interval=60,
                     charge_controller=lambda: (0, 95),
                 ),
-                widget.Net(
-                    **widget_defaults,
-                    background=colors[0],
-                    format="{down} \u2193\u2191 {up}",
-                ),
-                widget.Volume(
-                    **widget_defaults,
-                    background=colors[0],
+                # Volume
+                widget.GenPollText(
+                    font="JetBrainsMono Nerd Font",
+                    func=lambda: get_volume_icon(),
+                    fontsize=16,
+                    padding=16,
+                    align="center",
+                    update_interval=0.5,
                 ),
                 widget.Clock(
                     **widget_defaults,

@@ -13,6 +13,7 @@
     gh
     ghostty
     pavucontrol
+    pasystray
     btop
     xwallpaper
     pfetch
