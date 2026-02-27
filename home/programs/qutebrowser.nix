@@ -55,6 +55,15 @@
     keyBindings = {
       normal = {
         "<Ctrl-Tab>" = "tab-focus last";
+        "!" = "tab-focus 1";
+        "\\\"" = "tab-focus 2";
+        "#" = "tab-focus 3";
+        "$" = "tab-focus 4";
+        "%" = "tab-focus 5";
+        "&" = "tab-focus 6";
+        "'" = "tab-focus 7";
+        "(" = "tab-focus 8";
+        ")" = "tab-focus 9";
       };
     };
 
