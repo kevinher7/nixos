@@ -89,25 +89,6 @@ def get_wifi_icon():
         return "󰤫"
 
 
-def get_volume_icon():
-    try:
-        output = subprocess.getoutput("wpctl get-volume @DEFAULT_AUDIO_SINK@")
-        # Output looks like: "Volume: 0.45" or "Volume: 0.45 [MUTED]"
-
-        parts = output.split()
-        vol = int(float(parts[1]) * 100)  # Convert 0.45 to 45
-        muted = "[MUTED]" in output
-
-        if muted or vol == 0:
-            return "   M "
-        elif vol < 30:
-            return f"  {vol}%"
-        else:
-            return f"  {vol}%"
-    except Exception:
-        return "  --"
-
-
 keys = [
     # A list of available commands that can be bound to keys can be found
     # at https://docs.qtile.org/en/latest/manual/config/lazy.html
@@ -369,15 +350,15 @@ screens = [
                     charge_controller=lambda: (0, 95),
                 ),
                 # Volume
-                widget.GenPollText(
-                    font="JetBrainsMono Nerd Font",
-                    func=lambda: get_volume_icon(),
-                    fontsize=14,
-                    padding=8,
-                    align="center",
-                    background=colors[0],
-                    update_interval=0.3,
-                ),
+                # widget.GenPollText(
+                #     font="JetBrainsMono Nerd Font",
+                #     func=lambda: get_volume_icon(),
+                #     fontsize=14,
+                #     padding=8,
+                #     align="center",
+                #     background=colors[0],
+                #     update_interval=0.3,
+                # ),
                 widget.Clock(
                     **widget_defaults,
                     background=colors[2],
