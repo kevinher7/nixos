@@ -21,10 +21,14 @@
 
   time.timeZone = "Asia/Tokyo";
 
+  programs.i3lock.enable = true;
+
   services = {
     logind.powerKey = "suspend";
     xserver.displayManager.sessionCommands = ''
-      ${pkgs.xss-lock}/bin/xss-lock -- ${pkgs.i3lock-color}/bin/i3lock-color -c 000000 &
+      ${pkgs.xss-lock}/bin/xss-lock -- ${pkgs.i3lock-color}/bin/i3lock-color --color=2e3440 --clock --time-color=d8dee9 --date-color=d8dee9 &
     '';
   };
+
+  security.pam.services.i3lock-color.enable = true;
 }
