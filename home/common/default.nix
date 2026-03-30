@@ -3,6 +3,7 @@
   imports = [
     ./git.nix
     ./bash.nix
+    ./rofi.nix
     ./stylix.nix
   ];
 
