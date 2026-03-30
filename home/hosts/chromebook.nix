@@ -12,5 +12,9 @@
 
   home.packages = with pkgs; [
     playerctl
+    pavucontrol
+    pasystray
+    pcmanfm
+    papirus-icon-theme
   ];
 }

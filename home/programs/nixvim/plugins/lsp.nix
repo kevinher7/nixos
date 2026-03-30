@@ -53,10 +53,14 @@
         servers = {
           nixd = {
             enable = true;
-          };
-
-          statix = {
-            enable = true;
+            settings = {
+              diagnostic = {
+                suppress = [ "formatting" ];
+              };
+              formatting = {
+                command = [ "nixpkgs-fmt" ];
+              };
+            };
           };
 
           ruff = {

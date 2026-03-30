@@ -15,7 +15,11 @@
     stateVersion = "25.05";
 
     packages = with pkgs; [
+      btop
+      tree
+      gh
       curl
+      pfetch
       bitwarden-cli
     ];
   };
