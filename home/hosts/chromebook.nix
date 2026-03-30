@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   imports = [
-    ../common/
+    ../common
     ../desktops/qtile
     ../programs/nixvim
     ../programs/betterlockscreen.nix
