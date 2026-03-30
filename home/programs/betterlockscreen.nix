@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  lockImage = ../../walls/girl-reading-book.png;
+  lockImage = ../../assets/wallpapers/girl-reading-book.png;
   lockImageTarget = "${config.home.homeDirectory}/.config/betterlockscreen/lock.png";
 
   lockWrapper = pkgs.writeShellScriptBin "lock-with-betterlockscreen" ''

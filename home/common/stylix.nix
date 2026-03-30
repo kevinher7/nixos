@@ -5,7 +5,7 @@ _:
 
     # autoEnable = false; # Disable autoEnable to avoid conflicts with NixOS level
 
-    image = ../../walls/girl-reading-book.png;
+    image = ../../assets/wallpapers/girl-reading-book.png;
     polarity = "dark";
 
     targets = {

@@ -4,7 +4,7 @@
     enable = true;
     autoEnable = true;
 
-    image = ../walls/girl-reading-book.png;
+    image = ../assets/wallpapers/girl-reading-book.png;
     polarity = "dark";
 
     cursor = {

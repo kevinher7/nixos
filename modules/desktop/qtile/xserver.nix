@@ -5,7 +5,7 @@ _:
     desktopManager.runXdgAutostartIfNone = true;
     xkb.layout = "jp";
     displayManager.sessionCommands = ''
-      xwallpaper --zoom ~/walls/girl-reading-book.png
+      xwallpaper --zoom ${../../assets/wallpapers/girl-reading-book.png}
       xset r rate 400 35 &
     '';
   };
