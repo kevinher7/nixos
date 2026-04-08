@@ -21,7 +21,6 @@
       gh
       curl
       pfetch
-      bitwarden-cli
     ];
   };
 }

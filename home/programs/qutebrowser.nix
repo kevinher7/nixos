@@ -1,4 +1,21 @@
-{ lib, ... }:
+{ pkgs, lib, ... }:
+let
+  pythonEnv = pkgs.python3.withPackages (ps: with ps; [
+    tldextract
+    pyperclip
+  ]);
+
+  qute-bitwarden = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/qutebrowser/qutebrowser/main/misc/userscripts/qute-bitwarden";
+    sha256 = "092ayjkhzfka4d2vl05y9c5zwnf0lkn8gxairl1kgcn0wwhz0y50";
+  };
+
+  # Use the setup python env as a wrapper
+  bitwarden-wrapped = pkgs.writeShellScript "bitwarden" ''
+    ${pkgs.keyutils}/bin/keyctl link @u @s 2>/dev/null || true
+    exec ${pythonEnv}/bin/python ${qute-bitwarden} "$@"
+  '';
+in
 {
   programs.qutebrowser = {
     enable = true;
@@ -64,6 +81,10 @@
         "'" = "tab-focus 7";
         "(" = "tab-focus 8";
         ")" = "tab-focus 9";
+
+        # Userscripts
+        ",p" = "spawn --userscript bitwarden";
+        ",P" = "spawn --userscript bitwarden --totp";
       };
     };
 
@@ -80,4 +101,16 @@
     '';
 
   };
+
+  # Place in userscripts in qutebrowser's userscripts directory
+  xdg.configFile."qutebrowser/userscripts/bitwarden" = {
+    source = bitwarden-wrapped;
+    executable = true; # Critical: userscripts must be executable
+  };
+
+  home.packages = with pkgs; [
+    bitwarden-cli
+    keyutils
+    xclip
+  ];
 }
