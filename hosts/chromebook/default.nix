@@ -23,6 +23,40 @@ _:
 
   programs.i3lock.enable = true;
 
-  services.logind.powerKey = "suspend";
   security.pam.services.i3lock-color.enable = true;
+
+  # Power Management
+  systemd.sleep.extraConfig = ''
+    HibernateDelaySec=5m
+  '';
+
+  services.logind = {
+    powerKey = "suspend";
+
+    lidSwitch = "suspend-then-hibernate";
+
+    extraConfig = ''
+      IdleAction=suspend-then-hibernate
+      IdleActionSec=10m
+    '';
+  };
+
+  services.auto-cpufreq = {
+    enable = true;
+
+    settings = {
+      battery = {
+        governor = "powersave";
+        turbo = "auto";
+        energy_performance_preference = "power";
+      };
+
+      charger = {
+        governor = "performance";
+        turbo = "auto";
+        energy_performance_preference = "balance_performance";
+      };
+    };
+  };
 }
+
