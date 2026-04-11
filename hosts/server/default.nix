@@ -4,8 +4,8 @@
     ./hardware-configuration.nix
     ../../modules/system.nix
     ../../modules/packages.nix
+    ../../modules/stylix.nix
     ../../modules/docker.nix
-    ../../modules/desktop/qtile
     ../../modules/networking
     ../../modules/login
     ../../modules/power
