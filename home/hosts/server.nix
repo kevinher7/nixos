@@ -3,6 +3,7 @@ _:
   imports = [
     ../common/git.nix
     ../common/bash.nix
+    ../programs/nixvim
   ];
 
   home.username = "uribo";
