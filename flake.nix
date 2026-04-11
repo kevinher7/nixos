@@ -40,7 +40,7 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "backup";
-                extraSpecialArgs = { inherit inputs; };
+                extraSpecialArgs = { inherit inputs hostname username; };
                 sharedModules = [ nixvim.homeModules.nixvim ];
                 users.${username} = import ./home/hosts/${hostname}.nix;
               };
