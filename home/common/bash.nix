@@ -6,7 +6,7 @@
     shellAliases = lib.mkMerge [
       {
         # Common Aliasses
-        nrs = ''sudo nixos-rebuild switch --flake ~/nixos-config#${hostname}'';
+        nrs = ''sudo nixos-rebuild switch --flake ~/nixos-config#$(hostname)'';
         cdnc = "cd ~/nixos-config";
       }
 
