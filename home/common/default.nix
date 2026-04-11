@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, username, ... }:
 {
   imports = [
     ./git.nix
@@ -10,9 +10,8 @@
   programs.home-manager.enable = true;
 
   home = {
-    # TODO: Modularize the username?
-    username = "kevin";
-    homeDirectory = lib.mkForce "/home/kevin";
+    username = username;
+    homeDirectory = lib.mkForce "/home/${username}";
     stateVersion = "25.05";
 
     packages = with pkgs; [

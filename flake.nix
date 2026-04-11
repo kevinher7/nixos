@@ -25,12 +25,12 @@
       system = "x86_64-linux";
 
       # Helper Functions
-      mkNixosConfig = hostname: username:
+      mkNixosConfig = hostname: profile: username:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs hostname profile username; };
           modules = [
-            ./hosts/${hostname}
+            ./hosts/${profile}
 
             stylix.nixosModules.stylix
 
@@ -40,9 +40,9 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "backup";
-                extraSpecialArgs = { inherit inputs; };
+                extraSpecialArgs = { inherit inputs hostname profile username; };
                 sharedModules = [ nixvim.homeModules.nixvim ];
-                users.${username} = import ./home/hosts/${hostname}.nix;
+                users.${username} = import ./home/hosts/${profile}.nix;
               };
             }
           ];
@@ -50,7 +50,8 @@
     in
     {
       nixosConfigurations = {
-        beans-btw = mkNixosConfig "chromebook" "kevin";
+        beans-btw = mkNixosConfig "beans-btw" "chromebook" "kevin";
+        uribo-btw = mkNixosConfig "uribo-btw" "server" "uribo";
       };
     };
 }

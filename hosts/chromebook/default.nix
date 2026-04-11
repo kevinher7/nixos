@@ -1,23 +1,31 @@
-_:
+{ hostname, ... }:
 {
   imports = [
     ./hardware-configuration.nix
     ../../modules/system.nix
     ../../modules/packages.nix
-    ../../modules/networking.nix
     ../../modules/programs.nix
     ../../modules/stylix.nix
     ../../modules/desktop/qtile
+    ../../modules/networking
     ../../modules/login
     ../../modules/input
     ../../modules/audio
   ];
 
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "beans-btw";
+  myModules.networking = {
+    enable = true;
+    hostname = hostname;
+    tailscale = {
+      enable = true;
+      ssh = false;
+    };
+  };
 
   time.timeZone = "Asia/Tokyo";
 
