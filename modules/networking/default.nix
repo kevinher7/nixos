@@ -29,7 +29,7 @@ in
   };
 
   config = lib.mkIf cfg.networking.enable {
-    networking.hostname = cfg.networking.hostname;
+    networking.hostName = cfg.networking.hostname;
     networking.networkmanager.enable = true;
 
     networking.firewall = {
