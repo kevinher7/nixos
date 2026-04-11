@@ -6,7 +6,7 @@ in
   options.myModules.networking = {
     enable = lib.mkEnableOption "Networking Configuration";
 
-    hostName = lib.mkOption {
+    hostname = lib.mkOption {
       type = lib.types.str;
       description = "The hostname of the machine";
     };
@@ -29,7 +29,7 @@ in
   };
 
   config = lib.mkIf cfg.networking.enable {
-    networking.hostName = cfg.networking.hostName;
+    networking.hostname = cfg.networking.hostname;
     networking.networkmanager.enable = true;
 
     networking.firewall = {

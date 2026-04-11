@@ -1,4 +1,4 @@
-_:
+{ hostname, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -20,7 +20,7 @@ _:
 
   myModules.networking = {
     enable = true;
-    hostName = "beans-btw";
+    hostname = hostname;
     tailscale = {
       enable = true;
       ssh = false;

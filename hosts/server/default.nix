@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, hostname, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -11,7 +11,7 @@
 
   myModules.networking = {
     enable = true;
-    hostName = "uribo-btw";
+    hostname = hostname;
     tailscale = {
       enable = true;
       openFirewall = true;
