@@ -1,4 +1,4 @@
-{ config, lib, pkgs, username, ... }:
+{ config, lib, ... }:
 let
   cfg = config.myModules.power;
 in
@@ -22,7 +22,7 @@ in
       enable = true;
       settings = {
         battery = {
-          governor = "powersave";
+          governor = "performance";
           turbo = "auto";
           energy_performance_preference = "power";
         };
