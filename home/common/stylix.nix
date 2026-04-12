@@ -10,7 +10,7 @@ _:
 
     targets = {
       rofi.enable = true;
-      ghostty.enable = true;
+      alacritty.enable = false;
       btop.enable = true;
       zathura.enable = true;
       qutebrowser.enable = true;

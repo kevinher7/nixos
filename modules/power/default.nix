@@ -2,7 +2,7 @@
 {
   imports = [
     ./server.nix
-    # ./chromebook.nix # TODO: Add chromebook power profile
+    ./chromebook.nix
   ];
 
   options.myModules.power = {

@@ -52,6 +52,6 @@ in
   services.screen-locker = {
     enable = true;
     lockCmd = lib.mkForce "${lockWrapper}/bin/lock-with-betterlockscreen";
-    inactiveInterval = lib.mkForce 3;
+    inactiveInterval = lib.mkForce 1;
   };
 }

@@ -1,4 +1,4 @@
-{ hostname, ... }:
+{ hostname, profile, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -9,28 +9,30 @@
     ../../modules/desktop/qtile
     ../../modules/networking
     ../../modules/login
+    ../../modules/power
     ../../modules/input
     ../../modules/audio
   ];
 
+  time.timeZone = "Asia/Tokyo";
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  myModules.networking = {
-    enable = true;
-    hostname = hostname;
-    tailscale = {
+  myModules = {
+    networking = {
       enable = true;
-      ssh = false;
+      hostname = hostname;
+      tailscale = {
+        enable = true;
+        ssh = false;
+      };
+    };
+
+    power = {
+      enable = true;
+      profile = profile;
     };
   };
 
-  time.timeZone = "Asia/Tokyo";
-
   programs.i3lock.enable = true;
-
-  services.logind.powerKey = "suspend";
   security.pam.services.i3lock-color.enable = true;
 }
+

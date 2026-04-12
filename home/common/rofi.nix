@@ -3,7 +3,7 @@
   programs.rofi = {
     enable = true;
 
-    terminal = "${lib.getExe config.programs.ghostty.package}";
+    terminal = "${lib.getExe config.programs.alacritty.package}";
 
     modes = [
       "drun"
