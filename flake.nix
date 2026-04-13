@@ -24,7 +24,7 @@
     let
       system = "x86_64-linux";
 
-      # Helper Functions
+      # Helper Function to Create Configs
       mkNixosConfig = hostname: profile: username:
         nixpkgs.lib.nixosSystem {
           inherit system;

@@ -29,5 +29,15 @@
       profile = profile;
     };
   };
+
+  myHomelab = {
+    vaultwarden = {
+      enable = true;
+      domain = "https://vault.uribogoat.duckdns.org";
+    };
+
+    npm.enable = true;
+  };
+
 }
 
