@@ -3,14 +3,6 @@ let
   cfg = config.myHomelab;
 in
 {
-  options.myHomelab.vaultwarden = {
-    enable = lib.mkEnableOption "Vaultwarden password manager";
-
-    domain = lib.mkOption {
-      type = lib.types.str;
-    };
-  };
-
   config = lib.mkIf cfg.vaultwarden.enable {
     virtualisation.oci-containers.containers.vaultwarden = {
       image = "vaultwarden/server:latest";

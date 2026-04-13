@@ -3,10 +3,6 @@ let
   cfg = config.myHomelab;
 in
 {
-  options.myHomelab.npm = {
-    enable = lib.mkEnableOption "Nginx Proxy Manager";
-  };
-
   config = lib.mkIf cfg.npm.enable {
     virtualisation.oci-containers.containers.npm = {
       image = "jc21/nginx-proxy-manager:latest";

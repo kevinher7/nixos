@@ -7,6 +7,7 @@
     ../../modules/stylix.nix
     ../../modules/docker.nix
     ../../modules/networking
+    ../../modules/containers
     ../../modules/login
     ../../modules/power
   ];
