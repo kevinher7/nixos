@@ -17,10 +17,13 @@ in
         "/var/lib/npm/data:/data"
         "/var/lib/npm/letsencrypt:/etc/letsencrypt"
       ];
+
+      extraOptions = [ "--network=homelab" ];
     };
 
     systemd = {
       tmpfiles.rules = [
+        "d /etc/containers/networks 0755 root root -"
         "d /var/lib/npm/data 0750 root root -"
         "d /var/lib/npm/letsencrypt 0750 root root -"
       ];
@@ -42,6 +45,11 @@ in
             ${pkgs.podman}/bin/podman network rm homelab || true
           '';
         };
+      };
+
+      services."podman-npm" = {
+        after = [ "podman-network-init.service" ];
+        requires = [ "podman-network-init.service" ];
       };
     };
   };
