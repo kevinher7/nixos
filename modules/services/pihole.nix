@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   cfg = config.myHomelab;
 in
@@ -124,6 +124,11 @@ in
         enable = true;
         interval = cfg.pihole.queryLogRetention;
       };
+    };
+
+    services.pihole-web = {
+      enable = true;
+      ports = [ cfg.pihole.webPort ];
     };
 
     # Disable conflicting services
