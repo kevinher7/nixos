@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   cfg = config.myHomelab;
 in
@@ -94,7 +94,12 @@ in
       lists = cfg.pihole.blocklists;
 
       settings = {
-        misc.readOnly = false;
+        misc = {
+          readOnly = false;
+          dnsmasq_lines = [
+            "address=/uribogoat.duckdns.org/192.168.0.33" # Host machine's local ip address
+          ];
+        };
 
         dns = {
           upstreams = cfg.pihole.upstreamDNS;
