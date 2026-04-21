@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   cfg = config.myHomelab;
 in
@@ -112,14 +112,6 @@ in
         '';
     };
 
-    # Override the config file to use the sops template
-    environment.etc."pihole/pihole.toml" = lib.mkForce {
-      source = config.sops.templates."pihole.toml".path;
-      user = "pihole";
-      group = "pihole";
-      mode = "0400";
-    };
-
     services.pihole-ftl = {
       enable = true;
 
@@ -137,15 +129,32 @@ in
       };
     };
 
+    systemd.services.pihole-ftl = {
+      # serviceConfig = {
+      #   ExecStartPre = [
+      #     "+${pkgs.writeShellScript "pihole-config" ''
+      #   ${pkgs.coreutils}/bin/cp ${config.sops.templates."pihole.toml".path} /etc/pihole/pihole.toml
+      #   ${pkgs.coreutils}/bin/chown pihole:pihole /etc/pihole/pihole.toml
+      #   ${pkgs.coreutils}/bin/chmod 0400 /etc/pihole/pihole.toml
+      # ''}"
+      #   ];
+      # };
+
+      restartTriggers = [ config.sops.templates."pihole.toml".file ];
+    };
+
+    # Ensure directories exist
+    systemd.tmpfiles.rules = [
+      # "d /etc/pihole 0755 pihole pihole - -"
+      # "d /run/pihole 0755 pihole pihole - -"
+      # "d /var/lib/pihole 0755 pihole pihole - -"
+      # "f /etc/pihole/versions 0644 pihole pihole - -"
+      "L+ /etc/pihole/pihole.toml - - - - ${config.sops.templates."pihole.toml".path}"
+    ];
+
     services.pihole-web = {
       enable = true;
       ports = [ cfg.pihole.webPort ];
-    };
-
-    # Ensure sops-nix runs before pihole-ftl
-    systemd.services.pihole-ftl = {
-      after = [ "sops-nix.service" ];
-      requires = [ "sops-nix.service" ];
     };
 
     # Disable conflicting services
@@ -158,13 +167,6 @@ in
     };
 
     services.dnsmasq.enable = false;
-
-    # Ensure directories exist
-    systemd.tmpfiles.rules = [
-      "d /etc/pihole 0755 pihole pihole - -"
-      "d /var/lib/pihole 0755 pihole pihole - -"
-      "f /etc/pihole/versions 0644 pihole pihole - -"
-    ];
   };
 }
 
