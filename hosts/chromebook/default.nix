@@ -2,10 +2,10 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/packages.nix
     ../../modules/stylix.nix
     ../../modules/desktop/qtile
     ../../modules/system
+    ../../modules/core
     ../../modules/networking
     ../../modules/login
     ../../modules/power
