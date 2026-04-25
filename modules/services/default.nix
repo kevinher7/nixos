@@ -4,6 +4,6 @@ _:
     ./podman.nix
     ./pihole.nix
     ./npm.nix
-    # ./vaultwarden.nix
+    ./vaultwarden.nix
   ];
 }

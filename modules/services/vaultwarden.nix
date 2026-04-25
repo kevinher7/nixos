@@ -1,6 +1,7 @@
 { config, lib, ... }:
 let
   cfg = config.myHomelab;
+  dataDir = "/var/lib/vaultwarden";
 in
 {
   options.myHomelab.vaultwarden = {
@@ -14,7 +15,7 @@ in
 
     port = lib.mkOption {
       type = lib.types.port;
-      default = 8000;
+      default = 1821;
       description = "Internal port for Vaultwarden (proxy to this via NPM)";
     };
   };
@@ -24,14 +25,17 @@ in
       enable = true;
       config = {
         DOMAIN = cfg.vaultwarden.domain;
+        ROCKET_ADDRESS = "127.0.0.1";
         ROCKET_PORT = cfg.vaultwarden.port;
         WEB_VAULT_ENABLED = true;
         SIGNUPS_ALLOWED = false; # Set to true initially to create admin account, then disable
+        DATA_FOLDER = dataDir;
       };
     };
 
-    # Firewall - only localhost needs access since NPM will proxy to it
-    # If you want direct access (not recommended), open the port:
-    # networking.firewall.allowedTCPPorts = [ cfg.vaultwarden.port ];
+    # The module's default StateDirectory is "bitwarden_rs" → /var/lib/bitwarden_rs.
+    # Force it to manage /var/lib/vaultwarden instead so systemd creates/maintains it.
+    systemd.services.vaultwarden.serviceConfig.StateDirectory =
+      lib.mkForce "vaultwarden";
   };
 }
