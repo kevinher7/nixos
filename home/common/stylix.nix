@@ -9,6 +9,7 @@ _:
     polarity = "dark";
 
     targets = {
+      gnome.enable = false;
       rofi.enable = true;
       alacritty.enable = false;
       btop.enable = true;

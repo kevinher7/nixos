@@ -12,7 +12,7 @@
   home = {
     username = username;
     homeDirectory = lib.mkForce "/home/${username}";
-    stateVersion = "25.05";
+    stateVersion = "25.11";
 
     packages = with pkgs; [
       btop

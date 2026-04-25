@@ -2,15 +2,15 @@
   description = "Kevin's Nixos Configuration";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-25.05";
+    nixpkgs.url = "nixpkgs/nixos-25.11";
 
     stylix = {
-      url = "github:nix-community/stylix/release-25.05";
+      url = "github:nix-community/stylix/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -18,9 +18,14 @@
     nixvim = {
       url = "github:nix-community/nixvim?rev=695b0b80f8452bc584adf23eb58bdc9f599e35eb";
     };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, home-manager, nixvim, stylix, ... }@inputs:
+  outputs = { nixpkgs, home-manager, nixvim, stylix, sops-nix, ... }@inputs:
     let
       system = "x86_64-linux";
 
@@ -31,6 +36,7 @@
           specialArgs = { inherit inputs hostname profile username; };
           modules = [
             ./hosts/${profile}
+            sops-nix.nixosModules.sops
 
             stylix.nixosModules.stylix
 
