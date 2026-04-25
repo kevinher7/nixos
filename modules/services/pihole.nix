@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   cfg = config.myHomelab;
 in
@@ -98,9 +98,14 @@ in
 
           [webserver]
           port = "${cfg.pihole.webPort}"
+          domain = "${config.services.pihole-web.hostName}"
+
+          [webserver.paths]
+          webroot = "${config.services.pihole-web.package}/share/"
+          webhome = "/"
         
           [webserver.api]
-          pwhash = "${config.sops.placeholder.pihole_password}"
+          pwhash = '${lib.trim config.sops.placeholder.pihole_password}'
         
           [webserver.session]
           timeout = ${toString cfg.pihole.sessionTimeout}
@@ -129,33 +134,17 @@ in
       };
     };
 
-    systemd.services.pihole-ftl = {
-      # serviceConfig = {
-      #   ExecStartPre = [
-      #     "+${pkgs.writeShellScript "pihole-config" ''
-      #   ${pkgs.coreutils}/bin/cp ${config.sops.templates."pihole.toml".path} /etc/pihole/pihole.toml
-      #   ${pkgs.coreutils}/bin/chown pihole:pihole /etc/pihole/pihole.toml
-      #   ${pkgs.coreutils}/bin/chmod 0400 /etc/pihole/pihole.toml
-      # ''}"
-      #   ];
-      # };
-
-      restartTriggers = [ config.sops.templates."pihole.toml".file ];
-    };
-
-    # Ensure directories exist
-    systemd.tmpfiles.rules = [
-      # "d /etc/pihole 0755 pihole pihole - -"
-      # "d /run/pihole 0755 pihole pihole - -"
-      # "d /var/lib/pihole 0755 pihole pihole - -"
-      # "f /etc/pihole/versions 0644 pihole pihole - -"
-      "L+ /etc/pihole/pihole.toml - - - - ${config.sops.templates."pihole.toml".path}"
-    ];
-
     services.pihole-web = {
       enable = true;
       ports = [ cfg.pihole.webPort ];
     };
+
+    environment.etc."pihole/pihole.toml".source =
+      lib.mkForce config.sops.templates."pihole.toml".path;
+
+    systemd.services.pihole-ftl.restartTriggers = [
+      config.sops.templates."pihole.toml".file
+    ];
 
     # Disable conflicting services
     services.resolved = {
