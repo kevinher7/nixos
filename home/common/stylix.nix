@@ -16,6 +16,7 @@ _:
       zathura.enable = true;
       qutebrowser.enable = true;
       nixvim.enable = false;
+      opencode.enable = false;
     };
   };
 }
