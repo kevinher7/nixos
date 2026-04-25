@@ -25,7 +25,7 @@ in
       enable = true;
       config = {
         DOMAIN = cfg.vaultwarden.domain;
-        ROCKET_ADDRESS = "127.0.0.1";
+        ROCKET_ADDRESS = "0.0.0.0";
         ROCKET_PORT = cfg.vaultwarden.port;
         WEB_VAULT_ENABLED = true;
         SIGNUPS_ALLOWED = false; # Set to true initially to create admin account, then disable
