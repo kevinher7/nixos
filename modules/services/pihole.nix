@@ -1,8 +1,10 @@
-{ config, lib, ... }:
-let
-  cfg = config.myHomelab;
-in
 {
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.myHomelab;
+in {
   options.myHomelab.pihole = {
     enable = lib.mkEnableOption "Pi-hole DNS sinkhole and ad blocker";
 
@@ -14,7 +16,7 @@ in
 
     upstreamDNS = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [ "1.1.1.1" "1.0.0.1" "8.8.8.8" ];
+      default = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
       description = "Upstream DNS servers";
     };
 
@@ -31,10 +33,16 @@ in
     blocklists = lib.mkOption {
       type = lib.types.listOf (lib.types.submodule {
         options = {
-          url = lib.mkOption { type = lib.types.str; };
-          type = lib.mkOption { type = lib.types.str; default = "block"; };
-          enabled = lib.mkOption { type = lib.types.bool; default = true; };
-          description = lib.mkOption { type = lib.types.str; };
+          url = lib.mkOption {type = lib.types.str;};
+          type = lib.mkOption {
+            type = lib.types.str;
+            default = "block";
+          };
+          enabled = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+          };
+          description = lib.mkOption {type = lib.types.str;};
         };
       });
       default = [
@@ -80,63 +88,73 @@ in
       owner = "pihole";
       group = "pihole";
       mode = "0400";
-      content =
-        let
-          # Helper to format string arrays for TOML
-          fmtStrings = arr: lib.concatMapStringsSep ", " (x: ''"${x}"'') arr;
-        in
-        ''
-          [misc]
-          readOnly = false
-          dnsmasq_lines = ["address=/uribogoat.duckdns.org/192.168.0.33"]
+      content = let
+        # Helper to format string arrays for TOML
+        fmtStrings = arr: lib.concatMapStringsSep ", " (x: ''"${x}"'') arr;
+      in ''
+        [misc]
+        readOnly = false
+        dnsmasq_lines = ["address=/uribogoat.duckdns.org/192.168.0.33"]
 
-          [dns]
-          upstreams = [${fmtStrings cfg.pihole.upstreamDNS}]
-          hosts = [${fmtStrings cfg.pihole.localHosts}]
-          domainNeeded = true
-          bogusPriv = true
+        [dns]
+        upstreams = [${fmtStrings cfg.pihole.upstreamDNS}]
+        hosts = [${fmtStrings cfg.pihole.localHosts}]
+        domainNeeded = true
+        bogusPriv = true
 
-          [webserver]
-          port = "${cfg.pihole.webPort}"
-          domain = "${config.services.pihole-web.hostName}"
+        [webserver]
+        port = "${cfg.pihole.webPort}"
+        domain = "${config.services.pihole-web.hostName}"
 
-          [webserver.paths]
-          webroot = "${config.services.pihole-web.package}/share/"
-          webhome = "/"
-        
-          [webserver.api]
-          pwhash = '${lib.trim config.sops.placeholder.pihole_password}'
-        
-          [webserver.session]
-          timeout = ${toString cfg.pihole.sessionTimeout}
+        [webserver.paths]
+        webroot = "${config.services.pihole-web.package}/share/"
+        webhome = "/"
 
-          [ntp]
-          ipv4.active = false
-          ipv6.active = false
-          sync.active = false
-        '';
+        [webserver.api]
+        pwhash = '${lib.trim config.sops.placeholder.pihole_password}'
+
+        [webserver.session]
+        timeout = ${toString cfg.pihole.sessionTimeout}
+
+        [ntp]
+        ipv4.active = false
+        ipv6.active = false
+        sync.active = false
+      '';
     };
 
-    services.pihole-ftl = {
-      enable = true;
-
-      openFirewallDNS = cfg.pihole.openFirewallDNS;
-      openFirewallWebserver = cfg.pihole.openFirewallWeb;
-
-      lists = cfg.pihole.blocklists;
-
-      # Settings are provided via sops template
-      settings = { };
-
-      queryLogDeleter = {
+    services = {
+      pihole-ftl = {
         enable = true;
-        interval = cfg.pihole.queryLogRetention;
-      };
-    };
 
-    services.pihole-web = {
-      enable = true;
-      ports = [ cfg.pihole.webPort ];
+        inherit (cfg.pihole) openFirewallDNS;
+        openFirewallWebserver = cfg.pihole.openFirewallWeb;
+
+        lists = cfg.pihole.blocklists;
+
+        # Settings are provided via sops template
+        settings = {};
+
+        queryLogDeleter = {
+          enable = true;
+          interval = cfg.pihole.queryLogRetention;
+        };
+      };
+
+      pihole-web = {
+        enable = true;
+        ports = [cfg.pihole.webPort];
+      };
+
+      resolved = {
+        enable = false;
+        extraConfig = ''
+          DNSStubListener=no
+          MulticastDNS=off
+        '';
+      };
+
+      dnsmasq.enable = false;
     };
 
     environment.etc."pihole/pihole.toml".source =
@@ -145,17 +163,5 @@ in
     systemd.services.pihole-ftl.restartTriggers = [
       config.sops.templates."pihole.toml".file
     ];
-
-    # Disable conflicting services
-    services.resolved = {
-      enable = false;
-      extraConfig = ''
-        DNSStubListener=no
-        MulticastDNS=off
-      '';
-    };
-
-    services.dnsmasq.enable = false;
   };
 }
-

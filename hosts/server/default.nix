@@ -1,5 +1,8 @@
-{ hostname, profile, ... }:
 {
+  hostname,
+  profile,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/system
@@ -17,7 +20,7 @@
   myModules = {
     networking = {
       enable = true;
-      hostname = hostname;
+      inherit hostname;
       tailscale = {
         enable = true;
         openFirewall = true;
@@ -27,7 +30,7 @@
 
     power = {
       enable = true;
-      profile = profile;
+      inherit profile;
     };
   };
 
@@ -44,6 +47,4 @@
       webPort = "8080";
     };
   };
-
 }
-

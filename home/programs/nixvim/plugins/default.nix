@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   imports = [
     ./telescope.nix
     ./lsp.nix

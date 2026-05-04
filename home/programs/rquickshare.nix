@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   home = {
     packages = with pkgs; [
       rquickshare
@@ -20,7 +19,6 @@
       realclose = false;
       visibility = 2;
     };
-
   };
 
   services.dunst.enable = true;

@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   imports = [
     ./plugins
     ./keymappings.nix
@@ -72,16 +71,16 @@
 
     autoCmd = [
       {
-        event = [ "TextYankPost" ];
+        event = ["TextYankPost"];
         desc = "Highliht when yanking text";
         group = "kickstart-highlight-yank";
         callback = {
           __raw = ''
 
-          function()
-            vim.hl.on_yank()
-          end
-        '';
+            function()
+              vim.hl.on_yank()
+            end
+          '';
         };
       }
     ];

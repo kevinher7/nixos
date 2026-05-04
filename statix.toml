@@ -1,8 +1,6 @@
-[lint]
 disabled = ["empty_let_in", "legacy_let_syntax"]
 
-[exclude]
-paths = [
+ignore = [
     "hosts/*/hardware-configuration.nix",
     "*.lock"
 ]

@@ -1,5 +1,8 @@
-{ hostname, profile, ... }:
 {
+  hostname,
+  profile,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/desktop/qtile
@@ -18,7 +21,7 @@
   myModules = {
     networking = {
       enable = true;
-      hostname = hostname;
+      inherit hostname;
       tailscale = {
         enable = true;
         ssh = false;
@@ -27,7 +30,7 @@
 
     power = {
       enable = true;
-      profile = profile;
+      inherit profile;
     };
   };
 
@@ -38,4 +41,3 @@
 
   security.pam.services.i3lock-color.enable = true;
 }
-

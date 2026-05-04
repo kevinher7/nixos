@@ -1,8 +1,10 @@
-{ config, lib, ... }:
-let
-  cfg = config.myModules;
-in
 {
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.myModules;
+in {
   options.myModules.networking = {
     enable = lib.mkEnableOption "Networking Configuration";
 
@@ -29,21 +31,23 @@ in
   };
 
   config = lib.mkIf cfg.networking.enable {
-    networking.hostName = cfg.networking.hostname;
-    networking.networkmanager.enable = true;
+    networking = {
+      hostName = cfg.networking.hostname;
+      networkmanager.enable = true;
 
-    networking.firewall = {
-      enable = true;
-      allowedTCPPorts = [ 9300 ];
-      allowedUDPPorts = [ 5353 ];
+      firewall = {
+        enable = true;
+        allowedTCPPorts = [9300];
+        allowedUDPPorts = [5353];
 
-      trustedInterfaces = [ "podman1" ];
+        trustedInterfaces = ["podman1"];
+      };
     };
 
     services = {
       tailscale = lib.mkIf cfg.networking.tailscale.enable {
         enable = true;
-        openFirewall = cfg.networking.tailscale.openFirewall;
+        inherit (cfg.networking.tailscale) openFirewall;
         extraSetFlags = lib.optional cfg.networking.tailscale.ssh "--ssh";
       };
 

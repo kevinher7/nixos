@@ -1,8 +1,6 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   wallpaper = ../../../assets/wallpapers/girl-reading-book.png;
-in
-{
+in {
   services.xserver = {
     enable = true;
     desktopManager.runXdgAutostartIfNone = true;

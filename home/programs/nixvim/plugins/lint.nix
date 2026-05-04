@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.nixvim = {
     extraPackages = with pkgs; [
       shellcheck
@@ -11,10 +10,10 @@
       enable = true;
 
       lintersByFt = {
-        nix = [ "statix" ];
-        sh = [ "shellcheck" ];
-        bash = [ "shellcheck" ];
-        markdown = [ "markdownlint" ];
+        nix = ["statix"];
+        sh = ["shellcheck"];
+        bash = ["shellcheck"];
+        markdown = ["markdownlint"];
       };
     };
   };

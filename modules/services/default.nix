@@ -1,5 +1,4 @@
-_:
-{
+_: {
   imports = [
     ./podman.nix
     ./pihole.nix

@@ -1,4 +1,3 @@
-_:
-{
-  imports = [ ./ly.nix ];
+_: {
+  imports = [./ly.nix];
 }

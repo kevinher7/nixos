@@ -1,9 +1,13 @@
-{ pkgs, lib, ... }:
-let
-  pythonEnv = pkgs.python3.withPackages (ps: with ps; [
-    tldextract
-    pyperclip
-  ]);
+{
+  pkgs,
+  lib,
+  ...
+}: let
+  pythonEnv = pkgs.python3.withPackages (ps:
+    with ps; [
+      tldextract
+      pyperclip
+    ]);
 
   qute-bitwarden = pkgs.fetchurl {
     url = "https://raw.githubusercontent.com/qutebrowser/qutebrowser/main/misc/userscripts/qute-bitwarden";
@@ -15,8 +19,7 @@ let
     ${pkgs.keyutils}/bin/keyctl link @u @s 2>/dev/null || true
     exec ${pythonEnv}/bin/python ${qute-bitwarden} "$@"
   '';
-in
-{
+in {
   programs.qutebrowser = {
     enable = true;
 
@@ -53,7 +56,6 @@ in
       };
 
       window.transparent = true;
-
 
       content = {
         # Privacy
@@ -99,7 +101,6 @@ in
 
       # config.set("content.webgl", False, "*")
     '';
-
   };
 
   # Place in userscripts in qutebrowser's userscripts directory

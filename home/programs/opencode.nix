@@ -1,5 +1,8 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   programs.opencode = {
     enable = true;
     # tui.themes = "nord";
@@ -8,7 +11,7 @@
   systemd.user.services.opencode-web = {
     Unit = {
       Description = "OpenCode Web Service";
-      After = [ "network.target" ];
+      After = ["network.target"];
     };
 
     Service = {
@@ -20,7 +23,7 @@
     };
 
     Install = {
-      WantedBy = [ "default.target" ];
+      WantedBy = ["default.target"];
     };
   };
 }
