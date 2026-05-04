@@ -5,7 +5,7 @@
     ./keymappings.nix
   ];
 
-   home.packages = with pkgs; [
+  home.packages = with pkgs; [
     # Nixvim
     ripgrep
     alejandra

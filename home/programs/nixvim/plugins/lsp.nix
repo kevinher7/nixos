@@ -10,7 +10,7 @@
 
         settings = {
           format_on_save = {
-            lsp_fallback = "fallback";
+            lsp_format = "fallback";
             timeout_ms = 500;
           };
 

@@ -1,6 +1,6 @@
 { ... }:
 {
-   imports = [
+  imports = [
     ./telescope.nix
     ./lsp.nix
     ./lint.nix
