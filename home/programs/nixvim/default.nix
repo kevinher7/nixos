@@ -5,7 +5,7 @@
     ./keymappings.nix
   ];
 
-  home.packages = with pkgs; [
+   home.packages = with pkgs; [
     # Nixvim
     ripgrep
     alejandra
@@ -13,6 +13,11 @@
     ruff
     clang-tools
     typstyle
+
+    # Linters
+    shellcheck
+    markdownlint-cli
+    statix
   ];
 
   programs.nixvim = {

@@ -1,8 +1,9 @@
 { ... }:
 {
-  imports = [
+   imports = [
     ./telescope.nix
     ./lsp.nix
+    ./lint.nix
     ./treesitter.nix
     ./gitsigns.nix
     ./indent-blankline.nix

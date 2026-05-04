@@ -62,6 +62,26 @@
         action = "<cmd>Gitsigns prev_hunk<CR>";
         options = { desc = "Previous Git [h]unk"; };
       }
+      {
+        mode = "n";
+        key = "<leader>ul";
+        action = "<cmd>lua require('lint').try_lint()<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "[L]int buffer";
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>x";
+        action = "<cmd>lua vim.diagnostic.setloclist()<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Populate loclist with diagnostics";
+        };
+      }
     ];
   };
 }
