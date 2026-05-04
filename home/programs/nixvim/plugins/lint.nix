@@ -17,19 +17,5 @@
         markdown = [ "markdownlint" ];
       };
     };
-
-    autoCmd = [
-      {
-        event = [ "BufWritePost" ];
-        desc = "Lint on save";
-        callback = {
-          __raw = ''
-            function()
-              require('lint').try_lint()
-            end
-          '';
-        };
-      }
-    ];
   };
 }
