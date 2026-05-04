@@ -4,9 +4,9 @@ let
 in
 {
   config = lib.mkIf (cfg.enable && cfg.profile == "server") {
-    services.logind = {
-      lidSwitch = "ignore";
-      lidSwitchExternalPower = "ignore";
+    services.logind.settings.Login = {
+      HandleLidSwitch = "ignore";
+      HandleLidSwitchExternalPower = "ignore";
     };
 
     systemd.targets = {
