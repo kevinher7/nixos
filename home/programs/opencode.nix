@@ -13,6 +13,7 @@
 
     Service = {
       ExecStart = "${lib.getExe config.programs.opencode.package} serve --hostname 0.0.0.0 --port 4096";
+      WorkingDirectory = "/home/uribo/nixos-config";
       Restart = "always";
       RestartSec = 5;
       # TODO: add EnvironmentFile with sops-nix password
