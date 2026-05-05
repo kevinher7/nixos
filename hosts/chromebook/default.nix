@@ -34,10 +34,8 @@
     };
   };
 
-  programs = {
-    i3lock.enable = true;
-    light.enable = true;
-  };
+  programs.i3lock.enable = true;
+  hardware.acpilight.enable = true;
 
   security.pam.services.i3lock-color.enable = true;
 }
