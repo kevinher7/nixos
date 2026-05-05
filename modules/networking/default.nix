@@ -37,7 +37,6 @@ in {
 
       firewall = {
         enable = true;
-        allowedTCPPorts = [9300];
         allowedUDPPorts = [5353];
 
         trustedInterfaces = ["podman1" "tailscale0"];
