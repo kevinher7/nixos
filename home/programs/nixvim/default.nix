@@ -7,8 +7,8 @@
   home.packages = with pkgs; [
     # Nixvim
     ripgrep
-     alejandra
-     ruff
+    alejandra
+    ruff
     clang-tools
     typstyle
 

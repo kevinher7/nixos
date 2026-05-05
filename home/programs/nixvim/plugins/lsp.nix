@@ -17,7 +17,7 @@
           formatters_by_ft = {
             python = ["ruff_format"];
             c = ["clang_format"];
-             nix = ["alejandra"];
+            nix = ["alejandra"];
             typst = ["typstyle"];
           };
         };
@@ -56,7 +56,7 @@
                 suppress = ["formatting"];
               };
               formatting = {
-                 command = ["alejandra"];
+                command = ["alejandra"];
               };
             };
           };
