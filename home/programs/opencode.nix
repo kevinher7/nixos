@@ -1,4 +1,4 @@
-{
+{username, ...}: {
   programs.opencode = {
     enable = true;
 
@@ -14,4 +14,6 @@
       # environmentFile = "/run/secrets/opencode-web";
     };
   };
+
+  systemd.user.services.opencode-web.Service.WorkingDirectory = "/home/${username}/nixos-config";
 }
