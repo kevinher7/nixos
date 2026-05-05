@@ -10,15 +10,15 @@ in {
       powerKey = "suspend";
       lidSwitch = "suspend-then-hibernate";
 
-      extraConfig = ''
-        IdleAction=suspend-then-hibernate
-        IdleActionSec=10m
-      '';
+      settings.Login = {
+        IdleAction = "suspend-then-hibernate";
+        IdleActionSec = "10m";
+      };
     };
 
-    systemd.sleep.extraConfig = ''
-      HibernateDelaySec=180
-    '';
+    systemd.sleep.settings.Sleep = {
+      HibernateDelaySec = 180;
+    };
 
     services.auto-cpufreq = {
       enable = true;

@@ -146,13 +146,7 @@ in {
         ports = [cfg.pihole.webPort];
       };
 
-      resolved = {
-        enable = false;
-        extraConfig = ''
-          DNSStubListener=no
-          MulticastDNS=off
-        '';
-      };
+      resolved.enable = false;
 
       dnsmasq.enable = false;
     };
