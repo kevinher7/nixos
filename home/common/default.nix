@@ -2,6 +2,7 @@
   lib,
   pkgs,
   username,
+  config,
   ...
 }: {
   imports = [
@@ -26,4 +27,7 @@
       pfetch
     ];
   };
+
+  # Silence GTK4 theme warning while on stateVersion < 26.05
+  gtk.gtk4.theme = config.gtk.theme;
 }
