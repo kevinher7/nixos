@@ -13,6 +13,7 @@
         nrs = ''sudo nixos-rebuild switch --flake ~/nixos-config#${hostname}'';
         cdnc = "cd ~/nixos-config";
         och = "opencode web --hostname 0.0.0.0 --port 4096";
+        tree = "tree --gitignore";
       }
 
       # Chromebook aliases
