@@ -8,12 +8,12 @@ _: {
   };
 
   settings = {
+    excludes = ["**/hardware-configuration.nix" "*.lock"];
+
     formatter.alejandra = {
-      excludes = ["hosts/*/hardware-configuration.nix" "*.lock"];
     };
     formatter.statix = {
       options = ["fix"];
-      excludes = ["hosts/*/hardware-configuration.nix" "*.lock"];
     };
   };
 }
