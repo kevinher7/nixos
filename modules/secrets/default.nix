@@ -1,4 +1,3 @@
-_:
-{
-  imports = [ ./sops.nix ];
+_: {
+  imports = [./sops.nix];
 }

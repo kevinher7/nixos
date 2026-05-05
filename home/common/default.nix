@@ -1,5 +1,9 @@
-{ lib, pkgs, username, ... }:
 {
+  lib,
+  pkgs,
+  username,
+  ...
+}: {
   imports = [
     ./git.nix
     ./bash.nix
@@ -10,7 +14,7 @@
   programs.home-manager.enable = true;
 
   home = {
-    username = username;
+    inherit username;
     homeDirectory = lib.mkForce "/home/${username}";
     stateVersion = "25.11";
 

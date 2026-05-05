@@ -1,5 +1,4 @@
-_:
-{
+_: {
   imports = [
     ./users.nix
     ./packages.nix

@@ -1,8 +1,11 @@
-{ config, pkgs, lib, ... }:
-let
-  cfg = config.myHomelab;
-in
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
+  cfg = config.myHomelab;
+in {
   options.myHomelab.npm = {
     enable = lib.mkEnableOption "Nginx Proxy Manager";
   };
@@ -22,7 +25,7 @@ in
         "/var/lib/npm/letsencrypt:/etc/letsencrypt"
       ];
 
-      extraOptions = [ "--network=homelab" ];
+      extraOptions = ["--network=homelab"];
     };
 
     systemd = {
@@ -41,4 +44,3 @@ in
     };
   };
 }
-

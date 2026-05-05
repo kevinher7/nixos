@@ -1,5 +1,8 @@
-{ lib, config, ... }:
 {
+  lib,
+  config,
+  ...
+}: {
   programs.rofi = {
     enable = true;
 
@@ -21,4 +24,3 @@
     };
   };
 }
-

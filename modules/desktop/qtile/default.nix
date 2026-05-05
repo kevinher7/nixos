@@ -1,5 +1,4 @@
-_:
-{
+_: {
   imports = [
     ./xserver.nix
     ./picom.nix

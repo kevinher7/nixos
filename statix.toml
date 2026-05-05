@@ -1,0 +1,6 @@
+disabled = ["empty_let_in", "legacy_let_syntax"]
+
+ignore = [
+    "hosts/*/hardware-configuration.nix",
+    "*.lock"
+]

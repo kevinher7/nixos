@@ -23,41 +23,54 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, home-manager, nixvim, stylix, sops-nix, ... }@inputs:
-    let
-      system = "x86_64-linux";
+  outputs = {
+    nixpkgs,
+    home-manager,
+    nixvim,
+    stylix,
+    sops-nix,
+    treefmt-nix,
+    ...
+  } @ inputs: let
+    system = "x86_64-linux";
 
-      # Helper Function to Create Configs
-      mkNixosConfig = hostname: profile: username:
-        nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs hostname profile username; };
-          modules = [
-            ./hosts/${profile}
-            sops-nix.nixosModules.sops
+    # Helper Function to Create Configs
+    mkNixosConfig = hostname: profile: username:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {inherit inputs hostname profile username;};
+        modules = [
+          ./hosts/${profile}
+          sops-nix.nixosModules.sops
 
-            stylix.nixosModules.stylix
+          stylix.nixosModules.stylix
 
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                extraSpecialArgs = { inherit inputs hostname profile username; };
-                sharedModules = [ nixvim.homeModules.nixvim ];
-                users.${username} = import ./home/hosts/${profile}.nix;
-              };
-            }
-          ];
-        };
-    in
-    {
-      nixosConfigurations = {
-        beans-btw = mkNixosConfig "beans-btw" "chromebook" "kevin";
-        uribo-btw = mkNixosConfig "uribo-btw" "server" "uribo";
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              extraSpecialArgs = {inherit inputs hostname profile username;};
+              sharedModules = [nixvim.homeModules.nixvim];
+              users.${username} = import ./home/hosts/${profile}.nix;
+            };
+          }
+        ];
       };
+  in {
+    nixosConfigurations = {
+      beans-btw = mkNixosConfig "beans-btw" "chromebook" "kevin";
+      uribo-btw = mkNixosConfig "uribo-btw" "server" "uribo";
     };
+
+    formatter.${system} = (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix).config.build.wrapper;
+  };
 }

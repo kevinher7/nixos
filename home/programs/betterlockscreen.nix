@@ -1,5 +1,9 @@
-{ config, lib, pkgs, ... }:
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   lockImage = ../../assets/wallpapers/girl-reading-book.png;
   lockImageTarget = "${config.home.homeDirectory}/.config/betterlockscreen/lock.png";
 
@@ -31,17 +35,15 @@ let
       mkdir -p "$cache_dir"
 
       ${pkgs.betterlockscreen}/bin/betterlockscreen -u ${
-        lib.escapeShellArg lockImageTarget
-      }
+      lib.escapeShellArg lockImageTarget
+    }
 
       echo "$new" > "$stamp"
     fi
 
     exec ${pkgs.betterlockscreen}/bin/betterlockscreen -l dimblur
   '';
-
-in
-{
+in {
   home.packages = with pkgs; [
     betterlockscreen
     xss-lock

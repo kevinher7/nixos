@@ -1,4 +1,3 @@
-_:
-{
-  imports = [ ./stylix.nix ];
+_: {
+  imports = [./stylix.nix];
 }

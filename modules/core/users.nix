@@ -1,7 +1,6 @@
-{ username, ... }:
-{
+{username, ...}: {
   users.users.${username} = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "video" ];
+    extraGroups = ["wheel" "video"];
   };
 }

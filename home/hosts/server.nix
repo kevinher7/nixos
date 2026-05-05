@@ -1,5 +1,4 @@
-_:
-{
+_: {
   imports = [
     ../common
     ../programs/nixvim

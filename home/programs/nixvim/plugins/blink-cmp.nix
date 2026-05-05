@@ -29,18 +29,17 @@
             enabled = true;
           };
           sources = {
-            cmdline = [ ];
+            cmdline = [];
             providers = {
               buffer = {
                 score_offset = -7;
               };
               lsp = {
-                fallbacks = [ ];
+                fallbacks = [];
               };
             };
           };
         };
-
       };
     };
   };

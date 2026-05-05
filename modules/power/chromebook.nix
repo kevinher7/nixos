@@ -1,8 +1,10 @@
-{ config, lib, ... }:
-let
-  cfg = config.myModules.power;
-in
 {
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.myModules.power;
+in {
   config = lib.mkIf (cfg.enable && cfg.profile == "chromebook") {
     services.logind = {
       powerKey = "suspend";

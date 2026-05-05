@@ -1,9 +1,11 @@
-{ config, lib, ... }:
-let
+{
+  config,
+  lib,
+  ...
+}: let
   cfg = config.myHomelab;
   dataDir = "/var/lib/vaultwarden";
-in
-{
+in {
   options.myHomelab.vaultwarden = {
     enable = lib.mkEnableOption "Vaultwarden password manager";
 

@@ -14,13 +14,13 @@
 
         npairs.add_rule(
           Rule("$", "$", "typst")
-            -- This prevents the pair from triggering if the next character 
+            -- This prevents the pair from triggering if the next character
             -- is already a "$" (common for closing manually)
             -- :with_pair(cond.not_after_regex("$"))
 
-            -- Optional: If you want $$ to behave like display math 
+            -- Optional: If you want $$ to behave like display math
             -- and move to a new line on Enter
-            -- :with_cr(cond.none()) 
+            -- :with_cr(cond.none())
         )
       '';
     };

@@ -10,15 +10,14 @@
       {
         action = "<cmd>nohlsearch<CR>";
         key = "<Esc>";
-        options =
-          {
-            silent = true;
-            noremap = true;
-            desc = "Clean hlsearch";
-          };
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Clean hlsearch";
+        };
       }
       {
-        mode = [ "n" "v" ];
+        mode = ["n" "v"];
         key = "<leader>y";
         action = "\"+y";
       }
@@ -54,13 +53,33 @@
         mode = "n";
         key = "]h";
         action = "<cmd>Gitsigns next_hunk<CR>";
-        options = { desc = "Next Git [h]unk"; };
+        options = {desc = "Next Git [h]unk";};
       }
       {
         mode = "n";
         key = "[h";
         action = "<cmd>Gitsigns prev_hunk<CR>";
-        options = { desc = "Previous Git [h]unk"; };
+        options = {desc = "Previous Git [h]unk";};
+      }
+      {
+        mode = "n";
+        key = "<leader>ul";
+        action = "<cmd>lua require('lint').try_lint()<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "[L]int buffer";
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>x";
+        action = "<cmd>lua vim.diagnostic.setloclist()<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Populate loclist with diagnostics";
+        };
       }
     ];
   };

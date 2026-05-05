@@ -1,8 +1,6 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.nixvim = {
-
-    extraPackages = [ pkgs.typstyle ];
+    extraPackages = [pkgs.typstyle];
 
     plugins = {
       conform-nvim = {
@@ -10,17 +8,17 @@
 
         settings = {
           format_on_save = {
-            lsp_fallback = "fallback";
+            lsp_format = "fallback";
             timeout_ms = 500;
           };
 
           notify_on_error = true;
 
           formatters_by_ft = {
-            python = [ "ruff_format" ];
-            c = [ "clang_format" ];
-            nix = [ "nixpkgs_fmt" ];
-            typst = [ "typstyle" ];
+            python = ["ruff_format"];
+            c = ["clang_format"];
+            nix = ["alejandra"];
+            typst = ["typstyle"];
           };
         };
       };
@@ -55,17 +53,17 @@
             enable = true;
             settings = {
               diagnostic = {
-                suppress = [ "formatting" ];
+                suppress = ["formatting"];
               };
               formatting = {
-                command = [ "nixpkgs-fmt" ];
+                command = ["alejandra"];
               };
             };
           };
 
           ruff = {
             enable = true;
-            filetypes = [ "python" ];
+            filetypes = ["python"];
             extraOptions.on_attach.__raw = ''
               function(client, bufnr)
                 client.server_capabilities.documentFormattingProvider = false
