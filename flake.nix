@@ -71,8 +71,6 @@
       uribo-btw = mkNixosConfig "uribo-btw" "server" "uribo";
     };
 
-    formatter.${system} = treefmt-nix.lib.mkWrapper nixpkgs.legacyPackages.${system} {
-      projectRoot = ./.;
-    };
+    formatter.${system} = (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix).config.build.wrapper;
   };
 }
