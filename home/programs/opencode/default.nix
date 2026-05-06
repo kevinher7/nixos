@@ -11,6 +11,10 @@
   programs.opencode = {
     enable = true;
 
+    commands = {
+      lint = ./commands/lint.md;
+    };
+
     settings = {
       permission = {
         "*" = "allow";
