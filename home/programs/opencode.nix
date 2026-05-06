@@ -2,6 +2,14 @@
   programs.opencode = {
     enable = true;
 
+    settings = {
+      permission = {
+        "*" = "allow";
+        "doom_loop" = "allow";
+        "external_directory" = "allow";
+      };
+    };
+
     web = {
       enable = true;
       extraArgs = [
@@ -15,5 +23,8 @@
     };
   };
 
-  systemd.user.services.opencode-web.Service.WorkingDirectory = "/home/${username}/nixos-config";
+  systemd.user.services.opencode-web.Service = {
+    WorkingDirectory = "/home/${username}/nixos-config";
+    Environment = "PATH=/run/current-system/sw/bin:/home/${username}/.nix-profile/bin:/usr/bin:/bin";
+  };
 }
