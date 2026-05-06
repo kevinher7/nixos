@@ -1,4 +1,13 @@
-{username, ...}: {
+{
+  pkgs,
+  username,
+  ...
+}: {
+  home.packages = with pkgs; [
+    prettier
+    shfmt
+  ];
+
   programs.opencode = {
     enable = true;
 
@@ -7,6 +16,24 @@
         "*" = "allow";
         "doom_loop" = "allow";
         "external_directory" = "allow";
+      };
+
+      formatter = {
+        nixfmt = {
+          command = ["alejandra" "--quiet" "$FILE"];
+        };
+
+        ruff = {
+          command = ["ruff" "format" "$FILE"];
+        };
+
+        prettier = {
+          command = ["prettier" "--write" "$FILE"];
+        };
+
+        shfmt = {
+          command = ["shfmt" "-w" "$FILE"];
+        };
       };
     };
 
@@ -25,6 +52,6 @@
 
   systemd.user.services.opencode-web.Service = {
     WorkingDirectory = "/home/${username}/nixos-config";
-    Environment = "PATH=/run/current-system/sw/bin:/home/${username}/.nix-profile/bin:/usr/bin:/bin";
+    Environment = "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/home/${username}/.nix-profile/bin:/usr/bin:/bin";
   };
 }
