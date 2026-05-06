@@ -1,8 +1,7 @@
 _: {
   imports = [
-    ./podman.nix
     ./pihole.nix
-    ./npm.nix
+    ./nginx-proxy.nix
     ./vaultwarden.nix
   ];
 }

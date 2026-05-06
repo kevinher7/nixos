@@ -34,7 +34,7 @@
   };
 
   myHomelab = {
-    npm.enable = true;
+    nginxProxy.enable = true;
 
     vaultwarden = {
       enable = true;
