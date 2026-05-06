@@ -9,7 +9,6 @@
     ../../modules/core
     ../../modules/theming
     ../../modules/networking
-    ../../modules/login
     ../../modules/power
     ../../modules/secrets
     ../../modules/services
