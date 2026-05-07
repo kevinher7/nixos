@@ -39,7 +39,8 @@ in {
         ];
         dnsProvider = "duckdns";
         environmentFile = config.sops.templates."acme-duckdns.env".path;
-        dnsPropagationCheck = true;
+        # Disable local propagation check — Let's Encrypt validates directly
+        dnsPropagationCheck = false;
       };
     };
 
