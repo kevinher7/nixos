@@ -73,7 +73,7 @@ in {
           forceSSL = true;
           useACMEHost = "uribogoat.duckdns.org";
           locations."/" = {
-            proxyPass = "http://localhost:8080/admin/";
+            proxyPass = "http://localhost:8080/";
           };
         };
 
