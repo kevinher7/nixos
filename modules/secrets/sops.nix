@@ -12,6 +12,12 @@ _: {
         group = "pihole";
         mode = "0400";
       };
+
+      duckdns_token = {
+        owner = "acme";
+        group = "acme";
+        mode = "0400";
+      };
     };
   };
 }

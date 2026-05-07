@@ -39,7 +39,7 @@ in {
         enable = true;
         allowedUDPPorts = [5353];
 
-        trustedInterfaces = ["podman1" "tailscale0"];
+        trustedInterfaces = ["tailscale0"];
       };
     };
 
