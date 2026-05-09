@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Run statix linting
+        run: nix run nixpkgs#statix -- check .
+
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Evaluate chromebook configuration
+        run: >
+          nix eval --show-trace
+          '.#nixosConfigurations."beans-btw".config.system.build.toplevel.outPath'
+
+      - name: Evaluate server configuration
+        run: >
+          nix eval --show-trace
+          '.#nixosConfigurations."uribo-btw".config.system.build.toplevel.outPath'
