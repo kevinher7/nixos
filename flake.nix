@@ -28,6 +28,11 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    git-hooks-nix = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -37,9 +42,11 @@
     stylix,
     sops-nix,
     treefmt-nix,
+    git-hooks-nix,
     ...
   } @ inputs: let
     system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
 
     # Helper Function to Create Configs
     mkNixosConfig = hostname: profile: username:
@@ -71,6 +78,11 @@
       uribo-btw = mkNixosConfig "uribo-btw" "server" "uribo";
     };
 
-    formatter.${system} = (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix).config.build.wrapper;
+    formatter.${system} = (treefmt-nix.lib.evalModule pkgs ./treefmt.nix).config.build.wrapper;
+
+    checks.${system}.pre-commit-check = git-hooks-nix.lib.${system}.run {
+      src = ./.;
+      inherit (import ./git-hooks.nix {inherit pkgs;}) hooks;
+    };
   };
 }
