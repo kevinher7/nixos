@@ -15,7 +15,16 @@ This guide assumes you already have NixOS installed.
    cd ~/nixos-config
    ```
 
-2. **Secrets & Encryption** 🔐
+2. **Install Git Hooks** 🪝
+
+   This repository uses `git-hooks.nix` to enforce formatting, linting, and conventional commits.
+
+   ```bash
+   nix build .#checks.x86_64-linux.pre-commit-check
+   eval "$(nix eval --raw '.#checks.x86_64-linux.pre-commit-check.shellHook')"
+   ```
+
+3. **Secrets & Encryption** 🔐
 
    Sensitive values are encrypted with [`sops-nix`](https://github.com/Mic92/sops-nix). The NixOS module automatically derives the age key from `/etc/ssh/ssh_host_ed25519_key` during system rebuilds, so builds work transparently. However, to **manually edit** secrets with the `sops` CLI, you need an age identity file accessible to your user.
 
@@ -39,7 +48,7 @@ This guide assumes you already have NixOS installed.
 
    Add or modify keys, save, and `sops` will re-encrypt automatically.
 
-3. **Build & Switch**
+4. **Build & Switch**
 
    Run the rebuild for the specific host you are setting up:
 
