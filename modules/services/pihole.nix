@@ -81,6 +81,65 @@ in {
       default = "daily";
       description = "Interval for query log cleanup";
     };
+
+    dhcp = {
+      enable = lib.mkEnableOption "Pi-hole DHCP server";
+
+      active = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Whether the DHCP server is active. Set to true only after router DHCP is disabled.";
+      };
+
+      router = lib.mkOption {
+        type = lib.types.str;
+        default = "192.168.0.1";
+        description = "Default gateway (router IP) to advertise to DHCP clients";
+      };
+
+      start = lib.mkOption {
+        type = lib.types.str;
+        default = "192.168.0.100";
+        description = "Start of DHCP range";
+      };
+
+      end = lib.mkOption {
+        type = lib.types.str;
+        default = "192.168.0.250";
+        description = "End of DHCP range";
+      };
+
+      netmask = lib.mkOption {
+        type = lib.types.str;
+        default = "255.255.255.0";
+        description = "Subnet mask";
+      };
+
+      leaseTime = lib.mkOption {
+        type = lib.types.str;
+        default = "24h";
+        description = "DHCP lease duration";
+      };
+
+      ipv6 = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable DHCPv6";
+      };
+
+      staticLeases = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Static DHCP leases in format: MAC,IP,hostname,leaseTime";
+        example = ["aa:bb:cc:dd:ee:ff,192.168.0.10,nas,infinite"];
+      };
+    };
+
+    openFirewallDHCP = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Open firewall for DHCP (port 67 UDP)";
+    };
   };
 
   config = lib.mkIf cfg.pihole.enable {
@@ -94,7 +153,7 @@ in {
       in ''
         [misc]
         readOnly = false
-        dnsmasq_lines = ["address=/uribogoat.duckdns.org/192.168.0.33"]
+        dnsmasq_lines = ["address=/uribogoat.duckdns.org/192.168.0.2"]
 
         [dns]
         upstreams = [${fmtStrings cfg.pihole.upstreamDNS}]
@@ -116,6 +175,21 @@ in {
         [webserver.session]
         timeout = ${toString cfg.pihole.sessionTimeout}
 
+        ${lib.optionalString cfg.pihole.dhcp.enable ''
+          [dhcp]
+          active = ${lib.boolToString cfg.pihole.dhcp.active}
+          router = "${cfg.pihole.dhcp.router}"
+          start = "${cfg.pihole.dhcp.start}"
+          end = "${cfg.pihole.dhcp.end}"
+          netmask = "${cfg.pihole.dhcp.netmask}"
+          leaseTime = "${cfg.pihole.dhcp.leaseTime}"
+          ipv6 = ${lib.boolToString cfg.pihole.dhcp.ipv6}
+          rapidCommit = true
+          ${lib.optionalString (cfg.pihole.dhcp.staticLeases != []) ''
+            hosts = [${fmtStrings cfg.pihole.dhcp.staticLeases}]
+          ''}
+        ''}
+
         [ntp]
         ipv4.active = false
         ipv6.active = false
@@ -127,7 +201,7 @@ in {
       pihole-ftl = {
         enable = true;
 
-        inherit (cfg.pihole) openFirewallDNS;
+        inherit (cfg.pihole) openFirewallDNS openFirewallDHCP;
         openFirewallWebserver = cfg.pihole.openFirewallWeb;
 
         lists = cfg.pihole.blocklists;
