@@ -32,6 +32,10 @@
   homebrew = {
     enable = true;
 
+    taps = [
+      "nikitabobko/tap"
+    ];
+
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
