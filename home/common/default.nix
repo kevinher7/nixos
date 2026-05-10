@@ -5,19 +5,23 @@
   config,
   ...
 }: {
-  imports =
-    [
-      ./git.nix
-    ]
-    ++ lib.optionals pkgs.stdenv.isLinux [./linux]
-    ++ lib.optionals pkgs.stdenv.isDarwin [./darwin];
+  imports = [
+    ./git.nix
+    ./linux
+    ./darwin
+  ];
+
+  options.myHome.os = lib.mkOption {
+    type = lib.types.enum ["linux" "darwin"];
+    description = "Target operating system for this home configuration";
+  };
 
   programs.home-manager.enable = true;
 
   home = {
     inherit username;
     homeDirectory = lib.mkForce (
-      if pkgs.stdenv.isDarwin
+      if config.myHome.os == "darwin"
       then "/Users/${username}"
       else "/home/${username}"
     );
