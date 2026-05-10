@@ -1,9 +1,9 @@
 {
+  config,
   lib,
-  pkgs,
   ...
 }:
-lib.mkIf pkgs.stdenv.isLinux {
+lib.mkIf (config.myHome.os == "linux") {
   stylix = {
     enable = true;
 

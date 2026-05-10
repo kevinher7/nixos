@@ -1,4 +1,10 @@
-{hostname, ...}: {
+{
+  config,
+  lib,
+  hostname,
+  ...
+}:
+lib.mkIf (config.myHome.os == "darwin") {
   programs.zsh = {
     enable = true;
     autosuggestion.enable = true;

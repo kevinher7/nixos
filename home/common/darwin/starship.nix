@@ -1,9 +1,9 @@
 {
+  config,
   lib,
-  pkgs,
   ...
 }:
-lib.mkIf pkgs.stdenv.isDarwin {
+lib.mkIf (config.myHome.os == "darwin") {
   programs.starship = {
     enable = true;
     enableZshIntegration = true;

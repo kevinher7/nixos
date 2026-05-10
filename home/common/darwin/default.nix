@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}:
-lib.mkIf (config.myHome.os == "darwin") {
+_: {
   imports = [
     ./zsh.nix
     ./starship.nix

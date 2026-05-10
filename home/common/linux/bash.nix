@@ -3,9 +3,10 @@
   pkgs,
   profile,
   hostname,
+  config,
   ...
 }:
-lib.mkIf pkgs.stdenv.isLinux {
+lib.mkIf (config.myHome.os == "linux") {
   programs.bash = {
     enable = true;
 

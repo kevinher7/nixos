@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}:
-lib.mkIf (config.myHome.os == "linux") {
+_: {
   imports = [
     ./bash.nix
     ./rofi.nix
