@@ -53,6 +53,7 @@
   } @ inputs: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+    forEachSystem = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"];
 
     # Helper Function to Create NixOS Configs
     mkNixosConfig = hostname: profile: username:
@@ -124,7 +125,10 @@
       kebee = mkDarwinConfig "kebee" "macbook" "beellm";
     };
 
-    formatter.${system} = (treefmt-nix.lib.evalModule pkgs ./treefmt.nix).config.build.wrapper;
+    formatter = forEachSystem (
+      sys:
+        (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${sys} ./treefmt.nix).config.build.wrapper
+    );
 
     checks.${system}.pre-commit-check = git-hooks-nix.lib.${system}.run {
       src = ./.;
