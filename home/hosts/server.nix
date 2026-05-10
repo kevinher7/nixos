@@ -5,6 +5,4 @@ _: {
     ../programs/ghostty.nix
     ../programs/opencode
   ];
-
-  myHome.os = "linux";
 }

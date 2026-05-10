@@ -14,7 +14,15 @@
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
-  system.stateVersion = 6;
+  system = {
+    stateVersion = 6;
+    primaryUser = username;
+    defaults = {
+      dock.autohide = true;
+      finder.AppleShowAllExtensions = true;
+      NSGlobalDomain.AppleInterfaceStyle = "Dark";
+    };
+  };
 
   users.users.${username} = {
     home = "/Users/${username}";
@@ -61,11 +69,5 @@
       "zen-browser"
       "zoom"
     ];
-  };
-
-  system.defaults = {
-    dock.autohide = true;
-    finder.AppleShowAllExtensions = true;
-    NSGlobalDomain.AppleInterfaceStyle = "Dark";
   };
 }

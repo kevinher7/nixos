@@ -9,8 +9,6 @@
     ../programs/rquickshare.nix
   ];
 
-  myHome.os = "linux";
-
   home.packages = with pkgs; [
     playerctl
     pavucontrol

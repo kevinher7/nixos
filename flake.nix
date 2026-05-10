@@ -58,7 +58,10 @@
     mkNixosConfig = hostname: profile: username:
       nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit inputs hostname profile username;};
+        specialArgs = {
+          inherit inputs hostname profile username;
+          osFamily = "linux";
+        };
         modules = [
           ./hosts/${profile}
           sops-nix.nixosModules.sops
@@ -71,7 +74,10 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               backupFileExtension = "backup";
-              extraSpecialArgs = {inherit inputs hostname profile username;};
+              extraSpecialArgs = {
+                inherit inputs hostname profile username;
+                osFamily = "linux";
+              };
               sharedModules = [nixvim.homeModules.nixvim];
               users.${username} = import ./home/hosts/${profile}.nix;
             };
@@ -85,7 +91,10 @@
     in
       nix-darwin.lib.darwinSystem {
         system = darwinSystem;
-        specialArgs = {inherit inputs hostname profile username;};
+        specialArgs = {
+          inherit inputs hostname profile username;
+          osFamily = "darwin";
+        };
         modules = [
           ./hosts/${profile}
           sops-nix.darwinModules.sops
@@ -95,7 +104,10 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               backupFileExtension = "backup";
-              extraSpecialArgs = {inherit inputs hostname profile username;};
+              extraSpecialArgs = {
+                inherit inputs hostname profile username;
+                osFamily = "darwin";
+              };
               sharedModules = [nixvim.homeModules.nixvim];
               users.${username} = import ./home/hosts/${profile}.nix;
             };
