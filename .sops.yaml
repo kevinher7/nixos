@@ -1,8 +1,14 @@
 keys:
   - &server_age age10zthhu9ul6amwgsdqux0n5plrmeq9vcuxk068atxvr3plt78zy2s27nfqj
+  # TODO: Add macbook age key after generating it on the Mac:
+  # nix-shell -p ssh-to-age --run "ssh-to-age -private-key -i /etc/ssh/ssh_host_ed25519_key" > ~/Library/Application\ Support/sops/age/keys.txt
+  # Then: age-keygen -y ~/Library/Application\ Support/sops/age/keys.txt
+  # - &macbook_age <paste-public-key-here>
 
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
     key_groups:
       - age:
           - *server_age
+          # TODO: Uncomment after adding macbook key
+          # - *macbook_age

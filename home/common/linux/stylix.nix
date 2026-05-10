@@ -1,10 +1,15 @@
-_: {
+{
+  lib,
+  pkgs,
+  ...
+}:
+lib.mkIf pkgs.stdenv.isLinux {
   stylix = {
     enable = true;
 
     # autoEnable = false; # Disable autoEnable to avoid conflicts with NixOS level
 
-    image = ../../assets/wallpapers/girl-reading-book.png;
+    image = ../../../assets/wallpapers/girl-reading-book.png;
     polarity = "dark";
 
     targets = {

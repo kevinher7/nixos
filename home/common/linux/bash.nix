@@ -1,9 +1,11 @@
 {
   lib,
+  pkgs,
   profile,
   hostname,
   ...
-}: {
+}:
+lib.mkIf pkgs.stdenv.isLinux {
   programs.bash = {
     enable = true;
 

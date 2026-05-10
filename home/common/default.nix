@@ -7,16 +7,19 @@
 }: {
   imports = [
     ./git.nix
-    ./bash.nix
-    ./rofi.nix
-    ./stylix.nix
+    ./linux
+    ./darwin
   ];
 
   programs.home-manager.enable = true;
 
   home = {
     inherit username;
-    homeDirectory = lib.mkForce "/home/${username}";
+    homeDirectory = lib.mkForce (
+      if pkgs.stdenv.isDarwin
+      then "/Users/${username}"
+      else "/home/${username}"
+    );
     stateVersion = "25.11";
 
     packages = with pkgs; [
