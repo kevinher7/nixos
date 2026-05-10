@@ -43,33 +43,19 @@
     };
 
     brews = [
-      "bun"
-      "fnm"
       "gemini-cli"
-      "gitleaks"
-      "jq"
-      "just"
-      "lefthook"
       "localstack-cli"
       "pyenv"
       "tfenv"
-      "terraform-docs"
-      "terraform-ls"
-      "tflint"
-      "tmux"
-      "uv"
     ];
 
     casks = [
       "1password"
       "1password-cli"
       "aerospace"
-      "aws-vault-binary"
       "codex"
       "dbeaver-community"
       "docker-desktop"
-      "gcloud-cli"
-      "ghostty"
       "google-chrome"
       "postman"
       "raycast"
