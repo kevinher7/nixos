@@ -4,6 +4,7 @@
   pkgs,
   ...
 }: let
+  cfg = config.myPrograms.betterlockscreen;
   lockImage = ../../assets/wallpapers/girl-reading-book.png;
   lockImageTarget = "${config.home.homeDirectory}/.config/betterlockscreen/lock.png";
 
@@ -44,16 +45,18 @@
     exec ${pkgs.betterlockscreen}/bin/betterlockscreen -l dimblur
   '';
 in {
-  home.packages = with pkgs; [
-    betterlockscreen
-    xss-lock
-  ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      betterlockscreen
+      xss-lock
+    ];
 
-  xdg.configFile."betterlockscreen/lock.png".source = lockImage;
+    xdg.configFile."betterlockscreen/lock.png".source = lockImage;
 
-  services.screen-locker = {
-    enable = true;
-    lockCmd = lib.mkForce "${lockWrapper}/bin/lock-with-betterlockscreen";
-    inactiveInterval = lib.mkForce 1;
+    services.screen-locker = {
+      enable = true;
+      lockCmd = lib.mkForce "${lockWrapper}/bin/lock-with-betterlockscreen";
+      inactiveInterval = lib.mkForce 1;
+    };
   };
 }

@@ -1,7 +1,9 @@
 _: {
-  imports = [
-    ../common
-    ../programs/nixvim
-    ../programs/opencode
-  ];
+  imports = [../common ../programs];
+
+  myPrograms = {
+    ghostty.enable = true;
+    nixvim.enable = true;
+    opencode.enable = true;
+  };
 }
