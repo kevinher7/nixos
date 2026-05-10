@@ -1,5 +1,6 @@
 {
   lib,
+  pkgs,
   profile,
   hostname,
   ...

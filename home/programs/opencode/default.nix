@@ -1,6 +1,8 @@
 {
   pkgs,
   username,
+  profile,
+  lib,
   ...
 }: {
   home.packages = with pkgs; [
@@ -41,7 +43,7 @@
       };
     };
 
-    web = {
+    web = lib.mkIf (profile == "server") {
       enable = true;
       extraArgs = [
         "--hostname"
@@ -54,8 +56,10 @@
     };
   };
 
-  systemd.user.services.opencode-web.Service = {
-    WorkingDirectory = "/home/${username}/nixos-config";
-    Environment = "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/home/${username}/.nix-profile/bin:/usr/bin:/bin";
+  systemd.user.services.opencode-web = lib.mkIf (profile == "server") {
+    Service = {
+      WorkingDirectory = "/home/${username}/nixos-config";
+      Environment = "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/home/${username}/.nix-profile/bin:/usr/bin:/bin";
+    };
   };
 }
