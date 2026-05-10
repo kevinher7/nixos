@@ -1,9 +1,17 @@
-{pkgs, ...}: {
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}: let
+  cfg = config.myPrograms.nixvim;
+in {
   imports = [
     ./plugins
     ./keymappings.nix
   ];
 
+  config = lib.mkIf cfg.enable {
   home.packages = with pkgs; [
     # Nixvim
     ripgrep
@@ -124,5 +132,6 @@
         };
       };
     };
+  };
   };
 }

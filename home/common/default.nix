@@ -7,7 +7,7 @@
   ...
 }: {
   imports =
-    [./git.nix]
+    [./git.nix ../programs]
     ++ lib.optional (osFamily == "linux") ./linux
     ++ lib.optional (osFamily == "darwin") ./darwin;
 

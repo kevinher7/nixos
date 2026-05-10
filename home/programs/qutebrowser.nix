@@ -1,8 +1,10 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }: let
+  cfg = config.myPrograms.qutebrowser;
   pythonEnv = pkgs.python3.withPackages (ps:
     with ps; [
       tldextract
@@ -20,6 +22,7 @@
     exec ${pythonEnv}/bin/python ${qute-bitwarden} "$@"
   '';
 in {
+  config = lib.mkIf cfg.enable {
   programs.qutebrowser = {
     enable = true;
 
@@ -114,4 +117,5 @@ in {
     keyutils
     xclip
   ];
+  };
 }
