@@ -9,6 +9,7 @@ in {
   config = lib.mkIf cfg.enable {
     programs.ghostty = {
       enable = true;
+      package = lib.mkIf (osFamily == "darwin") null;
       settings =
         {
           # font-family = "JetBrainsMono";
