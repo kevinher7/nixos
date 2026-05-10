@@ -5,11 +5,12 @@
   config,
   ...
 }: {
-  imports = [
-    ./git.nix
-    ./linux
-    ./darwin
-  ];
+  imports =
+    [
+      ./git.nix
+    ]
+    ++ lib.optionals pkgs.stdenv.isLinux [./linux]
+    ++ lib.optionals pkgs.stdenv.isDarwin [./darwin];
 
   programs.home-manager.enable = true;
 
