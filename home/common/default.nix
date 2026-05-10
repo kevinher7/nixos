@@ -5,11 +5,12 @@
   config,
   ...
 }: {
-  imports = [
-    ./git.nix
-    ./linux
-    ./darwin
-  ];
+  imports =
+    [
+      ./git.nix
+    ]
+    ++ lib.optionals (config.myHome.os == "linux") [./linux]
+    ++ lib.optionals (config.myHome.os == "darwin") [./darwin];
 
   options.myHome.os = lib.mkOption {
     type = lib.types.enum ["linux" "darwin"];

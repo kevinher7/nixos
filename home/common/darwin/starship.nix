@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}:
-lib.mkIf (config.myHome.os == "darwin") {
+{lib, ...}: {
   programs.starship = {
     enable = true;
     enableZshIntegration = true;

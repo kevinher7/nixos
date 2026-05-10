@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}:
-lib.mkIf (config.myHome.os == "linux") {
+{lib, ...}: {
   stylix = {
     enable = true;
 

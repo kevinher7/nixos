@@ -1,9 +1,8 @@
 {
-  config,
   lib,
+  config,
   ...
-}:
-lib.mkIf (config.myHome.os == "linux") {
+}: {
   programs.rofi = {
     enable = true;
 
