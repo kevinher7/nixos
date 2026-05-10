@@ -66,7 +66,7 @@
       "raycast"
       "stats"
       "visual-studio-code"
-      "zen-browser"
+      "zen"
       "zoom"
     ];
   };

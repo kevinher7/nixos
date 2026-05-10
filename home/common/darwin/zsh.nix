@@ -24,7 +24,7 @@
     shellAliases = {
       cwd = "pwd | pbcopy";
       awx = "aws-vault exec developer -- ";
-      nrs = "darwin-rebuild switch --flake ~/nixos-config#${hostname}";
+      nrs = "sudo darwin-rebuild switch --flake ~/nixos-config#${hostname}";
       oca = "opencode attach http://100.87.121.69:4096/";
       cdnc = "cd ~/nixos-config";
       och = "opencode serve --hostname 0.0.0.0 --port 4096";
