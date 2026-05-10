@@ -5,5 +5,6 @@ _: {
     ghostty.enable = true;
     nixvim.enable = true;
     opencode.enable = true;
+    tmux.enable = true;
   };
 }
