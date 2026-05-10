@@ -1,5 +1,5 @@
 _: {
-  imports = [../common];
+  imports = [../common ../programs];
 
   myPrograms = {
     ghostty.enable = true;

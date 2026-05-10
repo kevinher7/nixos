@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  imports = [../common ../desktops/qtile];
+  imports = [../common ../programs ../desktops/qtile];
 
   myPrograms = {
     alacritty.enable = true;
