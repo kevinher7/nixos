@@ -43,3 +43,8 @@ jobs:
         run: >
           nix eval --show-trace
           '.#nixosConfigurations."uribo-btw".config.system.build.toplevel.outPath'
+
+      - name: Evaluate macbook configuration
+        run: >
+          nix eval --show-trace
+          '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
