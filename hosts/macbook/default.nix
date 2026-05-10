@@ -61,6 +61,7 @@
     ];
 
     casks = [
+      "1password"
       "1password-cli"
       "aerospace"
       "aws-vault-binary"
@@ -69,6 +70,7 @@
       "gcloud-cli"
       "raycast"
       "stats"
+      "steam"
       "visual-studio-code"
       "zen"
       "zoom"
