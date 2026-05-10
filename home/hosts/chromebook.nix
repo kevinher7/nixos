@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   imports = [
     ../common
+    ../common/linux/stylix.nix
     ../desktops/qtile
     ../programs/nixvim
     ../programs/betterlockscreen.nix

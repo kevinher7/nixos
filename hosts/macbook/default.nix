@@ -32,7 +32,6 @@
 
     brews = [
       "bun"
-      "direnv"
       "fnm"
       "gemini-cli"
       "gitleaks"
@@ -41,7 +40,6 @@
       "lefthook"
       "localstack-cli"
       "pyenv"
-      "starship"
       "tfenv"
       "terraform-docs"
       "terraform-ls"
