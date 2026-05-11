@@ -16,7 +16,7 @@ in {
       allowedHosts = "uribogoat.duckdns.org,localhost:8082,127.0.0.1:8082";
 
       settings = {
-        title = "uribo-btw";
+        title = "Kevin's Home Lab";
         theme = "dark";
         color = "slate";
         background = "solid";
@@ -30,9 +30,9 @@ in {
 
       widgets = [
         {
-          search = {
-            provider = "duckduckgo";
-            target = "_blank";
+          greeting = {
+            text = "Kevin's Home Lab";
+            text_size = "4xl";
           };
         }
       ];
@@ -59,7 +59,7 @@ in {
             {
               "OpenCode" = {
                 href = "https://code.uribogoat.duckdns.org";
-                icon = "code";
+                icon = "opencode";
                 description = "Web-based AI assistant";
                 siteMonitor = "http://localhost:4096";
               };
