@@ -13,6 +13,7 @@
     jq
     just
     lefthook
+    pyenv
     terraform-docs
     terraform-ls
     tflint

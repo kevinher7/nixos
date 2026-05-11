@@ -45,7 +45,6 @@
     brews = [
       "gemini-cli"
       "localstack-cli"
-      "pyenv"
       "tfenv"
     ];
 
