@@ -55,6 +55,7 @@
       "aerospace"
       "codex"
       "dbeaver-community"
+      "ghostty"
       "docker-desktop"
       "google-chrome"
       "postman"
