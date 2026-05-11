@@ -96,7 +96,7 @@ in {
       forceSSL = true;
       useACMEHost = "uribogoat.duckdns.org";
       locations."/" = {
-        proxyPass = "http://localhost:8082";
+        proxyPass = "http://127.0.0.1:8082";
         proxyWebsockets = true;
       };
     };

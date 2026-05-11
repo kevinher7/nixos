@@ -14,6 +14,12 @@ in {
       description = "Port for the Pi-hole web interface";
     };
 
+    localDomainIP = lib.mkOption {
+      type = lib.types.str;
+      default = "192.168.0.2";
+      description = "IP address to resolve local DuckDNS domains to via dnsmasq. Should be the Tailscale IP if you want cross-network access from tailnet devices.";
+    };
+
     upstreamDNS = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
@@ -153,7 +159,7 @@ in {
       in ''
         [misc]
         readOnly = false
-        dnsmasq_lines = ["address=/uribogoat.duckdns.org/192.168.0.2"]
+        dnsmasq_lines = ["address=/uribogoat.duckdns.org/${cfg.pihole.localDomainIP}"]
 
         [dns]
         upstreams = [${fmtStrings cfg.pihole.upstreamDNS}]

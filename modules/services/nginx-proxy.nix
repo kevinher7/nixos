@@ -58,7 +58,7 @@ in {
           forceSSL = true;
           useACMEHost = "uribogoat.duckdns.org";
           locations."/" = {
-            proxyPass = "http://localhost:1821";
+            proxyPass = "http://127.0.0.1:1821";
             proxyWebsockets = true;
           };
         };
@@ -68,7 +68,7 @@ in {
           forceSSL = true;
           useACMEHost = "uribogoat.duckdns.org";
           locations."/" = {
-            proxyPass = "http://localhost:8080/";
+            proxyPass = "http://127.0.0.1:8080/";
           };
         };
 
@@ -77,7 +77,7 @@ in {
           forceSSL = true;
           useACMEHost = "uribogoat.duckdns.org";
           locations."/" = {
-            proxyPass = "http://localhost:4096";
+            proxyPass = "http://127.0.0.1:4096";
             proxyWebsockets = true;
           };
         };
