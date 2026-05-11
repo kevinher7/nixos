@@ -1,4 +1,8 @@
-{hostname, ...}: {
+{
+  hostname,
+  osConfig,
+  ...
+}: {
   programs.zsh = {
     enable = true;
     autosuggestion.enable = true;
@@ -25,7 +29,7 @@
       cwd = "pwd | pbcopy";
       awx = "aws-vault exec developer -- ";
       nrs = "sudo darwin-rebuild switch --flake ~/nixos-config#${hostname}";
-      oca = "opencode attach http://100.87.121.69:4096/";
+      oca = "opencode attach http://${osConfig.myVars.serverTailscaleIP}:4096/";
       cdnc = "cd ~/nixos-config";
       och = "opencode serve --hostname 0.0.0.0 --port 4096";
       tree = "tree --gitignore";

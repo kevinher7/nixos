@@ -6,7 +6,12 @@
 }: {
   imports = [
     ../../modules/core/packages.nix
+    ../../modules/vars
   ];
+
+  myVars = {
+    serverTailscaleIP = "100.87.121.69";
+  };
 
   networking.hostName = hostname;
 
