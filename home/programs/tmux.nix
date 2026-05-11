@@ -1,4 +1,8 @@
-{ lib, config, ... }: let
+{
+  lib,
+  config,
+  ...
+}: let
   cfg = config.myPrograms.tmux;
 in {
   config = lib.mkIf cfg.enable {

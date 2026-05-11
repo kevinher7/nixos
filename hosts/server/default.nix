@@ -71,6 +71,7 @@
     pihole = {
       enable = true;
       webPort = "8080";
+      localDomainIP = "100.87.121.69";
 
       localHosts = [
         "192.168.0.1   router.lan"
