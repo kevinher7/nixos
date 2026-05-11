@@ -51,12 +51,7 @@ in {
       recommendedProxySettings = true;
 
       virtualHosts = {
-        # Root domain: temporary redirect to pihole
-        "uribogoat.duckdns.org" = {
-          forceSSL = true;
-          useACMEHost = "uribogoat.duckdns.org";
-          globalRedirect = "pihole.uribogoat.duckdns.org";
-        };
+        # Root domain is handled by the homepage dashboard module
 
         # Vaultwarden password manager
         "vault.uribogoat.duckdns.org" = {

@@ -61,6 +61,7 @@
 
   myHomelab = {
     nginxProxy.enable = true;
+    homepage.enable = true;
 
     vaultwarden = {
       enable = true;
