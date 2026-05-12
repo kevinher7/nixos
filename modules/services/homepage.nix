@@ -4,6 +4,7 @@
   ...
 }: let
   cfg = config.myHomelab;
+  inherit (config.myVars) domain;
 in {
   options.myHomelab.homepage = {
     enable = lib.mkEnableOption "Homepage service dashboard";
@@ -13,7 +14,7 @@ in {
     services.homepage-dashboard = {
       enable = true;
       openFirewall = false;
-      allowedHosts = "uribogoat.duckdns.org,localhost:8082,127.0.0.1:8082";
+      allowedHosts = "${domain},localhost:8082,127.0.0.1:8082";
 
       settings = {
         title = "Kevin's Home Lab";
@@ -42,7 +43,7 @@ in {
           "Services" = [
             {
               "Pi-hole" = {
-                href = "https://pihole.uribogoat.duckdns.org";
+                href = "https://pihole.${domain}";
                 icon = "pi-hole";
                 description = "DNS sinkhole & ad blocker";
                 siteMonitor = "http://localhost:8080";
@@ -50,7 +51,7 @@ in {
             }
             {
               "Vaultwarden" = {
-                href = "https://vault.uribogoat.duckdns.org";
+                href = "https://vault.${domain}";
                 icon = "bitwarden";
                 description = "Password manager";
                 siteMonitor = "http://localhost:1821";
@@ -58,7 +59,7 @@ in {
             }
             {
               "OpenCode" = {
-                href = "https://code.uribogoat.duckdns.org";
+                href = "https://code.${domain}";
                 icon = "opencode";
                 description = "Web-based AI assistant";
                 siteMonitor = "http://localhost:4096";
@@ -92,9 +93,9 @@ in {
       ];
     };
 
-    services.nginx.virtualHosts."uribogoat.duckdns.org" = {
+    services.nginx.virtualHosts.${domain} = {
       forceSSL = true;
-      useACMEHost = "uribogoat.duckdns.org";
+      useACMEHost = domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8082";
         proxyWebsockets = true;

@@ -4,6 +4,8 @@
   ...
 }: let
   cfg = config.myHomelab;
+  vars = config.myVars;
+  inherit (vars) domain;
 in {
   options.myHomelab.nginxProxy = {
     enable = lib.mkEnableOption "Nginx reverse proxy with automatic HTTPS";
@@ -29,13 +31,13 @@ in {
     # Let's Encrypt certificates via DNS-01 (no open ports required)
     security.acme = {
       acceptTerms = true;
-      defaults.email = "kevinhernem@gmail.com";
-      certs."uribogoat.duckdns.org" = {
-        domain = "uribogoat.duckdns.org";
+      defaults.email = vars.acmeEmail;
+      certs.${domain} = {
+        inherit domain;
         extraDomainNames = [
-          "vault.uribogoat.duckdns.org"
-          "pihole.uribogoat.duckdns.org"
-          "code.uribogoat.duckdns.org"
+          "vault.${domain}"
+          "pihole.${domain}"
+          "code.${domain}"
         ];
         dnsProvider = "duckdns";
         environmentFile = config.sops.templates."acme-duckdns.env".path;
@@ -54,9 +56,9 @@ in {
         # Root domain is handled by the homepage dashboard module
 
         # Vaultwarden password manager
-        "vault.uribogoat.duckdns.org" = {
+        "vault.${domain}" = {
           forceSSL = true;
-          useACMEHost = "uribogoat.duckdns.org";
+          useACMEHost = domain;
           locations."/" = {
             proxyPass = "http://127.0.0.1:1821";
             proxyWebsockets = true;
@@ -64,18 +66,18 @@ in {
         };
 
         # Pi-hole web interface
-        "pihole.uribogoat.duckdns.org" = {
+        "pihole.${domain}" = {
           forceSSL = true;
-          useACMEHost = "uribogoat.duckdns.org";
+          useACMEHost = domain;
           locations."/" = {
             proxyPass = "http://127.0.0.1:8080/";
           };
         };
 
         # Opencode web service
-        "code.uribogoat.duckdns.org" = {
+        "code.${domain}" = {
           forceSSL = true;
-          useACMEHost = "uribogoat.duckdns.org";
+          useACMEHost = domain;
           locations."/" = {
             proxyPass = "http://127.0.0.1:4096";
             proxyWebsockets = true;
@@ -88,7 +90,7 @@ in {
     users.users.nginx.extraGroups = ["acme"];
 
     # Ensure ACME certificate is available before nginx starts
-    systemd.services.nginx.after = ["acme-uribogoat.duckdns.org.service"];
-    systemd.services.nginx.wants = ["acme-uribogoat.duckdns.org.service"];
+    systemd.services.nginx.after = ["acme-${domain}.service"];
+    systemd.services.nginx.wants = ["acme-${domain}.service"];
   };
 }

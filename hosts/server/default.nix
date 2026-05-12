@@ -1,4 +1,5 @@
 {
+  config,
   hostname,
   profile,
   lib,
@@ -13,7 +14,14 @@
     ../../modules/power
     ../../modules/secrets
     ../../modules/services
+    ../../modules/vars
   ];
+
+  myVars = {
+    domain = "uribogoat.duckdns.org";
+    acmeEmail = "kevinhernem@gmail.com";
+    serverTailscaleIP = "100.87.121.69";
+  };
 
   time.timeZone = "Asia/Tokyo";
 
@@ -65,13 +73,13 @@
 
     vaultwarden = {
       enable = true;
-      domain = "https://vault.uribogoat.duckdns.org";
+      domain = "https://vault.${config.myVars.domain}";
     };
 
     pihole = {
       enable = true;
       webPort = "8080";
-      localDomainIP = "100.87.121.69";
+      localDomainIP = config.myVars.serverTailscaleIP;
 
       localHosts = [
         "192.168.0.1   router.lan"

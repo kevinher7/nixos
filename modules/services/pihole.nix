@@ -159,7 +159,7 @@ in {
       in ''
         [misc]
         readOnly = false
-        dnsmasq_lines = ["address=/uribogoat.duckdns.org/${cfg.pihole.localDomainIP}"]
+        dnsmasq_lines = ["address=/${config.myVars.domain}/${cfg.pihole.localDomainIP}"]
 
         [dns]
         upstreams = [${fmtStrings cfg.pihole.upstreamDNS}]
