@@ -8,7 +8,19 @@
       EDITOR = "vim";
     };
 
+    profileExtra = ''
+      # intentionally empty - see programs.zsh.initContent
+    '';
+
     initContent = ''
+      # Homebrew shellenv
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+
+      # pyenv
+      export PYENV_ROOT="$HOME/.pyenv"
+      [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+      eval "$(pyenv init - zsh)"
+
       # Cargo (Rust)
       export PATH="/Users/beellm/.cargo/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"

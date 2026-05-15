@@ -12,6 +12,12 @@
 
   programs.zsh.enable = true;
 
+  # Loaded by /etc/zshenv for every shell (login or not, interactive or not),
+  # so tools spawning a PTY without `-l` (e.g. t3code) still get a sane locale.
+  environment.variables = {
+    LANG = "en_US.UTF-8";
+  };
+
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   system = {
@@ -38,11 +44,12 @@
 
     onActivation = {
       autoUpdate = true;
-      cleanup = "zap";
+      cleanup = "uninstall";
       upgrade = true;
     };
 
     brews = [
+      "cairo"
       "gemini-cli"
       "localstack-cli"
       "tfenv"
@@ -62,7 +69,6 @@
       "stats"
       "steam"
       "tailscale-app"
-      "t3-code"
       "visual-studio-code"
       "wispr-flow"
       "zen"
