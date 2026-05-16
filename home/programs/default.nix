@@ -8,6 +8,7 @@
     ./tmux.nix
     ./nixvim
     ./opencode
+    ./zen-browser
   ];
 
   options.myPrograms = {
@@ -19,5 +20,6 @@
     tmux.enable = lib.mkEnableOption "tmux terminal multiplexer";
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     opencode.enable = lib.mkEnableOption "opencode AI assistant";
+    zen-browser.enable = lib.mkEnableOption "zen browser (twilight-official)";
   };
 }

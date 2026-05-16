@@ -76,7 +76,7 @@
       "tailscale-app"
       "visual-studio-code"
       "wispr-flow"
-      "zen"
+      # "zen"  # migrated to flake; remove after stable week
       "zoom"
     ];
   };
