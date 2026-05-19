@@ -33,6 +33,22 @@
       finder.AppleShowAllExtensions = true;
       NSGlobalDomain.AppleInterfaceStyle = "Dark";
     };
+    activationScripts.aliasApplications.text = let
+      aliasDir = "/Users/${username}/Applications";
+      hmAppsDir = "${aliasDir}/Home Manager Apps";
+    in ''
+      for item in "${aliasDir}/"*.app; do
+        if [ -f "$item" ] && ! [ -d "$item" ]; then
+          rm -f "$item"
+        fi
+      done
+
+      for app in "${hmAppsDir}/"*.app; do
+        if [ -d "$app" ]; then
+          ${pkgs.mkalias}/bin/mkalias "$app" "${aliasDir}/$(basename "$app")"
+        fi
+      done
+    '';
   };
 
   users.users.${username} = {
