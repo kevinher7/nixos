@@ -70,7 +70,6 @@
     };
 
     brews = [
-      "cairo"
       "gemini-cli"
       "localstack-cli"
       "tfenv"
