@@ -7,6 +7,7 @@
   home.packages = with pkgs; [
     aws-vault
     bun
+    claude-code
     fnm
     gitleaks
     google-cloud-sdk

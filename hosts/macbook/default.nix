@@ -13,6 +13,8 @@
     serverTailscaleIP = "100.87.121.69";
   };
 
+  nixpkgs.config.allowUnfree = true;
+
   networking.hostName = hostname;
 
   programs.zsh.enable = true;
