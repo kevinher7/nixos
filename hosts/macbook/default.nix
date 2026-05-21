@@ -74,8 +74,6 @@
     greedyCasks = true;
 
     brews = [
-      "gemini-cli"
-      "localstack-cli"
       "tfenv"
     ];
 
@@ -95,7 +93,6 @@
       "tailscale-app"
       "visual-studio-code"
       "wispr-flow"
-      # "zen"  # migrated to flake; remove after stable week
       "zoom"
     ];
   };
