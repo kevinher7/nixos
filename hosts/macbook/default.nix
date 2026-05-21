@@ -71,6 +71,8 @@
       upgrade = true;
     };
 
+    greedyCasks = true;
+
     brews = [
       "gemini-cli"
       "localstack-cli"
