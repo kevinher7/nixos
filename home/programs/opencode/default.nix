@@ -1,5 +1,6 @@
 {
   pkgs,
+  inputs,
   username,
   profile,
   osFamily,
@@ -18,6 +19,7 @@ in {
 
       programs.opencode = {
         enable = true;
+        package = inputs.llm-agents.packages.${pkgs.system}.opencode;
 
         commands = {
           lint = ./commands/lint.md;

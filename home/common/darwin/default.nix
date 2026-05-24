@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, inputs, ...}: {
   imports = [
     ./zsh.nix
     ./starship.nix
@@ -7,7 +7,7 @@
   home.packages = with pkgs; [
     aws-vault
     bun
-    claude-code
+    inputs.llm-agents.packages.${pkgs.system}.claude-code
     fnm
     gitleaks
     google-cloud-sdk
