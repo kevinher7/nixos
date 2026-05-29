@@ -80,6 +80,8 @@
     greedyCasks = true;
 
     brews = [
+      "ansible"
+      "sshpass"
       "tfenv"
     ];
 
