@@ -2,7 +2,7 @@
   description = "Kevin's Nixos Configuration";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     stylix = {
       url = "github:nix-community/stylix/master";

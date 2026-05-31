@@ -5,7 +5,6 @@
 }: {
   config = lib.mkIf config.myPrograms.zen-browser.enable {
     programs.zen-browser.profiles.default = {
-      keyboardShortcutsVersion = 18;
       keyboardShortcuts = [
         {
           id = "key_undoCloseWindow";
