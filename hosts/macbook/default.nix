@@ -89,6 +89,7 @@
       "1password"
       "1password-cli"
       "aerospace"
+      "cap"
       "codex"
       "dbeaver-community"
       "ghostty"
