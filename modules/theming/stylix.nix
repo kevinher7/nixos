@@ -6,6 +6,10 @@
     image = ../../assets/wallpapers/girl-reading-book.png;
     polarity = "dark";
 
+    # Stylix's kmscon target still sets the removed `services.kmscon.{extraConfig,fonts}`
+    # options, which fail evaluation on current nixpkgs. We don't use kmscon, so disable it.
+    targets.kmscon.enable = false;
+
     cursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Ice";
