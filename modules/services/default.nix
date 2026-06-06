@@ -4,5 +4,6 @@ _: {
     ./nginx-proxy.nix
     ./vaultwarden.nix
     ./homepage.nix
+    ./t3code.nix
   ];
 }
