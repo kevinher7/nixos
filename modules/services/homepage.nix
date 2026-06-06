@@ -40,39 +40,52 @@ in {
 
       services = [
         {
-          "Services" = [
-            {
-              "Pi-hole" = {
-                href = "https://pihole.${domain}";
-                icon = "pi-hole";
-                description = "DNS sinkhole & ad blocker";
-                siteMonitor = "http://localhost:8080";
-              };
-            }
-            {
-              "Vaultwarden" = {
-                href = "https://vault.${domain}";
-                icon = "bitwarden";
-                description = "Password manager";
-                siteMonitor = "http://localhost:1821";
-              };
-            }
-            {
-              "OpenCode" = {
-                href = "https://code.${domain}";
-                icon = "opencode";
-                description = "Web-based AI assistant";
-                siteMonitor = "http://localhost:4096";
-              };
-            }
-            {
-              "Tailscale" = {
-                href = "https://login.tailscale.com/admin/machines";
-                icon = "tailscale";
-                description = "Mesh VPN";
-              };
-            }
-          ];
+          "Services" =
+            [
+              {
+                "Pi-hole" = {
+                  href = "https://pihole.${domain}";
+                  icon = "pi-hole";
+                  description = "DNS sinkhole & ad blocker";
+                  siteMonitor = "http://localhost:8080";
+                };
+              }
+              {
+                "Vaultwarden" = {
+                  href = "https://vault.${domain}";
+                  icon = "bitwarden";
+                  description = "Password manager";
+                  siteMonitor = "http://localhost:1821";
+                };
+              }
+              {
+                "OpenCode" = {
+                  href = "https://code.${domain}";
+                  icon = "opencode";
+                  description = "Web-based AI assistant";
+                  siteMonitor = "http://localhost:4096";
+                };
+              }
+            ]
+            ++ lib.optionals cfg.t3code.enable [
+              {
+                "T3 Code" = {
+                  href = "https://${cfg.t3code.domain}";
+                  icon = "code";
+                  description = "Headless coding agent UI";
+                  siteMonitor = "http://${cfg.t3code.host}:${toString cfg.t3code.port}";
+                };
+              }
+            ]
+            ++ [
+              {
+                "Tailscale" = {
+                  href = "https://login.tailscale.com/admin/machines";
+                  icon = "tailscale";
+                  description = "Mesh VPN";
+                };
+              }
+            ];
         }
       ];
 
