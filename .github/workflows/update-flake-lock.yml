@@ -33,6 +33,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ secrets.CREATE_PR_TOKEN }}
           branch: chore/update-flake-lock
           title: "chore: update flake.lock"
           body: |
