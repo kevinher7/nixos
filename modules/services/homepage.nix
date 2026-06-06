@@ -71,7 +71,7 @@ in {
               {
                 "T3 Code" = {
                   href = "https://${cfg.t3code.domain}";
-                  icon = "code";
+                  icon = "https://${cfg.t3code.domain}/favicon.ico";
                   description = "Headless coding agent UI";
                   siteMonitor = "http://${cfg.t3code.host}:${toString cfg.t3code.port}";
                 };
