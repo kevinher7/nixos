@@ -536,6 +536,7 @@
         "nixvim": "nixvim",
         "sops-nix": "sops-nix",
         "stylix": "stylix",
+        "t3code": "t3code",
         "treefmt-nix": "treefmt-nix_2",
         "zen-browser": "zen-browser"
       }
@@ -651,6 +652,27 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "t3code": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780759050,
+        "narHash": "sha256-Hu6JFHuESRc30/syeLjVpcuaU+3VLeuqOAA+EQC/RYY=",
+        "owner": "kevinher7",
+        "repo": "t3code",
+        "rev": "386515364bd08867574088389de248dd3a7f2766",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kevinher7",
+        "ref": "personal",
+        "repo": "t3code",
         "type": "github"
       }
     },
