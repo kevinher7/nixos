@@ -48,6 +48,11 @@
     };
 
     llm-agents.url = "github:numtide/llm-agents.nix";
+
+    t3code = {
+      url = "github:kevinher7/t3code/personal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -59,6 +64,7 @@
     sops-nix,
     treefmt-nix,
     git-hooks-nix,
+    t3code,
     ...
   } @ inputs: let
     system = "x86_64-linux";
