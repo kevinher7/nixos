@@ -30,11 +30,20 @@
 
       # fnm (Fast Node Manager)
       eval "$(fnm env --use-on-cd --shell zsh)"
+
+      # aws-vault wrapper using the dynamic AWS_PROFILE (set via direnv/.envrc)
+      awx() {
+        if [ -z "$AWS_PROFILE" ]; then
+          echo "awx: AWS_PROFILE is not set (cd into a repo with an .envrc?)" >&2
+          return 1
+        fi
+        echo "🔑 aws-vault: profile=$AWS_PROFILE" >&2
+        aws-vault exec "$AWS_PROFILE" -- "$@"
+      }
     '';
 
     shellAliases = {
       cwd = "pwd | pbcopy";
-      awx = "aws-vault exec developer -- ";
       nrs = "sudo darwin-rebuild switch --flake ~/nixos-config#${hostname}";
       oca = "opencode attach http://${osConfig.myVars.serverTailscaleIP}:4096/";
       cdnc = "cd ~/nixos-config";
