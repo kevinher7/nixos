@@ -37,7 +37,7 @@
           echo "awx: AWS_PROFILE is not set (cd into a repo with an .envrc?)" >&2
           return 1
         fi
-        echo "🔑 aws-vault: profile=$AWS_PROFILE" >&2
+        echo "🔑 Profile: $AWS_PROFILE" >&2
         aws-vault exec "$AWS_PROFILE" -- "$@"
       }
     '';
