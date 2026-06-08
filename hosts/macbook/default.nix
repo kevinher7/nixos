@@ -97,6 +97,7 @@
       "ghostty"
       "docker-desktop"
       "google-chrome"
+      "openvpn-connect"
       "postman"
       "raycast"
       "stats"
