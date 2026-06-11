@@ -7,7 +7,7 @@
   ...
 }: let
   cfg = config.myHomelab.t3code;
-  t3Packages = inputs.t3code.packages.${pkgs.system};
+  t3Packages = inputs.t3code.packages.${pkgs.stdenv.hostPlatform.system};
 in {
   options.myHomelab.t3code = {
     enable = lib.mkEnableOption "T3 Code headless server";
