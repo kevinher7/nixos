@@ -6,7 +6,6 @@
 }: {
   imports = [
     ../../modules/core/packages.nix
-    ../../modules/vars
     ../../modules/darwin
   ];
 

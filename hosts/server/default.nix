@@ -14,7 +14,6 @@
     ../../modules/power
     ../../modules/secrets
     ../../modules/services
-    ../../modules/vars
   ];
 
   myVars = {
