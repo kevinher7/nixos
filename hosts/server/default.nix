@@ -26,6 +26,8 @@
       email = "kevinhernem@gmail.com";
     };
 
+    opencodePort = 4096;
+
     lan = {
       gateway = "192.168.0.1";
       serverIP = "192.168.0.2";
@@ -96,7 +98,6 @@
 
     pihole = {
       enable = true;
-      webPort = "8080";
       localDomainIP = config.myVars.serverTailscaleIP;
 
       upstreamDNS = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];

@@ -46,6 +46,16 @@
       example = "100.64.0.1";
     };
 
+    opencodePort = lib.mkOption {
+      type = lib.types.port;
+      description = ''
+        Port the opencode web service listens on. Used by the server's
+        reverse proxy and dashboard and by the opencode shell aliases on
+        every host.
+      '';
+      example = 4096;
+    };
+
     lan = {
       gateway = lib.mkOption {
         type = lib.types.str;
