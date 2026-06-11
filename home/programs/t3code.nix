@@ -6,7 +6,7 @@
   ...
 }: let
   cfg = config.myPrograms.t3code;
-  t3Packages = inputs.t3code.packages.${pkgs.system};
+  t3Packages = inputs.t3code.packages.${pkgs.stdenv.hostPlatform.system};
 in {
   config = lib.mkMerge [
     (lib.mkIf cfg.cli.enable {
@@ -17,7 +17,7 @@ in {
       assertions = [
         {
           assertion = t3Packages ? desktop;
-          message = "myPrograms.t3code.desktop is enabled but the t3code flake provides no desktop package for ${pkgs.system} (desktop is macOS-only).";
+          message = "myPrograms.t3code.desktop is enabled but the t3code flake provides no desktop package for ${pkgs.stdenv.hostPlatform.system} (desktop is macOS-only).";
         }
       ];
 
