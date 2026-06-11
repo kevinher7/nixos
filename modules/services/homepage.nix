@@ -96,7 +96,7 @@ in {
               "Router" = [
                 {
                   abbr = "RT";
-                  href = "http://192.168.0.1";
+                  href = "http://${config.myVars.lan.gateway}";
                   icon = "router";
                 }
               ];

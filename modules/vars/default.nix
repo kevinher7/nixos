@@ -31,5 +31,39 @@
       '';
       example = "100.64.0.1";
     };
+
+    lan = {
+      gateway = lib.mkOption {
+        type = lib.types.str;
+        description = ''
+          LAN IP address of the router. Used as the default gateway, advertised
+          to DHCP clients and resolved as router.lan by Pi-hole.
+        '';
+        example = "192.168.0.1";
+      };
+
+      serverIP = lib.mkOption {
+        type = lib.types.str;
+        description = ''
+          Static LAN IP address of the homelab server, resolved as server.lan
+          by Pi-hole.
+        '';
+        example = "192.168.0.2";
+      };
+
+      dhcp = {
+        start = lib.mkOption {
+          type = lib.types.str;
+          description = "Start of the DHCP range handed out by Pi-hole.";
+          example = "192.168.0.100";
+        };
+
+        end = lib.mkOption {
+          type = lib.types.str;
+          description = "End of the DHCP range handed out by Pi-hole.";
+          example = "192.168.0.250";
+        };
+      };
+    };
   };
 }
