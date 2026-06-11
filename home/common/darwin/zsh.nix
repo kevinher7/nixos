@@ -1,4 +1,5 @@
 {
+  config,
   hostname,
   osConfig,
   ...
@@ -21,7 +22,7 @@
       eval "$(/opt/homebrew/bin/brew shellenv)"
 
       # Cargo (Rust)
-      export PATH="/Users/beellm/.cargo/bin:$PATH"
+      export PATH="${config.home.homeDirectory}/.cargo/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
 
       # Homebrew libpq
