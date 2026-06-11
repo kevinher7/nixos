@@ -21,7 +21,7 @@
 
     # Does not follow input.nixpkgs to prevent unexpected bugs
     nixvim = {
-      url = "github:nix-community/nixvim?rev=695b0b80f8452bc584adf23eb58bdc9f599e35eb";
+      url = "github:nix-community/nixvim";
     };
 
     sops-nix = {
