@@ -18,6 +18,13 @@
 
   time.timeZone = "Asia/Tokyo";
 
+  myVars = {
+    gitUser = {
+      name = "Kevin Hernandez";
+      email = "kevinhernem@gmail.com";
+    };
+  };
+
   myModules = {
     networking = {
       enable = true;

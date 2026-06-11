@@ -21,6 +21,20 @@
       example = "you@example.com";
     };
 
+    gitUser = {
+      name = lib.mkOption {
+        type = lib.types.str;
+        description = "Name used for the git committer/author identity.";
+        example = "Jane Doe";
+      };
+
+      email = lib.mkOption {
+        type = lib.types.str;
+        description = "Email used for the git committer/author identity.";
+        example = "you@example.com";
+      };
+    };
+
     serverTailscaleIP = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;

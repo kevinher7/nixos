@@ -11,6 +11,11 @@
 
   myVars = {
     serverTailscaleIP = "100.87.121.69";
+
+    gitUser = {
+      name = "Kevin Hernandez";
+      email = "kevinhernem@gmail.com";
+    };
   };
 
   nixpkgs.config.allowUnfree = true;

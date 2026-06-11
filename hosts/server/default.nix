@@ -21,6 +21,11 @@
     acmeEmail = "kevinhernem@gmail.com";
     serverTailscaleIP = "100.87.121.69";
 
+    gitUser = {
+      name = "Kevin Hernandez";
+      email = "kevinhernem@gmail.com";
+    };
+
     lan = {
       gateway = "192.168.0.1";
       serverIP = "192.168.0.2";
