@@ -15,7 +15,6 @@
 
   programs.nixvim = {
     plugins = {
-      transparent.enable = true;
       web-devicons.enable = true;
       none-ls.enable = true;
 
