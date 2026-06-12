@@ -8,13 +8,21 @@
 in {
   options.myHomelab.homepage = {
     enable = lib.mkEnableOption "Homepage service dashboard";
+
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 8082;
+      description = "Internal port for the Homepage dashboard (proxied by nginx)";
+    };
   };
 
   config = lib.mkIf cfg.homepage.enable {
     services.homepage-dashboard = {
       enable = true;
       openFirewall = false;
-      allowedHosts = "${domain},localhost:8082,127.0.0.1:8082";
+      allowedHosts = let
+        port = toString cfg.homepage.port;
+      in "${domain},localhost:${port},127.0.0.1:${port}";
 
       settings = {
         title = "Kevin's Home Lab";
@@ -47,7 +55,7 @@ in {
                   href = "https://pihole.${domain}";
                   icon = "pi-hole";
                   description = "DNS sinkhole & ad blocker";
-                  siteMonitor = "http://localhost:8080";
+                  siteMonitor = "http://localhost:${cfg.pihole.webPort}";
                 };
               }
               {
@@ -55,7 +63,7 @@ in {
                   href = "https://vault.${domain}";
                   icon = "bitwarden";
                   description = "Password manager";
-                  siteMonitor = "http://localhost:1821";
+                  siteMonitor = "http://localhost:${toString cfg.vaultwarden.port}";
                 };
               }
               {
@@ -63,7 +71,7 @@ in {
                   href = "https://code.${domain}";
                   icon = "opencode";
                   description = "Web-based AI assistant";
-                  siteMonitor = "http://localhost:4096";
+                  siteMonitor = "http://localhost:${toString config.myVars.opencodePort}";
                 };
               }
             ]
@@ -96,7 +104,7 @@ in {
               "Router" = [
                 {
                   abbr = "RT";
-                  href = "http://192.168.0.1";
+                  href = "http://${config.myVars.lan.gateway}";
                   icon = "router";
                 }
               ];
@@ -110,7 +118,7 @@ in {
       forceSSL = true;
       useACMEHost = domain;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:8082";
+        proxyPass = "http://127.0.0.1:${toString cfg.homepage.port}";
         proxyWebsockets = true;
       };
     };

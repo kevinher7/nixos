@@ -6,12 +6,19 @@
 }: {
   imports = [
     ../../modules/core/packages.nix
-    ../../modules/vars
     ../../modules/darwin
+    ../../modules/vars
   ];
 
   myVars = {
     serverTailscaleIP = "100.87.121.69";
+
+    gitUser = {
+      name = "Kevin Hernandez";
+      email = "kevinhernem@gmail.com";
+    };
+
+    opencodePort = 4096;
   };
 
   nixpkgs.config.allowUnfree = true;

@@ -1,4 +1,5 @@
 {
+  config,
   hostname,
   osConfig,
   ...
@@ -21,7 +22,7 @@
       eval "$(/opt/homebrew/bin/brew shellenv)"
 
       # Cargo (Rust)
-      export PATH="/Users/beellm/.cargo/bin:$PATH"
+      export PATH="${config.home.homeDirectory}/.cargo/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
 
       # Homebrew libpq
@@ -45,9 +46,9 @@
     shellAliases = {
       cwd = "pwd | pbcopy";
       nrs = "sudo darwin-rebuild switch --flake ~/nixos-config#${hostname}";
-      oca = "opencode attach http://${osConfig.myVars.serverTailscaleIP}:4096/";
+      oca = "opencode attach http://${osConfig.myVars.serverTailscaleIP}:${toString osConfig.myVars.opencodePort}/";
       cdnc = "cd ~/nixos-config";
-      och = "opencode serve --hostname 0.0.0.0 --port 4096";
+      och = "opencode serve --hostname 0.0.0.0 --port ${toString osConfig.myVars.opencodePort}";
       tree = "tree --gitignore";
     };
   };

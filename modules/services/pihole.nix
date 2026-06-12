@@ -16,7 +16,7 @@ in {
 
     localDomainIP = lib.mkOption {
       type = lib.types.str;
-      default = "192.168.0.2";
+      default = config.myVars.lan.serverIP;
       description = "IP address to resolve local DuckDNS domains to via dnsmasq. Should be the Tailscale IP if you want cross-network access from tailnet devices.";
     };
 
@@ -29,9 +29,8 @@ in {
     localHosts = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [
-        "192.168.1.1   router.lan"
-        "192.168.1.2   server.lan"
-        "192.168.1.10  nas.lan"
+        "${config.myVars.lan.gateway}   router.lan"
+        "${config.myVars.lan.serverIP}   server.lan"
       ];
       description = "Local DNS entries";
     };
@@ -99,19 +98,19 @@ in {
 
       router = lib.mkOption {
         type = lib.types.str;
-        default = "192.168.0.1";
+        default = config.myVars.lan.gateway;
         description = "Default gateway (router IP) to advertise to DHCP clients";
       };
 
       start = lib.mkOption {
         type = lib.types.str;
-        default = "192.168.0.100";
+        default = config.myVars.lan.dhcp.start;
         description = "Start of DHCP range";
       };
 
       end = lib.mkOption {
         type = lib.types.str;
-        default = "192.168.0.250";
+        default = config.myVars.lan.dhcp.end;
         description = "End of DHCP range";
       };
 
