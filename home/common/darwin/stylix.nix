@@ -1,5 +1,6 @@
 {
   lib,
+  pkgs,
   inputs,
   ...
 }: let
@@ -20,8 +21,12 @@ in {
     # so Stylix's own "disable overlays under useGlobalPkgs" guard never fires.
     overlays.enable = false;
 
+    # Wallpaper set by the below activation script
     image = wallpaper;
     polarity = "dark";
+
+    # Pin explicit scheme so accents stay distinct;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
 
     targets = {
       ghostty.enable = true;
@@ -32,7 +37,17 @@ in {
 
       zen-browser.enable = false;
 
-      nixvim.enable = false;
+      nixvim = {
+        enable = true;
+
+        # Stylix paints an opaque Normal background by default; re-enable
+        # transparency so the terminal/wallpaper shows through
+        transparentBackground = {
+          main = true;
+          numberLine = true;
+          signColumn = true;
+        };
+      };
       opencode.enable = false;
     };
   };
