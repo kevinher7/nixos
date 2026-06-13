@@ -51,6 +51,16 @@
       }
       {
         mode = "n";
+        key = "<leader>e";
+        action = "<cmd>Neotree toggle<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Toggle file [e]xplorer";
+        };
+      }
+      {
+        mode = "n";
         key = "]h";
         action = "<cmd>Gitsigns next_hunk<CR>";
         options = {desc = "Next Git [h]unk";};

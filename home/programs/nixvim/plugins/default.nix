@@ -5,6 +5,7 @@
     ./lint.nix
     ./treesitter.nix
     ./gitsigns.nix
+    ./neo-tree.nix
     ./indent-blankline.nix
     ./typst-vim.nix
     ./blink-cmp.nix
