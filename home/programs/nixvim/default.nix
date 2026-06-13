@@ -43,6 +43,8 @@ in {
 
           # Replaces transparent.nvim, which was dropped for being unlicensed
           transparent_background = true;
+
+          auto_integrations = true;
         };
       };
 
