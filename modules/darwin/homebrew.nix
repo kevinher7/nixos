@@ -36,7 +36,6 @@ _: {
       "stats"
       "steam"
       "tailscale-app"
-      "visual-studio-code"
       "wispr-flow"
       "zoom"
     ];
