@@ -6,6 +6,7 @@
   osFamily,
   lib,
   config,
+  osConfig,
   ...
 }: let
   cfg = config.myPrograms.opencode;
@@ -57,7 +58,7 @@ in {
             "--hostname"
             "0.0.0.0"
             "--port"
-            "4096"
+            (toString osConfig.myVars.opencodePort)
           ];
           # TODO: add environmentFile with sops-nix password
           # environmentFile = "/run/secrets/opencode-web";

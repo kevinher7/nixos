@@ -3,6 +3,7 @@
   pkgs,
   profile,
   hostname,
+  osConfig,
   ...
 }: {
   programs.bash = {
@@ -13,7 +14,7 @@
         # Common Aliasses
         nrs = ''sudo nixos-rebuild switch --flake ~/nixos-config#${hostname}'';
         cdnc = "cd ~/nixos-config";
-        och = "opencode serve --hostname 0.0.0.0 --port 4096";
+        och = "opencode serve --hostname 0.0.0.0 --port ${toString osConfig.myVars.opencodePort}";
         tree = "tree --gitignore";
       }
 

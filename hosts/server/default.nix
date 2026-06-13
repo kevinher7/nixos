@@ -14,13 +14,28 @@
     ../../modules/power
     ../../modules/secrets
     ../../modules/services
-    ../../modules/vars
   ];
 
   myVars = {
     domain = "uribogoat.duckdns.org";
     acmeEmail = "kevinhernem@gmail.com";
     serverTailscaleIP = "100.87.121.69";
+
+    gitUser = {
+      name = "Kevin Hernandez";
+      email = "kevinhernem@gmail.com";
+    };
+
+    opencodePort = 4096;
+
+    lan = {
+      gateway = "192.168.0.1";
+      serverIP = "192.168.0.2";
+      dhcp = {
+        start = "192.168.0.100";
+        end = "192.168.0.250";
+      };
+    };
   };
 
   time.timeZone = "Asia/Tokyo";
@@ -35,14 +50,14 @@
       useDHCP = false;
       ipv4.addresses = [
         {
-          address = "192.168.0.2";
+          address = config.myVars.lan.serverIP;
           prefixLength = 24;
         }
       ];
     };
 
     defaultGateway = {
-      address = "192.168.0.1";
+      address = config.myVars.lan.gateway;
       interface = "enp2s0";
     };
 
@@ -83,22 +98,13 @@
 
     pihole = {
       enable = true;
-      webPort = "8080";
       localDomainIP = config.myVars.serverTailscaleIP;
-
-      localHosts = [
-        "192.168.0.1   router.lan"
-        "192.168.0.2   server.lan"
-      ];
 
       upstreamDNS = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
 
       dhcp = {
         enable = true;
         active = true;
-        router = "192.168.0.1";
-        start = "192.168.0.100";
-        end = "192.168.0.250";
 
         # Add static leases here if you have devices needing fixed IPs
         staticLeases = [

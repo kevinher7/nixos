@@ -62,7 +62,7 @@ in {
           forceSSL = true;
           useACMEHost = domain;
           locations."/" = {
-            proxyPass = "http://127.0.0.1:1821";
+            proxyPass = "http://127.0.0.1:${toString cfg.vaultwarden.port}";
             proxyWebsockets = true;
           };
         };
@@ -72,7 +72,7 @@ in {
           forceSSL = true;
           useACMEHost = domain;
           locations."/" = {
-            proxyPass = "http://127.0.0.1:8080/";
+            proxyPass = "http://127.0.0.1:${cfg.pihole.webPort}/";
           };
         };
 
@@ -81,7 +81,7 @@ in {
           forceSSL = true;
           useACMEHost = domain;
           locations."/" = {
-            proxyPass = "http://127.0.0.1:4096";
+            proxyPass = "http://127.0.0.1:${toString vars.opencodePort}";
             proxyWebsockets = true;
           };
         };

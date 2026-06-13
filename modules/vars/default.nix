@@ -21,6 +21,20 @@
       example = "you@example.com";
     };
 
+    gitUser = {
+      name = lib.mkOption {
+        type = lib.types.str;
+        description = "Name used for the git committer/author identity.";
+        example = "Jane Doe";
+      };
+
+      email = lib.mkOption {
+        type = lib.types.str;
+        description = "Email used for the git committer/author identity.";
+        example = "you@example.com";
+      };
+    };
+
     serverTailscaleIP = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
@@ -30,6 +44,50 @@
         and by other hosts that need to reach the server over Tailscale.
       '';
       example = "100.64.0.1";
+    };
+
+    opencodePort = lib.mkOption {
+      type = lib.types.port;
+      description = ''
+        Port the opencode web service listens on. Used by the server's
+        reverse proxy and dashboard and by the opencode shell aliases on
+        every host.
+      '';
+      example = 4096;
+    };
+
+    lan = {
+      gateway = lib.mkOption {
+        type = lib.types.str;
+        description = ''
+          LAN IP address of the router. Used as the default gateway, advertised
+          to DHCP clients and resolved as router.lan by Pi-hole.
+        '';
+        example = "192.168.0.1";
+      };
+
+      serverIP = lib.mkOption {
+        type = lib.types.str;
+        description = ''
+          Static LAN IP address of the homelab server, resolved as server.lan
+          by Pi-hole.
+        '';
+        example = "192.168.0.2";
+      };
+
+      dhcp = {
+        start = lib.mkOption {
+          type = lib.types.str;
+          description = "Start of the DHCP range handed out by Pi-hole.";
+          example = "192.168.0.100";
+        };
+
+        end = lib.mkOption {
+          type = lib.types.str;
+          description = "End of the DHCP range handed out by Pi-hole.";
+          example = "192.168.0.250";
+        };
+      };
     };
   };
 }

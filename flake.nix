@@ -81,6 +81,7 @@
         };
         modules = [
           ./hosts/${profile}
+          ./modules/vars
           sops-nix.nixosModules.sops
 
           stylix.nixosModules.stylix
@@ -114,6 +115,7 @@
         };
         modules = [
           ./hosts/${profile}
+          ./modules/vars
           sops-nix.darwinModules.sops
           home-manager.darwinModules.home-manager
           {
