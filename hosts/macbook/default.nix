@@ -8,6 +8,7 @@
     ../../modules/core/packages.nix
     ../../modules/darwin
     ../../modules/vars
+    ../../modules/darwin
   ];
 
   myVars = {

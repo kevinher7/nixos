@@ -8,9 +8,7 @@ _: {
 
     onActivation = {
       autoUpdate = true;
-      cleanup = "uninstall";
       upgrade = true;
-      # Homebrew 5.1.14+ requires a force flag for `--cleanup`; run it non-interactively.
       extraFlags = ["--force-cleanup"];
     };
 
