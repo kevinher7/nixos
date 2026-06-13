@@ -32,20 +32,6 @@ in {
       defaultEditor = true;
       luaLoader.enable = true;
 
-      colorschemes.catppuccin = {
-        enable = true;
-
-        settings = {
-          background = {
-            dark = "frappe";
-            light = "latte";
-          };
-
-          transparent_background = true;
-          float.transparent = true;
-        };
-      };
-
       clipboard = {
         providers = {
           xsel.enable = true;

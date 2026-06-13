@@ -12,6 +12,7 @@
     ./indent-blankline.nix
     ./typst-vim.nix
     ./blink-cmp.nix
+    ./transparent.nix
     ./lualine.nix
     ./nvim-autopairs.nix
     ./which-key.nix
