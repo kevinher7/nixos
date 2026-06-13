@@ -117,6 +117,7 @@
           ./hosts/${profile}
           ./modules/vars
           sops-nix.darwinModules.sops
+          stylix.darwinModules.stylix
           home-manager.darwinModules.home-manager
           {
             home-manager = {

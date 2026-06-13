@@ -6,6 +6,7 @@
   imports = [
     ./zsh.nix
     ./starship.nix
+    ./stylix.nix
   ];
 
   home.packages = with pkgs; [
