@@ -3,7 +3,7 @@
   inputs,
   ...
 }: let
-  wallpaper = ../../../assets/wallpapers/bunny.png;
+  wallpaper = ../../../assets/wallpapers/red-mountain.png;
 in {
   # The Stylix nix-darwin module installs fonts system-wide but does not wire up
   # the Home Manager options on darwin, so import the HM module explicitly here.
