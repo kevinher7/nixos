@@ -59,6 +59,47 @@
           desc = "Toggle file [e]xplorer";
         };
       }
+      # Git
+      {
+        mode = "n";
+        key = "<leader>gg";
+        action = "<cmd>Neogit<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "[G]it status panel";
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>gd";
+        action = "<cmd>DiffviewOpen<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "[G]it [d]iff view";
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>gc";
+        action = "<cmd>DiffviewClose<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "[G]it diff [c]lose";
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>gh";
+        action = "<cmd>DiffviewFileHistory %<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "[G]it file [h]istory";
+        };
+      }
       {
         mode = "n";
         key = "]h";
