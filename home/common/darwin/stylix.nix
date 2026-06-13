@@ -3,7 +3,7 @@
   inputs,
   ...
 }: let
-  wallpaper = ../../../assets/wallpapers/girl-reading-book.png;
+  wallpaper = ../../../assets/wallpapers/bunny.png;
 in {
   # The Stylix nix-darwin module installs fonts system-wide but does not wire up
   # the Home Manager options on darwin, so import the HM module explicitly here.
@@ -26,12 +26,13 @@ in {
     targets = {
       ghostty.enable = true;
       tmux.enable = true;
+      starship.enable = false;
+
       btop.enable = true;
-      nixvim.enable = true;
 
-      # zen-browser is auto-enabled; point it at our profile (see profile.nix).
-      zen-browser.profileNames = ["default"];
+      zen-browser.enable = false;
 
+      nixvim.enable = false;
       opencode.enable = false;
     };
   };
