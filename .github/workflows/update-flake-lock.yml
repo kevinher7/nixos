@@ -14,13 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v14
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/nix-installer-action@v22
 
       - name: Configure Git identity
         run: |
@@ -44,7 +41,7 @@ jobs:
             "$RUNNER_TEMP/flake-update-output.txt"
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.CREATE_PR_TOKEN }}
           branch: chore/update-flake-lock

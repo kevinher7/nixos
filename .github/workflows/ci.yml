@@ -9,40 +9,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v14
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/nix-installer-action@v22
 
       - name: Run statix linting
         run: nix run nixpkgs#statix -- check .
 
+  # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
+  # so we evaluate it here as a safety net. The Linux hosts are covered by `build`.
   eval:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v14
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
-
-      - name: Evaluate chromebook configuration
-        run: >
-          nix eval --show-trace
-          '.#nixosConfigurations."beans-btw".config.system.build.toplevel.outPath'
-
-      - name: Evaluate server configuration
-        run: >
-          nix eval --show-trace
-          '.#nixosConfigurations."uribo-btw".config.system.build.toplevel.outPath'
+        uses: DeterminateSystems/nix-installer-action@v22
 
       - name: Evaluate macbook configuration
         run: >
           nix eval --show-trace
           '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
+
+  # Build the x86_64-linux hosts and push the results to Cachix. Building
+  # implies evaluation, so these hosts don't need a separate eval step.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v22
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: kevinher7-nixos
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Build chromebook configuration
+        run: >
+          nix build --show-trace
+          '.#nixosConfigurations."beans-btw".config.system.build.toplevel'
+
+      - name: Build server configuration
+        run: >
+          nix build --show-trace
+          '.#nixosConfigurations."uribo-btw".config.system.build.toplevel'
