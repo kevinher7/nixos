@@ -86,6 +86,8 @@
     nginxProxy.enable = true;
     homepage.enable = true;
 
+    actual.enable = true;
+
     vaultwarden = {
       enable = true;
       domain = "https://vault.${config.myVars.domain}";

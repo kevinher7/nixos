@@ -85,6 +85,16 @@ in {
                 };
               }
             ]
+            ++ lib.optionals cfg.actual.enable [
+              {
+                "Actual Budget" = {
+                  href = "https://${cfg.actual.domain}";
+                  icon = "actual-budget";
+                  description = "Personal budgeting";
+                  siteMonitor = "http://localhost:${toString cfg.actual.port}";
+                };
+              }
+            ]
             ++ [
               {
                 "Tailscale" = {

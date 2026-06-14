@@ -5,5 +5,6 @@ _: {
     ./vaultwarden.nix
     ./homepage.nix
     ./t3code.nix
+    ./actual.nix
   ];
 }
