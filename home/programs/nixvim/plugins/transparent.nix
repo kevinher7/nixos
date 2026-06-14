@@ -22,6 +22,13 @@
         transparent.clear_prefix("Diffview")
         transparent.clear_prefix("BlinkCmp")
       end
+
+      -- mini.base16 (Stylix's colorscheme) sets NormalNC with an opaque
+      -- base00 background, and Stylix's transparentBackground.main only
+      -- clears Normal — not NormalNC. So non-current windows (e.g. Diffview's
+      -- diff editor panes when the file panel is focused) render opaque.
+      -- Clear it so inactive windows are transparent too.
+      vim.api.nvim_set_hl(0, "NormalNC", { bg = "none", ctermbg = "none" })
     '';
   };
 }
