@@ -12,6 +12,7 @@
     ./indent-blankline.nix
     ./typst-vim.nix
     ./blink-cmp.nix
+    ./transparent.nix
     ./lualine.nix
     ./nvim-autopairs.nix
     ./which-key.nix
@@ -24,6 +25,7 @@
     nixpkgs.config.allowUnfreePredicate = pkg:
       builtins.elem (lib.getName pkg) [
         "git-conflict.nvim"
+        "transparent.nvim"
       ];
 
     plugins = {

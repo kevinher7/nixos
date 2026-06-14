@@ -32,20 +32,6 @@ in {
       defaultEditor = true;
       luaLoader.enable = true;
 
-      colorschemes.catppuccin = {
-        enable = true;
-
-        settings = {
-          background = {
-            dark = "frappe";
-            light = "latte";
-          };
-
-          # Replaces transparent.nvim, which was dropped for being unlicensed
-          transparent_background = true;
-        };
-      };
-
       clipboard = {
         providers = {
           xsel.enable = true;
