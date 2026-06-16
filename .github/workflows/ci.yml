@@ -34,9 +34,13 @@ jobs:
           '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
 
   # Build the x86_64-linux hosts and push the results to Cachix. Building
-  # implies evaluation, so these hosts don't need a separate eval step.
+  # implies evaluation, so these hosts don't need a separate eval step. Each
+  # host builds in its own matrix job so they run in parallel.
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: [beans-btw, uribo-btw]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -50,12 +54,7 @@ jobs:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
-      - name: Build chromebook configuration
+      - name: Build ${{ matrix.host }} configuration
         run: >
           nix build --show-trace
-          '.#nixosConfigurations."beans-btw".config.system.build.toplevel'
-
-      - name: Build server configuration
-        run: >
-          nix build --show-trace
-          '.#nixosConfigurations."uribo-btw".config.system.build.toplevel'
+          '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
