@@ -48,21 +48,6 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
 
-      # Persist the Nix store across runs so ephemeral runners don't re-download
-      # the whole closure each time. Keyed on flake.lock (the expensive inputs);
-      # GC trims build-only deps before saving, and stale caches are purged so
-      # the matrix's two entries stay well under GitHub's 10 GB repo limit.
-      - name: Cache Nix store
-        uses: nix-community/cache-nix-action@v6
-        with:
-          primary-key: nix-${{ runner.os }}-${{ matrix.host }}-${{ hashFiles('flake.lock') }}
-          restore-prefixes-first-match: nix-${{ runner.os }}-${{ matrix.host }}-
-          gc-max-store-size-linux: 4G
-          purge: true
-          purge-prefixes: nix-${{ runner.os }}-${{ matrix.host }}-
-          purge-last-accessed: 604800
-          purge-primary-key: never
-
       - name: Setup Cachix
         uses: cachix/cachix-action@v17
         with:
