@@ -40,7 +40,8 @@ in {
             "pihole.${domain}"
             "code.${domain}"
           ]
-          ++ lib.optionals cfg.t3code.enable [cfg.t3code.domain];
+          ++ lib.optionals cfg.t3code.enable [cfg.t3code.domain]
+          ++ lib.optionals cfg.actual.enable [cfg.actual.domain];
         dnsProvider = "duckdns";
         environmentFile = config.sops.templates."acme-duckdns.env".path;
         # Disable local propagation check — Let's Encrypt validates directly
