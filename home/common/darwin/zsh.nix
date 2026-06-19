@@ -11,6 +11,8 @@
 
     sessionVariables = {
       EDITOR = "nvim";
+      # Use macOS Touch ID to unlock the aws-vault keychain instead of a password.
+      AWS_VAULT_BIOMETRICS = "1";
     };
 
     profileExtra = ''
@@ -32,14 +34,20 @@
       # fnm (Fast Node Manager)
       eval "$(fnm env --use-on-cd --shell zsh)"
 
-      # aws-vault wrapper using the dynamic AWS_PROFILE (set via direnv/.envrc)
+      # aws-vault wrapper using the dynamic AWS_PROFILE (set via direnv/.envrc).
+      # --duration 15m caps the cached STS session at the AWS 15-minute minimum,
+      # and we lock the keychain after each call so unlocking always needs a fresh
+      # Touch ID tap (MFA is re-prompted once the 15-minute session expires).
       awx() {
         if [ -z "$AWS_PROFILE" ]; then
           echo "awx: AWS_PROFILE is not set (cd into a repo with an .envrc?)" >&2
           return 1
         fi
         echo "🔑 Profile: $AWS_PROFILE" >&2
-        aws-vault exec "$AWS_PROFILE" -- "$@"
+        aws-vault exec --duration 15m "$AWS_PROFILE" -- "$@"
+        local rc=$?
+        security lock-keychain "$HOME/Library/Keychains/aws-vault.keychain-db" 2>/dev/null
+        return $rc
       }
     '';
 
