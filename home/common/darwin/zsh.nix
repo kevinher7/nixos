@@ -50,7 +50,7 @@
         local OVPN_VAULT="Local Development"   # 1Password vault holding the item
         local OVPN_ITEM="VPN"                  # Login item: username + password + .ovpn attachment
         local OVPN_FILE="client-config.ovpn"   # .ovpn file attached to the item
-        local user pass
+        local user pass config
 
         user="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/username")" \
           || { echo "ovpn: couldn't read username from 1Password" >&2; return 1; }
@@ -58,15 +58,36 @@
         pass="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/password")" \
           || { echo "ovpn: couldn't read password from 1Password" >&2; return 1; }
 
+        if [ -n "$1" ]; then
+          config="$(cat "$1")" \
+            || { echo "ovpn: couldn't read profile $1" >&2; return 1; }
+        else
+          config="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/$OVPN_FILE")" \
+            || { echo "ovpn: couldn't read profile from 1Password" >&2; return 1; }
+        fi
+
         echo "🔐 Connecting OpenVPN as $user..." >&2
 
-        if [ -n "$1" ]; then
-          sudo openvpn --config "$1" \
-            --auth-user-pass <(printf '%s\n%s\n' "$user" "$pass")
-        else
-          sudo openvpn --config <(op read "op://$OVPN_VAULT/$OVPN_ITEM/$OVPN_FILE") \
-            --auth-user-pass <(printf '%s\n%s\n' "$user" "$pass")
-        fi
+        # sudo closes inherited fds (closefrom), so /dev/fd process substitution
+        # can't reach the root openvpn process. Pass the profile + credentials
+        # through FIFOs instead: real paths root can open, backed only by kernel
+        # buffers, so no secret is ever written to a regular file.
+        local dir
+        dir="$(mktemp -d)" || return 1
+        local cfg="$dir/config.ovpn" auth="$dir/auth"
+        mkfifo -m 600 "$cfg" "$auth"
+
+        printf '%s\n' "$config" > "$cfg" &
+        local cfg_pid=$!
+        printf '%s\n%s\n' "$user" "$pass" > "$auth" &
+        local auth_pid=$!
+
+        sudo openvpn --config "$cfg" --auth-user-pass "$auth"
+        local rc=$?
+
+        kill "$cfg_pid" "$auth_pid" 2>/dev/null
+        rm -rf "$dir"
+        return $rc
       }
     '';
 
