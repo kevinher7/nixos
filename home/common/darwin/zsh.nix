@@ -45,6 +45,29 @@
         security lock-keychain "$HOME/Library/Keychains/aws-vault.keychain-db" 2>/dev/null
         return $rc
       }
+
+      ovpn() {
+        local OVPN_VAULT="Local Development"   # 1Password vault holding the item
+        local OVPN_ITEM="VPN"                  # Login item: username + password + .ovpn attachment
+        local OVPN_FILE="client-config.ovpn"   # .ovpn file attached to the item
+        local user pass
+
+        user="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/username")" \
+          || { echo "ovpn: couldn't read username from 1Password" >&2; return 1; }
+
+        pass="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/password")" \
+          || { echo "ovpn: couldn't read password from 1Password" >&2; return 1; }
+
+        echo "🔐 Connecting OpenVPN as $user..." >&2
+
+        if [ -n "$1" ]; then
+          sudo openvpn --config "$1" \
+            --auth-user-pass <(printf '%s\n%s\n' "$user" "$pass")
+        else
+          sudo openvpn --config <(op read "op://$OVPN_VAULT/$OVPN_ITEM/$OVPN_FILE") \
+            --auth-user-pass <(printf '%s\n%s\n' "$user" "$pass")
+        fi
+      }
     '';
 
     shellAliases = {

@@ -16,6 +16,7 @@ _: {
 
     brews = [
       "ansible"
+      "openvpn"
       "sshpass"
       "tfenv"
     ];
@@ -30,7 +31,6 @@ _: {
       "ghostty"
       "docker-desktop"
       "google-chrome"
-      "openvpn-connect"
       "postman"
       "raycast"
       "stats"
