@@ -1,5 +1,7 @@
-_: {
+{pkgs, ...}: {
   imports = [../common ../programs];
+
+  home.packages = [pkgs.postgresql];
 
   myPrograms = {
     ghostty.enable = true;

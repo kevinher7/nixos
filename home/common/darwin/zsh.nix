@@ -27,10 +27,6 @@
       export PATH="${config.home.homeDirectory}/.cargo/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
 
-      # Homebrew libpq
-      export PATH="/usr/local/opt/libpq/bin:$PATH"
-      export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-
       # fnm (Fast Node Manager)
       eval "$(fnm env --use-on-cd --shell zsh)"
 
