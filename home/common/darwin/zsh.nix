@@ -52,16 +52,18 @@
       OVPN_LOGFILE="$OVPN_RUNDIR/openvpn.log"
 
       ovpn() {
-        # Silence zsh job-control noise ([n] pid / "done") from the background
-        # FIFO writers below; reverts automatically when the function returns.
+        # Silence zsh job-control noise
         setopt local_options no_monitor
+
         # Site-specific values are kept out of this (public) repo. Override them
-        # in ~/.config/ovpn/env, e.g.:  OVPN_SPLIT_HOSTS="vpn-only-host.example.com"
+        # in ~/.config/ovpn/env, e.g.:  OVPN_VAULT="My Vault"
+
         [ -f "$HOME/.config/ovpn/env" ] && source "$HOME/.config/ovpn/env"
         local OVPN_VAULT="''${OVPN_VAULT:-Local Development}"   # 1Password vault
         local OVPN_ITEM="''${OVPN_ITEM:-VPN}"                   # Login item: user/pass + .ovpn attachment
         local OVPN_FILE="''${OVPN_FILE:-client-config.ovpn}"    # .ovpn attachment name
-        local OVPN_SPLIT_HOSTS="''${OVPN_SPLIT_HOSTS:-}"        # env override; else read from 1Password below
+        local OVPN_SPLIT_HOSTS                                  # read from 1Password below
+
         local user pass config
 
         # Refuse to stack a second tunnel on top of a running one.
@@ -84,11 +86,9 @@
             || { echo "ovpn: couldn't read profile from 1Password" >&2; return 1; }
         fi
 
-        # Hosts to route through the VPN: an env override wins; otherwise read
-        # the 1Password item's optional "split_hosts" field (space/newline-sep).
-        if [ -z "$OVPN_SPLIT_HOSTS" ]; then
-          OVPN_SPLIT_HOSTS="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/split_hosts" 2>/dev/null)"
-        fi
+        # Hosts to route through the VPN: read from the 1Password item's optional
+        # "split_hosts" field (space/newline-separated). This is the only source.
+        OVPN_SPLIT_HOSTS="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/split_hosts" 2>/dev/null)"
 
         echo "🔐 Connecting OpenVPN as $user..." >&2
         mkdir -p "$OVPN_RUNDIR"
