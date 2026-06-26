@@ -110,8 +110,11 @@
         printf '%s\n%s\n' "$user" "$pass" > "$auth" &
         local auth_pid=$!
 
+        # Disable the full-tunel + DNS
         sudo openvpn --config "$cfg" --auth-user-pass "$auth" \
           --pull-filter ignore "redirect-gateway" \
+          --pull-filter ignore "dhcp-option DNS" \
+          --pull-filter ignore "dhcp-option DOMAIN-ROUTE" \
           "''${route_opts[@]}" \
           --daemon ovpn --writepid "$OVPN_PIDFILE" --log "$OVPN_LOGFILE" --verb 3
         local rc=$?
