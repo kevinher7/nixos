@@ -46,11 +46,22 @@
         return $rc
       }
 
+      # Runtime state for the backgrounded openvpn daemon (pid + log).
+      OVPN_RUNDIR="$HOME/.cache/ovpn"
+      OVPN_PIDFILE="$OVPN_RUNDIR/openvpn.pid"
+      OVPN_LOGFILE="$OVPN_RUNDIR/openvpn.log"
+
       ovpn() {
         local OVPN_VAULT="Local Development"   # 1Password vault holding the item
         local OVPN_ITEM="VPN"                  # Login item: username + password + .ovpn attachment
         local OVPN_FILE="client-config.ovpn"   # .ovpn file attached to the item
         local user pass config
+
+        # Refuse to stack a second tunnel on top of a running one.
+        if [ -f "$OVPN_PIDFILE" ] && ps -p "$(cat "$OVPN_PIDFILE" 2>/dev/null)" >/dev/null 2>&1; then
+          echo "ovpn: already connected (pid $(cat "$OVPN_PIDFILE")). Run ovpn-down first." >&2
+          return 1
+        fi
 
         user="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/username")" \
           || { echo "ovpn: couldn't read username from 1Password" >&2; return 1; }
@@ -67,6 +78,7 @@
         fi
 
         echo "🔐 Connecting OpenVPN as $user..." >&2
+        mkdir -p "$OVPN_RUNDIR"
 
         # sudo closes inherited fds (closefrom), so /dev/fd process substitution
         # can't reach the root openvpn process. Pass the profile + credentials
@@ -82,12 +94,50 @@
         printf '%s\n%s\n' "$user" "$pass" > "$auth" &
         local auth_pid=$!
 
-        sudo openvpn --config "$cfg" --auth-user-pass "$auth"
+        # --daemon backgrounds openvpn after init so the shell is freed;
+        # --writepid records the pid for ovpn-down; logs go to a file.
+        sudo openvpn --config "$cfg" --auth-user-pass "$auth" \
+          --daemon ovpn --writepid "$OVPN_PIDFILE" --log "$OVPN_LOGFILE" --verb 3
         local rc=$?
 
-        kill "$cfg_pid" "$auth_pid" 2>/dev/null
-        rm -rf "$dir"
+        # Wipe the FIFOs once the daemon has consumed them, detached from the
+        # shell so it never blocks the prompt (10s covers the handshake).
+        ( sleep 10; kill "$cfg_pid" "$auth_pid" 2>/dev/null; rm -rf "$dir" ) &!
+
+        if [ $rc -eq 0 ]; then
+          echo "✅ OpenVPN started in background. Disconnect with: ovpn-down" >&2
+          echo "   Status: ovpn-status   Logs: sudo tail -f $OVPN_LOGFILE" >&2
+        else
+          kill "$cfg_pid" "$auth_pid" 2>/dev/null
+          rm -rf "$dir"
+          echo "ovpn: failed to start (rc=$rc); see $OVPN_LOGFILE" >&2
+        fi
         return $rc
+      }
+
+      # Stop the backgrounded openvpn tunnel.
+      ovpn-down() {
+        local pid
+        pid="$(sudo cat "$OVPN_PIDFILE" 2>/dev/null)"
+        if [ -n "$pid" ] && sudo kill "$pid" 2>/dev/null; then
+          echo "🔌 OpenVPN disconnected (pid $pid)." >&2
+        elif sudo pkill -x openvpn 2>/dev/null; then
+          echo "🔌 OpenVPN disconnected." >&2
+        else
+          echo "ovpn-down: no running OpenVPN found." >&2
+        fi
+        sudo rm -f "$OVPN_PIDFILE"
+      }
+
+      # Show whether the tunnel is up.
+      ovpn-status() {
+        local pid
+        pid="$(cat "$OVPN_PIDFILE" 2>/dev/null)"
+        if [ -n "$pid" ] && ps -p "$pid" >/dev/null 2>&1; then
+          echo "🟢 OpenVPN running (pid $pid)." >&2
+        else
+          echo "⚪ OpenVPN not running." >&2
+        fi
       }
     '';
 
