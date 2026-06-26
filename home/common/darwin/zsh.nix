@@ -52,6 +52,9 @@
       OVPN_LOGFILE="$OVPN_RUNDIR/openvpn.log"
 
       ovpn() {
+        # Silence zsh job-control noise ([n] pid / "done") from the background
+        # FIFO writers below; reverts automatically when the function returns.
+        setopt local_options no_monitor
         # Site-specific values are kept out of this (public) repo. Override them
         # in ~/.config/ovpn/env, e.g.:  OVPN_SPLIT_HOSTS="vpn-only-host.example.com"
         [ -f "$HOME/.config/ovpn/env" ] && source "$HOME/.config/ovpn/env"
