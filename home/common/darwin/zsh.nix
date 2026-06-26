@@ -52,9 +52,13 @@
       OVPN_LOGFILE="$OVPN_RUNDIR/openvpn.log"
 
       ovpn() {
-        local OVPN_VAULT="Local Development"   # 1Password vault holding the item
-        local OVPN_ITEM="VPN"                  # Login item: username + password + .ovpn attachment
-        local OVPN_FILE="client-config.ovpn"   # .ovpn file attached to the item
+        # Site-specific values are kept out of this (public) repo. Override them
+        # in ~/.config/ovpn/env, e.g.:  OVPN_SPLIT_HOSTS="vpn-only-host.example.com"
+        [ -f "$HOME/.config/ovpn/env" ] && source "$HOME/.config/ovpn/env"
+        local OVPN_VAULT="''${OVPN_VAULT:-Local Development}"   # 1Password vault
+        local OVPN_ITEM="''${OVPN_ITEM:-VPN}"                   # Login item: user/pass + .ovpn attachment
+        local OVPN_FILE="''${OVPN_FILE:-client-config.ovpn}"    # .ovpn attachment name
+        local OVPN_SPLIT_HOSTS="''${OVPN_SPLIT_HOSTS:-}"        # space-separated hosts to route via the VPN
         local user pass config
 
         # Refuse to stack a second tunnel on top of a running one.
@@ -80,6 +84,20 @@
         echo "🔐 Connecting OpenVPN as $user..." >&2
         mkdir -p "$OVPN_RUNDIR"
 
+        # Split tunnel: ignore the server's full-tunnel redirect-gateway push and
+        # route ONLY the configured hosts through the VPN, so other tunnels (e.g.
+        # Tailscale) and normal traffic stay on the default interface. Hosts are
+        # re-resolved on every connect to track dynamic (e.g. PaaS) IP changes.
+        local route_opts=() host ip
+        for host in $OVPN_SPLIT_HOSTS; do
+          for ip in $(dig +short "$host" | grep -E '^[0-9.]+$'); do
+            route_opts+=(--route "$ip" 255.255.255.255)
+          done
+        done
+        if [ -n "$OVPN_SPLIT_HOSTS" ] && [ ''${#route_opts[@]} -eq 0 ]; then
+          echo "ovpn: warning — couldn't resolve split hosts ($OVPN_SPLIT_HOSTS); they may be unreachable" >&2
+        fi
+
         # sudo closes inherited fds (closefrom), so /dev/fd process substitution
         # can't reach the root openvpn process. Pass the profile + credentials
         # through FIFOs instead: real paths root can open, backed only by kernel
@@ -94,9 +112,13 @@
         printf '%s\n%s\n' "$user" "$pass" > "$auth" &
         local auth_pid=$!
 
+        # --pull-filter ignore "redirect-gateway" drops the server's full-tunnel
+        # push; the per-host --route opts then send only those hosts via the VPN.
         # --daemon backgrounds openvpn after init so the shell is freed;
         # --writepid records the pid for ovpn-down; logs go to a file.
         sudo openvpn --config "$cfg" --auth-user-pass "$auth" \
+          --pull-filter ignore "redirect-gateway" \
+          "''${route_opts[@]}" \
           --daemon ovpn --writepid "$OVPN_PIDFILE" --log "$OVPN_LOGFILE" --verb 3
         local rc=$?
 
