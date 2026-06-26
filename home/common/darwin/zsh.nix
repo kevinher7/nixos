@@ -84,16 +84,14 @@
         echo "🔐 Connecting OpenVPN as $user..." >&2
         mkdir -p "$OVPN_RUNDIR"
 
-        # Split tunnel: ignore the server's full-tunnel redirect-gateway push and
-        # route ONLY the configured hosts through the VPN, so other tunnels (e.g.
-        # Tailscale) and normal traffic stay on the default interface. Hosts are
-        # re-resolved on every connect to track dynamic (e.g. PaaS) IP changes.
+        # Resolve vpn target host's ips (split tunnel)
         local route_opts=() host ip
         for host in $OVPN_SPLIT_HOSTS; do
           for ip in $(dig +short "$host" | grep -E '^[0-9.]+$'); do
             route_opts+=(--route "$ip" 255.255.255.255)
           done
         done
+
         if [ -n "$OVPN_SPLIT_HOSTS" ] && [ ''${#route_opts[@]} -eq 0 ]; then
           echo "ovpn: warning — couldn't resolve split hosts ($OVPN_SPLIT_HOSTS); they may be unreachable" >&2
         fi
@@ -112,18 +110,12 @@
         printf '%s\n%s\n' "$user" "$pass" > "$auth" &
         local auth_pid=$!
 
-        # --pull-filter ignore "redirect-gateway" drops the server's full-tunnel
-        # push; the per-host --route opts then send only those hosts via the VPN.
-        # --daemon backgrounds openvpn after init so the shell is freed;
-        # --writepid records the pid for ovpn-down; logs go to a file.
         sudo openvpn --config "$cfg" --auth-user-pass "$auth" \
           --pull-filter ignore "redirect-gateway" \
           "''${route_opts[@]}" \
           --daemon ovpn --writepid "$OVPN_PIDFILE" --log "$OVPN_LOGFILE" --verb 3
         local rc=$?
 
-        # Wipe the FIFOs once the daemon has consumed them, detached from the
-        # shell so it never blocks the prompt (10s covers the handshake).
         ( sleep 10; kill "$cfg_pid" "$auth_pid" 2>/dev/null; rm -rf "$dir" ) &!
 
         if [ $rc -eq 0 ]; then
