@@ -58,7 +58,7 @@
         local OVPN_VAULT="''${OVPN_VAULT:-Local Development}"   # 1Password vault
         local OVPN_ITEM="''${OVPN_ITEM:-VPN}"                   # Login item: user/pass + .ovpn attachment
         local OVPN_FILE="''${OVPN_FILE:-client-config.ovpn}"    # .ovpn attachment name
-        local OVPN_SPLIT_HOSTS="''${OVPN_SPLIT_HOSTS:-}"        # space-separated hosts to route via the VPN
+        local OVPN_SPLIT_HOSTS="''${OVPN_SPLIT_HOSTS:-}"        # env override; else read from 1Password below
         local user pass config
 
         # Refuse to stack a second tunnel on top of a running one.
@@ -81,12 +81,18 @@
             || { echo "ovpn: couldn't read profile from 1Password" >&2; return 1; }
         fi
 
+        # Hosts to route through the VPN: an env override wins; otherwise read
+        # the 1Password item's optional "split_hosts" field (space/newline-sep).
+        if [ -z "$OVPN_SPLIT_HOSTS" ]; then
+          OVPN_SPLIT_HOSTS="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/split_hosts" 2>/dev/null)"
+        fi
+
         echo "🔐 Connecting OpenVPN as $user..." >&2
         mkdir -p "$OVPN_RUNDIR"
 
         # Resolve vpn target host's ips (split tunnel)
         local route_opts=() host ip
-        for host in $OVPN_SPLIT_HOSTS; do
+        for host in ''${=OVPN_SPLIT_HOSTS}; do
           for ip in $(dig +short "$host" | grep -E '^[0-9.]+$'); do
             route_opts+=(--route "$ip" 255.255.255.255)
           done
