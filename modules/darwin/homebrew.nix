@@ -3,7 +3,10 @@ _: {
     enable = true;
 
     taps = [
-      "nikitabobko/tap"
+      {
+        name = "nikitabobko/tap";
+        trusted = true;
+      }
     ];
 
     onActivation = {
