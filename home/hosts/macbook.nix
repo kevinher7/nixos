@@ -13,5 +13,7 @@
     };
     tmux.enable = true;
     zen-browser.enable = true;
+
+    openvpn.enable = true;
   };
 }
