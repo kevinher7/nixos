@@ -8,6 +8,7 @@
     ./tmux.nix
     ./nixvim
     ./opencode
+    ./openvpn
     ./t3code.nix
     ./zen-browser
   ];
@@ -21,6 +22,7 @@
     tmux.enable = lib.mkEnableOption "tmux terminal multiplexer";
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     opencode.enable = lib.mkEnableOption "opencode AI assistant";
+    openvpn.enable = lib.mkEnableOption "openvpn split-tunnel wrapper (ovpn/ovpn-down/ovpn-status)";
     t3code = {
       cli.enable = lib.mkEnableOption "t3code CLI (`t3 serve`)";
       desktop.enable = lib.mkEnableOption "t3code desktop app (macOS only)";
