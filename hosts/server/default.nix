@@ -88,6 +88,8 @@
 
     actual.enable = true;
 
+    llm.enable = true;
+
     vaultwarden = {
       enable = true;
       domain = "https://vault.${config.myVars.domain}";
