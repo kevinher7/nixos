@@ -6,5 +6,7 @@ _: {
     ./homepage.nix
     ./t3code.nix
     ./actual.nix
+    ./llm.nix
+    ./open-webui.nix
   ];
 }
