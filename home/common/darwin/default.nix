@@ -7,6 +7,7 @@
     ./zsh.nix
     ./starship.nix
     ./stylix.nix
+    ./rtk.nix
   ];
 
   home.packages = with pkgs; [
