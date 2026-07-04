@@ -30,20 +30,36 @@
       # fnm (Fast Node Manager)
       eval "$(fnm env --use-on-cd --shell zsh)"
 
-      # aws-vault wrapper using the dynamic AWS_PROFILE (set via direnv/.envrc).
-      # --duration 15m caps the cached STS session at the AWS 15-minute minimum,
-      # and we lock the keychain after each call so unlocking always needs a fresh
-      # Touch ID tap (MFA is re-prompted once the 15-minute session expires).
       awx() {
-        if [ -z "$AWS_PROFILE" ]; then
-          echo "awx: AWS_PROFILE is not set (cd into a repo with an .envrc?)" >&2
+        local profile="$AWS_PROFILE"
+        if [ "$1" = "-p" ]; then
+          if [ -z "$2" ]; then
+            echo "awx: -p needs a profile name" >&2
+            return 1
+          fi
+          profile="$2"
+          shift 2
+        fi
+        if [ -z "$profile" ]; then
+          echo "awx: no profile (set AWS_PROFILE via .envrc, or pass -p <profile>)" >&2
           return 1
         fi
-        echo "🔑 Profile: $AWS_PROFILE" >&2
-        aws-vault exec --duration 15m "$AWS_PROFILE" -- "$@"
+        echo "🔑 Profile: $profile" >&2
+        aws-vault exec --duration 15m "$profile" -- "$@"
         local rc=$?
         security lock-keychain "$HOME/Library/Keychains/aws-vault.keychain-db" 2>/dev/null
         return $rc
+      }
+
+      tfp() {
+        local prof=()
+        if [ "$1" = "-p" ]; then
+          prof=(-p "$2")
+          shift 2
+        fi
+        awx "''${prof[@]}" terraform plan -no-color "$@" \
+          | tee >(awk '/^Terraform used the selected providers/{p=1} p{print} /^Plan: [0-9]/{p=0}' | pbcopy)
+        return ''${pipestatus[1]}
       }
     '';
 
