@@ -1,10 +1,11 @@
-{pkgs, ...}: {
+{config, ...}: {
   programs.nixvim = {
     plugins = {
       treesitter = {
         enable = true;
 
-        grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+        # Use nixvim's treesitter package: grammars from other nixpkgs instances ship queries Neovim can't parse.
+        grammarPackages = with config.programs.nixvim.plugins.treesitter.package.builtGrammars; [
           bash
           nix
           query
