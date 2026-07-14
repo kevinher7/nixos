@@ -86,7 +86,10 @@
     nginxProxy.enable = true;
     homepage.enable = true;
 
-    actual.enable = true;
+    actual = {
+      enable = true;
+      domain = "budget.${config.myVars.domain}";
+    };
 
     llm.enable = true;
 
