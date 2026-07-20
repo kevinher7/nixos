@@ -16,6 +16,7 @@
     ./lualine.nix
     ./nvim-autopairs.nix
     ./which-key.nix
+    ./claude-assistant.nix
   ];
 
   programs.nixvim = {
@@ -26,6 +27,7 @@
       builtins.elem (lib.getName pkg) [
         "git-conflict.nvim"
         "transparent.nvim"
+        "claude-code"
       ];
 
     plugins = {
