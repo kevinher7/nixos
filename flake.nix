@@ -81,6 +81,7 @@
         };
         modules = [
           ./hosts/${profile}
+          ./modules/overlays
           ./modules/vars
           sops-nix.nixosModules.sops
 
@@ -115,6 +116,7 @@
         };
         modules = [
           ./hosts/${profile}
+          ./modules/overlays
           ./modules/vars
           sops-nix.darwinModules.sops
           stylix.darwinModules.stylix
