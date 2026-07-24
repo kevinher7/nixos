@@ -4,12 +4,9 @@ _: {
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
-    # kevinher7-nixos holds the CI-built closures for the x86_64-linux hosts.
-    # Without it these machines rebuild every path the config makes custom
-    # (notably the pythonPackagesExtensions overlay in ../overlays) from source.
     extra-substituters = [
-      "https://cache.numtide.com"
-      "https://kevinher7-nixos.cachix.org"
+      "https://cache.numtide.com" # For LLM Agents
+      "https://kevinher7-nixos.cachix.org" # CI generated builds
     ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="

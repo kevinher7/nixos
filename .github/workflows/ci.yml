@@ -3,9 +3,6 @@ name: CI
 on:
   pull_request:
     branches: [main]
-  # Also build main itself. A merge commit is a different tree than the PR head
-  # whenever main moved while the PR was open, so PR-only runs leave the actual
-  # deployed closure uncached.
   push:
     branches: [main]
 
