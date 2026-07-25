@@ -531,11 +531,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784907949,
-        "narHash": "sha256-cH1/UnOKa4DBQV13VQeb//WLelHFd22xTA5CiVWZPXs=",
+        "lastModified": 1784942163,
+        "narHash": "sha256-dDcpKVJYwMGjendG7upuO4SjYaG1ScOthzr91r3nhMM=",
         "owner": "kevinher7",
         "repo": "t3code",
-        "rev": "9dedd8e47d4ebcbf7f6db765194baafe1b0d41bf",
+        "rev": "53f9ac167a8223d68e29571c6a8ada46823420b8",
         "type": "github"
       },
       "original": {
