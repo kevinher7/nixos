@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   programs.nixvim = {
-    extraPackages = [pkgs.typstyle];
+    extraPackages = [pkgs.typstyle pkgs.prettierd];
 
     plugins = {
       conform-nvim = {
@@ -20,6 +20,8 @@
             cpp = ["clang_format"];
             nix = ["alejandra"];
             typst = ["typstyle"];
+            json = ["prettierd"];
+            jsonc = ["prettierd"];
           };
         };
       };
