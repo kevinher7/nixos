@@ -58,5 +58,5 @@ jobs:
 
       - name: Build ${{ matrix.host }} configuration
         run: >
-          nix build --show-trace
-          '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
+          nix run nixpkgs#nix-fast-build -- --skip-cached --no-nom
+          --flake '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
