@@ -56,7 +56,12 @@ jobs:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
+      # Use nix-fast-build with --skip-cached so we only download and build
+      # store paths that aren't already in a substituter. Plain `nix build` on
+      # the toplevel realises the entire ~10 GiB closure onto the runner (which
+      # is then discarded) even when nothing changed; this skips that busywork
+      # and falls back to eval-only on a fully-cached run.
       - name: Build ${{ matrix.host }} configuration
         run: >
-          nix build --show-trace
-          '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
+          nix run nixpkgs#nix-fast-build -- --skip-cached --no-nom
+          --flake '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
