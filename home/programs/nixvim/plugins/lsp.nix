@@ -17,6 +17,7 @@
           formatters_by_ft = {
             python = ["ruff_format"];
             c = ["clang_format"];
+            cpp = ["clang_format"];
             nix = ["alejandra"];
             typst = ["typstyle"];
           };
@@ -76,6 +77,7 @@
           };
 
           clangd.enable = true; # C & C++
+          neocmake.enable = true; # CMake
           tinymist.enable = true; # Typst
         };
       };
