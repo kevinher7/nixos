@@ -132,6 +132,47 @@
           desc = "Populate loclist with diagnostics";
         };
       }
+      # Window resizing with Ctrl + arrow keys
+      {
+        mode = "n";
+        key = "<C-Up>";
+        action = "<cmd>resize +2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Increase window height";
+        };
+      }
+      {
+        mode = "n";
+        key = "<C-Down>";
+        action = "<cmd>resize -2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Decrease window height";
+        };
+      }
+      {
+        mode = "n";
+        key = "<C-Left>";
+        action = "<cmd>vertical resize -2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Decrease window width";
+        };
+      }
+      {
+        mode = "n";
+        key = "<C-Right>";
+        action = "<cmd>vertical resize +2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Increase window width";
+        };
+      }
     ];
   };
 }
