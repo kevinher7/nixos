@@ -13,6 +13,8 @@
 
           python
           c
+          cpp
+          cmake
 
           typst
         ];
