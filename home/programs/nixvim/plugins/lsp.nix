@@ -2,6 +2,18 @@
   programs.nixvim = {
     extraPackages = [pkgs.typstyle pkgs.prettierd];
 
+    autoCmd = [
+      {
+        event = "VimEnter";
+        desc = "Warm up prettierd daemon";
+        callback.__raw = ''
+          function()
+            vim.fn.jobstart({"prettierd", "start"}, {detach = true})
+          end
+        '';
+      }
+    ];
+
     plugins = {
       conform-nvim = {
         enable = true;
@@ -9,7 +21,7 @@
         settings = {
           format_on_save = {
             lsp_format = "fallback";
-            timeout_ms = 500;
+            timeout_ms = 2000;
           };
 
           notify_on_error = true;
