@@ -15,6 +15,9 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            lazy-trees = true
 
       - name: Run statix linting
         run: nix run nixpkgs#statix -- check .
@@ -29,6 +32,9 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            lazy-trees = true
 
       - name: Evaluate macbook configuration
         run: >
@@ -49,6 +55,9 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            lazy-trees = true
 
       - name: Setup Cachix
         uses: cachix/cachix-action@v17
