@@ -50,23 +50,6 @@
       finder.AppleShowAllExtensions = true;
       NSGlobalDomain.AppleInterfaceStyle = "Dark";
     };
-    # Free Ctrl+arrow for terminal apps (e.g. Neovim window resize) by
-    # disabling the macOS Mission Control symbolic hotkeys that reserve them:
-    #   32 = Mission Control       (Ctrl+Up)
-    #   33 = Application Windows   (Ctrl+Down)
-    #   79 = Move left a Space     (Ctrl+Left)
-    #   81 = Move right a Space    (Ctrl+Right)
-    # These are user-domain prefs, so run them as the primary user; a full
-    # logout/login may be needed for the change to take effect.
-    activationScripts.freeCtrlArrowHotkeys.text = ''
-      echo "Disabling Ctrl+arrow Mission Control hotkeys for ${username}..." >&2
-      for id in 32 33 79 81; do
-        sudo -u ${username} /usr/bin/defaults write com.apple.symbolichotkeys \
-          AppleSymbolicHotKeys -dict-add "$id" '{ enabled = 0; }'
-      done
-      sudo -u ${username} \
-        /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u || true
-    '';
     activationScripts.aliasApplications.text = let
       aliasDir = "/Users/${username}/Applications";
       hmAppsDir = "${aliasDir}/Home Manager Apps";
