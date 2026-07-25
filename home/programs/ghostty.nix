@@ -25,6 +25,10 @@ in {
         }
         // lib.optionalAttrs (osFamily == "darwin") {
           window-decoration = false;
+          # Make the Option key send Alt/Meta so terminal apps (e.g. Neovim's
+          # <M-arrow> window-resize maps) receive it, instead of macOS treating
+          # Option as a compose key for accented characters.
+          macos-option-as-alt = true;
         }
         // lib.optionalAttrs (osFamily == "linux") {
           window-decoration = false;
