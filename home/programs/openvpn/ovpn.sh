@@ -3,6 +3,8 @@
 OVPN_RUNDIR="$HOME/.cache/ovpn"
 OVPN_PIDFILE="$OVPN_RUNDIR/openvpn.pid"
 OVPN_LOGFILE="$OVPN_RUNDIR/openvpn.log"
+OVPN_PIN_BEGIN="# BEGIN ovpn split-tunnel pins"
+OVPN_PIN_END="# END ovpn split-tunnel pins"
 
 # Site-specific values are kept out of this (public) repo. Override them
 # in ~/.config/ovpn/env, e.g.:  OVPN_VAULT="My Vault"
@@ -39,14 +41,16 @@ OVPN_SPLIT_HOSTS="$(op read "op://$OVPN_VAULT/$OVPN_ITEM/split_hosts" 2>/dev/nul
 echo "🔐 Connecting OpenVPN as $user..." >&2
 mkdir -p "$OVPN_RUNDIR"
 
-# Resolve the split-tunnel hosts to IPs and build --route flags.
+# Resolve the split-tunnel hosts to IPs and build --route flags + /etc/hosts pins.
 route_opts=()
+pin_lines=()
 # Word-splitting on whitespace/newlines is intentional here.
 # shellcheck disable=SC2086
 for host in $OVPN_SPLIT_HOSTS; do
   # shellcheck disable=SC2046
   for ip in $(dig +short "$host" | grep -E '^[0-9.]+$' || true); do
     route_opts+=(--route "$ip" 255.255.255.255)
+    pin_lines+=("$ip $host")
   done
 done
 
@@ -68,6 +72,9 @@ cfg_pid=$!
 printf '%s\n%s\n' "$user" "$pass" > "$auth" &
 auth_pid=$!
 
+# Drop pins left by an unclean exit.
+sudo sed -i '' "\%$OVPN_PIN_BEGIN%,\%$OVPN_PIN_END%d" /etc/hosts 2>/dev/null || true
+
 # Ignore the pushed full-tunnel redirect + DNS so we coexist with other VPNs.
 rc=0
 sudo openvpn --config "$cfg" --auth-user-pass "$auth" \
@@ -83,6 +90,14 @@ sudo openvpn --config "$cfg" --auth-user-pass "$auth" \
 ( sleep 10; kill "$cfg_pid" "$auth_pid" 2>/dev/null || true; rm -rf "$dir" ) &
 
 if [ "$rc" -eq 0 ]; then
+  # CloudFront rotates edge IPs on a ~60s TTL; pin so re-resolution can't drift
+  # off the routes we just installed. Any edge IP serves any distribution.
+  if [ ${#pin_lines[@]} -gt 0 ]; then
+    printf '%s\n%s\n%s\n' "$OVPN_PIN_BEGIN" "$(printf '%s\n' "${pin_lines[@]}")" "$OVPN_PIN_END" \
+      | sudo tee -a /etc/hosts >/dev/null
+    sudo dscacheutil -flushcache
+    sudo killall -HUP mDNSResponder 2>/dev/null || true
+  fi
   echo "✅ OpenVPN started in background. Disconnect with: ovpn-down" >&2
   echo "   Status: ovpn-status   Logs: sudo tail -f $OVPN_LOGFILE" >&2
 else
