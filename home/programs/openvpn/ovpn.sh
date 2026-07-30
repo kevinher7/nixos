@@ -99,6 +99,15 @@ if [ "$rc" -eq 0 ]; then
     sudo dscacheutil -flushcache
     sudo killall -HUP mDNSResponder 2>/dev/null || true
   fi
+  # openvpn daemonises before the tunnel negotiates, so wait for the first route
+  # to land — otherwise an immediately following ovpn-status sees none of them.
+  if [ ${#pin_lines[@]} -gt 0 ]; then
+    first_ip="${pin_lines[0]%% *}"
+    for _ in $(seq 1 40); do
+      netstat -rn -f inet | grep -qF "$first_ip/32" && break
+      sleep 0.5
+    done
+  fi
   echo "✅ OpenVPN started in background. Disconnect with: ovpn-down" >&2
   echo "   Status: ovpn-status   Logs: sudo tail -f $OVPN_LOGFILE" >&2
 else
