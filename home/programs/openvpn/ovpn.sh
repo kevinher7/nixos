@@ -72,8 +72,9 @@ cfg_pid=$!
 printf '%s\n%s\n' "$user" "$pass" > "$auth" &
 auth_pid=$!
 
-# Drop pins left by an unclean exit.
-sudo sed -i '' "\%$OVPN_PIN_BEGIN%,\%$OVPN_PIN_END%d" /etc/hosts 2>/dev/null || true
+# Drop pins left by an unclean exit. stderr is not suppressed: this is the first
+# sudo call, so hiding it would hide the password prompt and hang silently.
+sudo sed -i '' "\%$OVPN_PIN_BEGIN%,\%$OVPN_PIN_END%d" /etc/hosts || true
 
 # Ignore the pushed full-tunnel redirect + DNS so we coexist with other VPNs.
 rc=0
@@ -97,6 +98,15 @@ if [ "$rc" -eq 0 ]; then
       | sudo tee -a /etc/hosts >/dev/null
     sudo dscacheutil -flushcache
     sudo killall -HUP mDNSResponder 2>/dev/null || true
+  fi
+  # openvpn daemonises before the tunnel negotiates, so wait for the first route
+  # to land — otherwise an immediately following ovpn-status sees none of them.
+  if [ ${#pin_lines[@]} -gt 0 ]; then
+    first_ip="${pin_lines[0]%% *}"
+    for _ in $(seq 1 40); do
+      netstat -rn -f inet | grep -qF "$first_ip/32" && break
+      sleep 0.5
+    done
   fi
   echo "✅ OpenVPN started in background. Disconnect with: ovpn-down" >&2
   echo "   Status: ovpn-status   Logs: sudo tail -f $OVPN_LOGFILE" >&2
