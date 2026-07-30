@@ -72,8 +72,9 @@ cfg_pid=$!
 printf '%s\n%s\n' "$user" "$pass" > "$auth" &
 auth_pid=$!
 
-# Drop pins left by an unclean exit.
-sudo sed -i '' "\%$OVPN_PIN_BEGIN%,\%$OVPN_PIN_END%d" /etc/hosts 2>/dev/null || true
+# Drop pins left by an unclean exit. stderr is not suppressed: this is the first
+# sudo call, so hiding it would hide the password prompt and hang silently.
+sudo sed -i '' "\%$OVPN_PIN_BEGIN%,\%$OVPN_PIN_END%d" /etc/hosts || true
 
 # Ignore the pushed full-tunnel redirect + DNS so we coexist with other VPNs.
 rc=0
