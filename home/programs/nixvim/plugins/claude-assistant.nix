@@ -35,6 +35,16 @@ in {
           desc = "Focus/hide Claude";
         };
       }
+      {
+        mode = ["n" "t"];
+        key = "<C-.>";
+        action = "<C-\\><C-n><C-w>p";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Unfocus Claude (keep visible)";
+        };
+      }
     ];
 
     extraConfigLua = ''
