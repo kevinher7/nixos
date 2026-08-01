@@ -24,6 +24,19 @@ in {
 
     extraPlugins = [claude-assistant-nvim];
 
+    keymaps = [
+      {
+        mode = ["n" "x" "t"];
+        key = "<C-,>";
+        action = "<C-\\><C-n><cmd>ClaudeCodeFocus<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Focus/hide Claude";
+        };
+      }
+    ];
+
     extraConfigLua = ''
       require("claude-assistant").setup({
         manage_claudecode = true,
@@ -40,8 +53,7 @@ in {
           explain_file = "<leader>aE",
           quicksend = "<leader>as",
           review_diff = "<leader>aR",
-          -- Avoid <C-s>, which many terminals treat as XOFF/freeze.
-          quicksend_insert = "<C-g>s",
+          quicksend_insert = "<C-s>",
         },
       })
     '';
