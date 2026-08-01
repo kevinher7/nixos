@@ -23,7 +23,6 @@
     just
     lefthook
     pnpm
-    (poetry.override {python3 = python312;})
     python312
     terraform-docs
     terraform-ls
