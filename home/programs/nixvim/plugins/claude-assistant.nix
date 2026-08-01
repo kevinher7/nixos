@@ -19,6 +19,9 @@ in {
       callSetup = false;
     };
 
+    # Keep PATH claude (managed by llm-agents flake) as the dependency
+    dependencies.claude-code.enable = false;
+
     extraPlugins = [claude-assistant-nvim];
 
     extraConfigLua = ''
