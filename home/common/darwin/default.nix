@@ -15,7 +15,6 @@
     bun
     cmake
     ninja
-    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.herdr
     fnm
     gitleaks

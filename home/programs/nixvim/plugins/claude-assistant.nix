@@ -19,7 +19,33 @@ in {
       callSetup = false;
     };
 
+    # Keep PATH claude (managed by llm-agents flake) as the dependency
+    dependencies.claude-code.enable = false;
+
     extraPlugins = [claude-assistant-nvim];
+
+    keymaps = [
+      {
+        mode = ["n" "x" "t"];
+        key = "<C-,>";
+        action = "<C-\\><C-n><cmd>ClaudeCodeFocus<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Focus/hide Claude";
+        };
+      }
+      {
+        mode = ["n" "t"];
+        key = "<C-.>";
+        action = "<C-\\><C-n><C-w>p";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Unfocus Claude (keep visible)";
+        };
+      }
+    ];
 
     extraConfigLua = ''
       require("claude-assistant").setup({
@@ -37,8 +63,7 @@ in {
           explain_file = "<leader>aE",
           quicksend = "<leader>as",
           review_diff = "<leader>aR",
-          -- Avoid <C-s>, which many terminals treat as XOFF/freeze.
-          quicksend_insert = "<C-g>s",
+          quicksend_insert = "<C-s>",
         },
       })
     '';
