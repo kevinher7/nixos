@@ -27,7 +27,6 @@
       builtins.elem (lib.getName pkg) [
         "git-conflict.nvim"
         "transparent.nvim"
-        "claude-code"
       ];
 
     plugins = {

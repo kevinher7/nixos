@@ -15,7 +15,6 @@
     bun
     cmake
     ninja
-    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.herdr
     fnm
     gitleaks
@@ -24,7 +23,6 @@
     just
     lefthook
     pnpm
-    (poetry.override {python3 = python312;})
     python312
     terraform-docs
     terraform-ls
