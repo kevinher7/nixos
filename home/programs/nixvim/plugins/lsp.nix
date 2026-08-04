@@ -1,6 +1,128 @@
-{pkgs, ...}: {
+{
+  lib,
+  osFamily,
+  pkgs,
+  ...
+}: {
   programs.nixvim = {
-    extraPackages = [pkgs.typstyle];
+    extraPackages = [pkgs.typstyle pkgs.prettierd];
+
+    autoCmd = [
+      {
+        event = "VimEnter";
+        desc = "Warm up prettierd daemon";
+        callback.__raw = ''
+          function()
+            vim.fn.jobstart({"prettierd", "start"}, {detach = true})
+          end
+        '';
+      }
+    ];
+
+    lsp = {
+      inlayHints.enable = true;
+
+      keymaps = [
+        {
+          key = "<leader>E";
+          mode = "n";
+          action.__raw = "function() vim.diagnostic.open_float() end";
+        }
+        {
+          key = "<leader>[";
+          mode = "n";
+          action.__raw = "function() vim.diagnostic.jump({count = -1, float = true}) end";
+        }
+        {
+          key = "<leader>]";
+          mode = "n";
+          action.__raw = "function() vim.diagnostic.jump({count = 1, float = true}) end";
+        }
+
+        # vim.lsp.buf.*
+        {
+          key = "gD";
+          mode = "n";
+          lspBufAction = "declaration";
+        }
+        {
+          key = "gd";
+          mode = "n";
+          lspBufAction = "definition";
+        }
+        {
+          key = "gr";
+          mode = "n";
+          lspBufAction = "references";
+        }
+        {
+          key = "gI";
+          mode = "n";
+          lspBufAction = "implementation";
+        }
+        {
+          key = "gy";
+          mode = "n";
+          lspBufAction = "type_definition";
+        }
+        {
+          key = "ga";
+          mode = "n";
+          lspBufAction = "code_action";
+        }
+        {
+          key = "<leader>cr";
+          mode = "n";
+          lspBufAction = "rename";
+        }
+      ];
+
+      servers = {
+        nixd = {
+          enable = true;
+          config.settings.nixd = {
+            diagnostic = {
+              suppress = ["formatting"];
+            };
+            formatting = {
+              command = ["alejandra"];
+            };
+          };
+        };
+
+        ruff = {
+          enable = true;
+          config = {
+            filetypes = ["python"];
+            on_attach.__raw = ''
+              function(client, bufnr)
+                client.server_capabilities.documentFormattingProvider = false
+              end
+            '';
+          };
+        };
+
+        ty = {
+          enable = true;
+        };
+
+        clangd = {
+          enable = true; # C & C++
+          config.cmd = [
+            (lib.getExe' pkgs.clang-tools (
+              if osFamily == "darwin"
+              then "clangd-unwrapped"
+              else "clangd"
+            ))
+            "--background-index"
+            "--clang-tidy"
+          ];
+        };
+
+        neocmake.enable = true; # CMake
+        tinymist.enable = true; # Typst
+      };
+    };
 
     plugins = {
       conform-nvim = {
@@ -9,7 +131,7 @@
         settings = {
           format_on_save = {
             lsp_format = "fallback";
-            timeout_ms = 500;
+            timeout_ms = 2000;
           };
 
           notify_on_error = true;
@@ -20,65 +142,9 @@
             cpp = ["clang_format"];
             nix = ["alejandra"];
             typst = ["typstyle"];
+            json = ["prettierd"];
+            jsonc = ["prettierd"];
           };
-        };
-      };
-
-      lsp = {
-        enable = true;
-        inlayHints = true;
-
-        keymaps = {
-          # silent = true;
-
-          diagnostic = {
-            "<leader>E" = "open_float";
-            "<leader>[" = "goto_prev";
-            "<leader>]" = "goto_next";
-          };
-
-          lspBuf = {
-            "gD" = "declaration";
-            "gd" = "definition";
-            "gr" = "references";
-            "gI" = "implementation";
-            "gy" = "type_definition";
-            "ga" = "code_action";
-
-            "<leader>cr" = "rename";
-          };
-        };
-
-        servers = {
-          nixd = {
-            enable = true;
-            settings = {
-              diagnostic = {
-                suppress = ["formatting"];
-              };
-              formatting = {
-                command = ["alejandra"];
-              };
-            };
-          };
-
-          ruff = {
-            enable = true;
-            filetypes = ["python"];
-            extraOptions.on_attach.__raw = ''
-              function(client, bufnr)
-                client.server_capabilities.documentFormattingProvider = false
-              end
-            '';
-          };
-
-          ty = {
-            enable = true;
-          };
-
-          clangd.enable = true; # C & C++
-          neocmake.enable = true; # CMake
-          tinymist.enable = true; # Typst
         };
       };
     };

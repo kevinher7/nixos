@@ -132,6 +132,49 @@
           desc = "Populate loclist with diagnostics";
         };
       }
+      # Window resizing with Alt/Option + arrow keys.
+      # Ctrl+arrow is avoided because macOS reserves it for Mission Control;
+      # Alt+arrow is free (ghostty sends it via macos-option-as-alt).
+      {
+        mode = "n";
+        key = "<M-Up>";
+        action = "<cmd>resize +2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Increase window height";
+        };
+      }
+      {
+        mode = "n";
+        key = "<M-Down>";
+        action = "<cmd>resize -2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Decrease window height";
+        };
+      }
+      {
+        mode = "n";
+        key = "<M-Left>";
+        action = "<cmd>vertical resize -2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Decrease window width";
+        };
+      }
+      {
+        mode = "n";
+        key = "<M-Right>";
+        action = "<cmd>vertical resize +2<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+          desc = "Increase window width";
+        };
+      }
     ];
   };
 }

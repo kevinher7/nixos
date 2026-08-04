@@ -53,6 +53,7 @@ in {
         claudecode = {
           terminal = {
             provider = "native",
+            split_width_percentage = 0.40,
           },
         },
         keymaps = {
