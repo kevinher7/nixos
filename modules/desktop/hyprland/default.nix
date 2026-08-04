@@ -14,8 +14,9 @@
   # Unlocking from hyprlock goes through PAM.
   security.pam.services.hyprlock.enable = true;
 
-  services.libinput.touchpad.naturalScrolling = true;
-
+  # No services.libinput here: it only emits an xorg.conf.d snippet, and its
+  # `enable` default follows services.xserver.enable, which is off on this
+  # host. Touchpad settings live in the Hyprland `input.touchpad` block.
   environment.systemPackages = with pkgs; [
     brightnessctl # Wayland replacement for `light`
     wl-clipboard

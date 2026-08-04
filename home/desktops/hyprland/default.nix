@@ -19,8 +19,14 @@ in {
   wayland.windowManager.hyprland = {
     enable = true;
 
-    # Pinned explicitly: home-manager flips this default to "lua" at
-    # stateVersion 26.05, and the settings below are written as hyprlang.
+    # These settings are hyprlang, so pin the generator rather than inheriting
+    # a default that depends on home.stateVersion.
+    #
+    # NOTE: hyprlang is deprecated upstream as of 0.55 and support was removed
+    # from Hyprland's main branch in July 2026. nixpkgs is on 0.56.1, which
+    # still reads it (with a deprecation notice at startup), but 0.57 will not.
+    # Migrating this file to configType = "lua" is a hard prerequisite for that
+    # bump, and nothing in the Nix layer will warn when it lands.
     configType = "hyprlang";
 
     settings = {
@@ -50,7 +56,7 @@ in {
       };
 
       dwindle = {
-        pseudotile = true;
+        # Required by the `layoutmsg, togglesplit` bind below.
         preserve_split = true;
       };
 
@@ -68,14 +74,18 @@ in {
           "$mod, d, exec, ${launcher}"
           "$mod, b, exec, qutebrowser"
           "$mod SHIFT, f, exec, pcmanfm"
-          "$mod CTRL, l, exec, ${lib.getExe pkgs.hyprlock}"
+          # Not $mod CTRL+l: that collides with the resize bind below, and
+          # Hyprland fires every bind on a chord rather than picking one.
+          "$mod CTRL, x, exec, ${lib.getExe config.programs.hyprlock.package}"
 
           # Window management
           "$mod, q, killactive"
           "$mod, f, fullscreen"
           "$mod, t, togglefloating"
           "$mod, space, cyclenext"
-          "$mod SHIFT, Return, togglesplit"
+          # `togglesplit` stopped being a dispatcher in 0.54; it is a dwindle
+          # layout message now.
+          "$mod SHIFT, Return, layoutmsg, togglesplit"
           "$mod CTRL, q, exit"
 
           # Focus (vim keys, as in qtile)
@@ -129,7 +139,7 @@ in {
     enable = true;
     settings = {
       general = {
-        lock_cmd = "pidof hyprlock || ${lib.getExe pkgs.hyprlock}";
+        lock_cmd = "pidof hyprlock || ${lib.getExe config.programs.hyprlock.package}";
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd = "hyprctl dispatch dpms on";
       };
@@ -155,23 +165,22 @@ in {
     settings = {
       general.hide_cursor = true;
 
-      background = [
-        {
-          blur_passes = 2;
-          blur_size = 8;
-        }
-      ];
+      # Attrsets, not single-element lists: stylix's hyprlock target writes
+      # `background` and `input-field` as attrsets, and a list at the same path
+      # fails to merge ("defined multiple times").
+      background = {
+        blur_passes = 2;
+        blur_size = 8;
+      };
 
-      input-field = [
-        {
-          size = "300, 50";
-          position = "0, -80";
-          halign = "center";
-          valign = "center";
-          fade_on_empty = false;
-          placeholder_text = "";
-        }
-      ];
+      input-field = {
+        size = "300, 50";
+        position = "0, -80";
+        halign = "center";
+        valign = "center";
+        fade_on_empty = false;
+        placeholder_text = "";
+      };
     };
   };
 

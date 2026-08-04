@@ -19,5 +19,9 @@
     grim
     slurp
     wl-clipboard
+
+    # home-manager's Hyprland onChange hook shells out to bare `jq` to reload
+    # live instances after a rebuild; without it on PATH, binds go stale.
+    jq
   ];
 }
