@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   i18n = {
     defaultLocale = "en_US.UTF-8";
 
@@ -7,7 +11,7 @@
       type = "fcitx5";
       fcitx5 = {
         ignoreUserConfig = true;
-        waylandFrontend = false;
+        inherit (config.myModules.input) waylandFrontend;
 
         addons = with pkgs; [
           fcitx5-mozc

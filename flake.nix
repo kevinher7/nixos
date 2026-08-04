@@ -139,6 +139,7 @@
   in {
     nixosConfigurations = {
       beans-btw = mkNixosConfig "beans-btw" "chromebook" "kevin";
+      kebean = mkNixosConfig "kebean" "dell" "kevin";
       uribo-btw = mkNixosConfig "uribo-btw" "server" "uribo";
     };
 
