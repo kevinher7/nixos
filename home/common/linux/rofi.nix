@@ -1,17 +1,10 @@
 {
   lib,
-  pkgs,
   config,
-  osConfig,
   ...
 }: {
   programs.rofi = {
     enable = true;
-
-    package =
-      if osConfig.programs.hyprland.enable
-      then pkgs.rofi-wayland
-      else pkgs.rofi;
 
     terminal = "${lib.getExe config.programs.alacritty.package}";
 
