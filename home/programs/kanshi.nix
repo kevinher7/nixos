@@ -12,19 +12,17 @@ in {
       # so the most specific (multi-monitor) profiles must come first
       settings = [
         {
-          # Clamshell: external monitor is the only (principal) screen when
-          # connected. eDP-1 must stay listed as disabled: kanshi still sees
-          # disabled outputs when matching profiles.
           profile.name = "docked";
           profile.outputs = [
             {
               criteria = "eDP-1";
-              status = "disable";
+              status = "enable";
+              position = "0,0";
             }
             {
               criteria = "HDMI-A-1";
               status = "enable";
-              position = "0,0";
+              position = "1920,0";
             }
           ];
         }
