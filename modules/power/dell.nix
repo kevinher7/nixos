@@ -11,6 +11,11 @@ in {
       lidSwitch = "suspend-then-hibernate";
 
       settings.Login = {
+        # Clamshell: systemd counts any connected HDMI/DP monitor as "docked",
+        # so lid close with the external monitor attached does nothing.
+        # If the laptop still suspends while the monitor is attached (known
+        # systemd docked-detection race), also set HandleLidSwitchExternalPower = "ignore".
+        HandleLidSwitchDocked = "ignore";
         IdleAction = "suspend-then-hibernate";
         IdleActionSec = "10m";
       };

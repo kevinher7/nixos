@@ -23,8 +23,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import subprocess
+import os
 import re
+import subprocess
 
 from libqtile import hook, bar, layout, qtile, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
@@ -34,6 +35,49 @@ from libqtile.utils import guess_terminal
 mod = "mod4"
 terminal = guess_terminal()
 
+# The qtile config dir is symlinked from the repo, so realpath lands in the
+# repo checkout and the wallpaper path works without hardcoding $HOME paths.
+WALLPAPER = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    "../../../assets/wallpapers/girl-reading-book.png",
+)
+
+
+def set_wallpaper():
+    """Apply the wallpaper for the active backend.
+
+    On X11 the root pixmap is lost every time the screen is resized (monitor
+    hotplug/rearrange), and on Wayland nothing sets a wallpaper by itself, so
+    this runs on startup and on every screen change.
+    """
+    if qtile.core.name == "wayland":
+        # Respawn so newly connected outputs get covered too
+        subprocess.run(["pkill", "-x", "swaybg"], check=False)
+        subprocess.Popen(["swaybg", "-i", WALLPAPER, "-m", "fill"])
+    else:
+        subprocess.Popen(["xwallpaper", "--zoom", WALLPAPER])
+
+
+def arrange_x11_outputs():
+    """Lay out all connected outputs side by side at their preferred mode.
+
+    Only needed on the X11 backend; kanshi handles this on Wayland.
+    """
+    if qtile.core.name != "x11":
+        return
+
+    result = subprocess.run(["xrandr", "--query"], capture_output=True, text=True)
+    connected = [
+        line.split()[0] for line in result.stdout.splitlines() if " connected" in line
+    ]
+    if len(connected) < 2:
+        return
+
+    cmd = ["xrandr", "--output", connected[0], "--auto"]
+    for previous, current in zip(connected, connected[1:]):
+        cmd += ["--output", current, "--auto", "--right-of", previous]
+    subprocess.run(cmd)
+
 
 @hook.subscribe.startup_once
 def autostart():
@@ -41,12 +85,55 @@ def autostart():
     subprocess.Popen(["pasystray"])
     subprocess.Popen(["fcitx5", "-d"])
 
+    # Expose the display to dbus/systemd user services; without this kanshi's
+    # ConditionEnvironment=WAYLAND_DISPLAY never passes. The explicit restart
+    # covers the case where kanshi was skipped before the env was imported
+    # (no-op where the kanshi unit doesn't exist, e.g. X11 sessions/hosts).
+    subprocess.run(
+        [
+            "dbus-update-activation-environment",
+            "--systemd",
+            "WAYLAND_DISPLAY",
+            "DISPLAY",
+        ],
+        check=False,
+    )
+    subprocess.run(["systemctl", "--user", "restart", "kanshi"], check=False)
+
+    arrange_x11_outputs()
+    set_wallpaper()
+
+
+@hook.subscribe.screen_change
+def reapply_wallpaper():
+    set_wallpaper()
+
+
+def find_wifi_interface():
+    """Return the first wireless interface name (wlp2s0, wlp0s12f0, ...)."""
+    try:
+        return next(
+            iface for iface in os.listdir("/sys/class/net") if iface.startswith("wl")
+        )
+    except StopIteration:
+        return None
+
+
+wifi_interface = find_wifi_interface()
+
 
 def get_wifi_icon():
+    if wifi_interface is None:
+        return "󰤫"
+
     try:
+        with open(f"/sys/class/net/{wifi_interface}/operstate") as f:
+            if f.read().strip() != "up":
+                return "󰤭"
+
         # Try using iwconfig for percentage-based quality
         result = subprocess.run(
-            ["iwconfig", "wlp0s12f0"], capture_output=True, text=True
+            ["iwconfig", wifi_interface], capture_output=True, text=True
         )
 
         # Look for "Link Quality=67/70" or "Signal level=-45 dBm"
@@ -335,96 +422,106 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-screens = [
-    Screen(
-        top=bar.Bar(
-            [
-                widget.CurrentLayout(
-                    **widget_defaults,
-                    background=colors[0],
-                ),
-                widget.GroupBox(
-                    disable_drag=True,
-                    rounded=False,
-                    font="JetBrainsMono NF Bold",
-                    fontsize=13,
-                    # padding = 5,
-                    padding_x=10,
-                    highlight_method="block",
-                    background=colors[0],
-                    foreground=colors[1],
-                    this_current_screen_border=colors[2],
-                    active=colors[-2],
-                    inactive=colors[-1],
-                ),
-                widget.Prompt(
-                    **widget_defaults,
-                    background=colors[0],
-                ),
-                widget.WindowName(
-                    **widget_defaults,
-                    background=colors[0],
-                    foreground=colors[3],
-                ),
-                # Wifi Widget
-                widget.GenPollText(
-                    font="JetBrainsMono Nerd Font",
-                    fontsize=16,
-                    padding=16,
-                    align="center",
-                    background=colors[0],
-                    foreground=colors[2],
-                    func=lambda: get_wifi_icon(),
-                    update_interval=5,
-                ),
-                widget.StatusNotifier(
-                    font="JetBrainsMono Nerd Font",
-                    fontsize=13,
-                    padding=10,
-                    icon_theme="Papirus-Dark",
-                    background=colors[2],
-                ),
-                widget.Battery(
-                    font="JetBrainsMono Nerd Font Bold",
-                    fontsize=14,
-                    padding=4,
-                    align="center",
-                    background=colors[0],
-                    format="{char} {percent:1.0%}",
-                    charge_char="󰂄",
-                    discharge_char="󰁹",
-                    empty_char="󰂎",
-                    full_char="󰁹",
-                    unknown_char="󰂃",
-                    update_interval=60,
-                    charge_controller=lambda: (0, 95),
-                ),
-                # Volume
-                # widget.GenPollText(
-                #     font="JetBrainsMono Nerd Font",
-                #     func=lambda: get_volume_icon(),
-                #     fontsize=14,
-                #     padding=8,
-                #     align="center",
-                #     background=colors[0],
-                #     update_interval=0.3,
-                # ),
-                widget.Clock(
-                    **widget_defaults,
-                    background=colors[2],
-                    format="%Y-%m-%d %a %I:%M %p",
-                ),
-            ],
-            24,
-            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
-            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+
+def make_bar_widgets(primary=False):
+    """Fresh widget instances for one screen's bar.
+
+    Widgets cannot be shared between bars, so each screen builds its own set.
+    StatusNotifier must exist only once per session (it owns the watcher on
+    the bus), so only the primary screen gets the tray.
+    """
+    widgets = [
+        widget.CurrentLayout(
+            **widget_defaults,
+            background=colors[0],
         ),
-        # You can uncomment this variable if you see that on X11 floating resize/moving is laggy
-        # By default we handle these events delayed to already improve performance, however your system might still be struggling
-        # This variable is set to None (no cap) by default, but you can set it to 60 to indicate that you limit it to 60 events per second
-        # x11_drag_polling_rate = 60,
-    ),
-]
+        widget.GroupBox(
+            disable_drag=True,
+            rounded=False,
+            font="JetBrainsMono NF Bold",
+            fontsize=13,
+            # padding = 5,
+            padding_x=10,
+            highlight_method="block",
+            background=colors[0],
+            foreground=colors[1],
+            this_current_screen_border=colors[2],
+            active=colors[-2],
+            inactive=colors[-1],
+        ),
+        widget.Prompt(
+            **widget_defaults,
+            background=colors[0],
+        ),
+        widget.WindowName(
+            **widget_defaults,
+            background=colors[0],
+            foreground=colors[3],
+        ),
+        # Wifi Widget
+        widget.GenPollText(
+            font="JetBrainsMono Nerd Font",
+            fontsize=16,
+            padding=16,
+            align="center",
+            background=colors[0],
+            foreground=colors[2],
+            func=lambda: get_wifi_icon(),
+            update_interval=5,
+        ),
+    ]
+
+    if primary:
+        widgets.append(
+            widget.StatusNotifier(
+                font="JetBrainsMono Nerd Font",
+                fontsize=13,
+                padding=10,
+                icon_theme="Papirus-Dark",
+                background=colors[2],
+            )
+        )
+
+    widgets.extend(
+        [
+            widget.Battery(
+                font="JetBrainsMono Nerd Font Bold",
+                fontsize=14,
+                padding=4,
+                align="center",
+                background=colors[0],
+                format="{char} {percent:1.0%}",
+                charge_char="󰂄",
+                discharge_char="󰁹",
+                empty_char="󰂎",
+                full_char="󰁹",
+                unknown_char="󰂃",
+                update_interval=60,
+                charge_controller=lambda: (0, 95),
+            ),
+            # Volume
+            # widget.GenPollText(
+            #     font="JetBrainsMono Nerd Font",
+            #     func=lambda: get_volume_icon(),
+            #     fontsize=14,
+            #     padding=8,
+            #     align="center",
+            #     background=colors[0],
+            #     update_interval=0.3,
+            # ),
+            widget.Clock(
+                **widget_defaults,
+                background=colors[2],
+                format="%Y-%m-%d %a %I:%M %p",
+            ),
+        ]
+    )
+    return widgets
+
+
+# One entry per physical monitor: extra monitors used to get a bare Screen
+# with no bar. Unused entries are ignored when fewer outputs are connected.
+screens = [Screen(top=bar.Bar(make_bar_widgets(primary=i == 0), 24)) for i in range(2)]
 
 # Drag floating layouts.
 mouse = [
