@@ -1,8 +1,9 @@
 {pkgs, ...}: {
-  imports = [../common ../programs ../desktops/hyprland];
+  imports = [../common ../programs ../desktops/qtile];
 
   myPrograms = {
     alacritty.enable = true;
+    betterlockscreen.enable = true;
     qutebrowser.enable = true;
     rquickshare.enable = true;
     nixvim.enable = true;
@@ -12,17 +13,8 @@
   home.packages = with pkgs; [
     playerctl
     pavucontrol
+    pasystray
     pcmanfm
     papirus-icon-theme
-
-    # Wayland equivalents of the X11 tooling the qtile hosts use
-    brightnessctl
-    grim
-    slurp
-    wl-clipboard
-
-    # home-manager's Hyprland onChange hook shells out to bare `jq` to reload
-    # live instances after a rebuild; without it on PATH, binds go stale.
-    jq
   ];
 }

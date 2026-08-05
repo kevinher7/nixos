@@ -2,12 +2,12 @@
 
 My personal, reproducible, and modular NixOS & Home-Manager configuration built around a single flake. This repo powers everything from a daily-driver Chromebook to a self-hosted home lab server.
 
-| Host        | Profile      | User     | Platform       | Desktop            |
-| ----------- | ------------ | -------- | -------------- | ------------------ |
-| `beans-btw` | `chromebook` | `kevin`  | x86_64-linux   | qtile (X11)        |
-| `kebean`    | `dell`       | `kevin`  | x86_64-linux   | Hyprland (Wayland) |
-| `uribo-btw` | `server`     | `uribo`  | x86_64-linux   | headless           |
-| `kebee`     | `macbook`    | `beellm` | aarch64-darwin | macOS              |
+| Host        | Profile      | User     | Platform       | Desktop     |
+| ----------- | ------------ | -------- | -------------- | ----------- |
+| `beans-btw` | `chromebook` | `kevin`  | x86_64-linux   | qtile (X11) |
+| `kebean`    | `dell`       | `kevin`  | x86_64-linux   | qtile (X11) |
+| `uribo-btw` | `server`     | `uribo`  | x86_64-linux   | headless    |
+| `kebee`     | `macbook`    | `beellm` | aarch64-darwin | macOS       |
 
 ---
 

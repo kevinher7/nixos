@@ -5,7 +5,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/desktop/hyprland
+    ../../modules/desktop/qtile
     ../../modules/system
     ../../modules/core
     ../../modules/theming
@@ -41,11 +41,12 @@
       enable = true;
       inherit profile;
     };
-
-    # Hyprland is a Wayland session, so fcitx5 uses its Wayland frontend here
-    # rather than the X11 one the qtile hosts rely on.
-    input.waylandFrontend = true;
   };
+
+  programs.i3lock.enable = true;
+  hardware.acpilight.enable = true;
+
+  security.pam.services.i3lock-color.enable = true;
 
   # AMD Radeon integrated graphics.
   hardware.enableRedistributableFirmware = true;
