@@ -6,6 +6,7 @@
     qutebrowser.enable = true;
     rquickshare.enable = true;
     nixvim.enable = true;
+    opencode.enable = true;
   };
 
   home.packages = with pkgs; [
