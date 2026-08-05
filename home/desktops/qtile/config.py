@@ -89,6 +89,28 @@ def get_wifi_icon():
         return "󰤫"
 
 
+@lazy.function
+def window_to_screen(qtile, direction=1):
+    """Send the focused window to the group shown on the next/previous screen."""
+    window = qtile.current_window
+    if window is None:
+        return
+    index = (qtile.current_screen.index + direction) % len(qtile.screens)
+    window.togroup(qtile.screens[index].group.name)
+
+
+@lazy.function
+def group_to_screen(qtile, direction=1):
+    """Send the current group to the next/previous screen.
+
+    Groups swap if the destination screen is occupied (built-in toscreen
+    behaviour), so with two monitors this sends the workspace to the other
+    monitor.
+    """
+    index = (qtile.current_screen.index + direction) % len(qtile.screens)
+    qtile.current_group.toscreen(index)
+
+
 keys = [
     # A list of available commands that can be bound to keys can be found
     # at https://docs.qtile.org/en/latest/manual/config/lazy.html
@@ -111,6 +133,34 @@ keys = [
     ),
     Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
+    # Multi-monitor control (xmonad-style mod+, / mod+.)
+    # mod = focus monitor, mod+shift = send window, mod+control = send group
+    Key([mod], "comma", lazy.prev_screen(), desc="Focus previous monitor"),
+    Key([mod], "period", lazy.next_screen(), desc="Focus next monitor"),
+    Key(
+        [mod, "shift"],
+        "comma",
+        window_to_screen(direction=-1),
+        desc="Send focused window to previous monitor",
+    ),
+    Key(
+        [mod, "shift"],
+        "period",
+        window_to_screen(direction=1),
+        desc="Send focused window to next monitor",
+    ),
+    Key(
+        [mod, "control"],
+        "comma",
+        group_to_screen(direction=-1),
+        desc="Send current group to previous monitor",
+    ),
+    Key(
+        [mod, "control"],
+        "period",
+        group_to_screen(direction=1),
+        desc="Send current group to next monitor",
+    ),
     # Grow windows. If current window is on the edge of screen and direction
     # will be to screen edge - window would shrink.
     Key([mod, "control"], "h", lazy.layout.grow_left(), desc="Grow window to the left"),

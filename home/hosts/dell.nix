@@ -4,6 +4,7 @@
   myPrograms = {
     alacritty.enable = true;
     betterlockscreen.enable = true;
+    kanshi.enable = true;
     qutebrowser.enable = true;
     rquickshare.enable = true;
     nixvim.enable = true;
