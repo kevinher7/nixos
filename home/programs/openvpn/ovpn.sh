@@ -10,7 +10,7 @@ OVPN_PIN_END="# END ovpn split-tunnel pins"
 # in ~/.config/ovpn/env, e.g.:  OVPN_VAULT="My Vault"
 # shellcheck source=/dev/null
 [ -f "$HOME/.config/ovpn/env" ] && source "$HOME/.config/ovpn/env"
-OVPN_VAULT="${OVPN_VAULT:-Local Development}"   # 1Password vault
+OVPN_VAULT="${OVPN_VAULT:-Employee}"            # 1Password vault
 OVPN_ITEM="${OVPN_ITEM:-VPN}"                   # Login item: user/pass + .ovpn attachment
 OVPN_FILE="${OVPN_FILE:-client-config.ovpn}"    # .ovpn attachment name
 
