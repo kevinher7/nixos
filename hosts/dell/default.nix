@@ -14,6 +14,7 @@
     ../../modules/power
     ../../modules/input
     ../../modules/audio
+    ../../modules/bluetooth
   ];
 
   time.timeZone = "Asia/Tokyo";
