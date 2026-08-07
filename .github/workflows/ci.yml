@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        host: [beans-btw, uribo-btw]
+        host: [beans-btw, kebean, uribo-btw]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

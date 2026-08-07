@@ -1,0 +1,53 @@
+{
+  hostname,
+  profile,
+  ...
+}: {
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules/desktop/qtile
+    ../../modules/system
+    ../../modules/core
+    ../../modules/theming
+    ../../modules/networking
+    ../../modules/login
+    ../../modules/power
+    ../../modules/input
+    ../../modules/audio
+  ];
+
+  time.timeZone = "Asia/Tokyo";
+
+  myVars = {
+    gitUser = {
+      name = "Kevin Hernandez";
+      email = "kevinhernem@gmail.com";
+    };
+
+    opencodePort = 4096;
+  };
+
+  myModules = {
+    networking = {
+      enable = true;
+      inherit hostname;
+      tailscale = {
+        enable = true;
+        ssh = false;
+      };
+    };
+
+    power = {
+      enable = true;
+      inherit profile;
+    };
+  };
+
+  programs.i3lock.enable = true;
+  hardware.acpilight.enable = true;
+
+  security.pam.services.i3lock-color.enable = true;
+
+  # AMD Radeon integrated graphics.
+  hardware.enableRedistributableFirmware = true;
+}
