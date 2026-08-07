@@ -4,132 +4,153 @@
   pkgs,
   ...
 }: let
+  mod = "SUPER";
   terminal = lib.getExe config.programs.alacritty.package;
   launcher = "${lib.getExe config.programs.rofi.finalPackage} -show drun";
+  lock = lib.getExe config.programs.hyprlock.package;
 
-  # qtile used groups "1234"; nine is the same muscle memory with more room.
+  inherit (lib.generators) mkLuaInline;
+
+  # Under configType = "lua", `settings.<name>` renders as `hl.<name>(...)` and a
+  # list value renders one call per element. `_args` turns an entry into a
+  # multi-argument call, and mkLuaInline emits a raw Lua expression rather than a
+  # quoted string — dispatchers are expressions, so they need it.
+  bind = keys: dispatcher: {
+    _args = [keys (mkLuaInline dispatcher)];
+  };
+
+  # The old binde/bindl/bindel/bindm flavours are all `hl.bind` plus a flag table.
+  bindOpts = keys: dispatcher: opts: {
+    _args = [keys (mkLuaInline dispatcher) opts];
+  };
+
+  exec = cmd: "hl.dsp.exec_cmd(${builtins.toJSON cmd})";
+
   workspaceBinds = lib.concatLists (lib.genList (i: let
       ws = toString (i + 1);
     in [
-      "$mod, ${ws}, workspace, ${ws}"
-      "$mod SHIFT, ${ws}, movetoworkspace, ${ws}"
+      (bind "${mod} + ${ws}" "hl.dsp.focus({ workspace = ${ws} })")
+      (bind "${mod} + SHIFT + ${ws}" "hl.dsp.window.move({ workspace = ${ws} })")
     ])
     9);
 in {
+  imports = [./waybar.nix];
+
   wayland.windowManager.hyprland = {
     enable = true;
 
-    # These settings are hyprlang, so pin the generator rather than inheriting
-    # a default that depends on home.stateVersion.
-    #
-    # NOTE: hyprlang is deprecated upstream as of 0.55 and support was removed
-    # from Hyprland's main branch in July 2026. nixpkgs is on 0.56.1, which
-    # still reads it (with a deprecation notice at startup), but 0.57 will not.
-    # Migrating this file to configType = "lua" is a hard prerequisite for that
-    # bump, and nothing in the Nix layer will warn when it lands.
-    configType = "hyprlang";
+    configType = "lua";
 
     settings = {
-      "$mod" = "SUPER";
+      monitor = {
+        output = "";
+        mode = "preferred";
+        position = "auto";
+        scale = 1;
+      };
 
-      monitor = ",preferred,auto,1";
+      config = {
+        input = {
+          kb_layout = "jp";
+          repeat_delay = 400;
+          repeat_rate = 35;
 
-      input = {
-        # Mirrors services.xserver.xkb.layout and the `xset r rate 400 35`
-        # session command the qtile hosts use.
-        kb_layout = "jp";
-        repeat_delay = 400;
-        repeat_rate = 35;
-
-        touchpad = {
-          natural_scroll = true;
-          disable_while_typing = true;
-          tap-to-click = true;
+          touchpad = {
+            natural_scroll = true;
+            disable_while_typing = true;
+            tap_to_click = true;
+          };
         };
-      };
 
-      general = {
-        gaps_in = 4;
-        gaps_out = 8;
-        border_size = 2;
-        layout = "dwindle";
-      };
+        general = {
+          gaps_in = 4;
+          gaps_out = 8;
+          border_size = 2;
+          layout = "dwindle";
+        };
 
-      dwindle = {
-        # Required by the `layoutmsg, togglesplit` bind below.
-        preserve_split = true;
-      };
+        dwindle = {
+          # Required by the `hl.dsp.layout("togglesplit")` bind below.
+          preserve_split = true;
+        };
 
-      misc = {
-        # Stylix/hyprpaper own the background; Hyprland's built-in one would
-        # only flash on startup.
-        disable_hyprland_logo = true;
-        disable_splash_rendering = true;
+        misc = {
+          # Stylix/hyprpaper own the background; Hyprland's built-in one would
+          # only flash on startup.
+          disable_hyprland_logo = true;
+          disable_splash_rendering = true;
+        };
       };
 
       bind =
         [
           # Launchers — same keys as the qtile config
-          "$mod, Return, exec, ${terminal}"
-          "$mod, d, exec, ${launcher}"
-          "$mod, b, exec, qutebrowser"
-          "$mod SHIFT, f, exec, pcmanfm"
-          # Not $mod CTRL+l: that collides with the resize bind below, and
+          (bind "${mod} + Return" (exec terminal))
+          (bind "${mod} + D" (exec launcher))
+          (bind "${mod} + B" (exec "qutebrowser"))
+          (bind "${mod} + SHIFT + F" (exec "pcmanfm"))
+          # Not ${mod} + CTRL + L: that collides with the resize bind below, and
           # Hyprland fires every bind on a chord rather than picking one.
-          "$mod CTRL, x, exec, ${lib.getExe config.programs.hyprlock.package}"
+          (bind "${mod} + CTRL + X" (exec lock))
 
           # Window management
-          "$mod, q, killactive"
-          "$mod, f, fullscreen"
-          "$mod, t, togglefloating"
-          "$mod, space, cyclenext"
+          (bind "${mod} + Q" "hl.dsp.window.close()")
+          (bind "${mod} + F" "hl.dsp.window.fullscreen()")
+          (bind "${mod} + T" ''hl.dsp.window.float({ action = "toggle" })'')
+          (bind "${mod} + Space" "hl.dsp.window.cycle_next()")
           # `togglesplit` stopped being a dispatcher in 0.54; it is a dwindle
           # layout message now.
-          "$mod SHIFT, Return, layoutmsg, togglesplit"
-          "$mod CTRL, q, exit"
+          (bind "${mod} + SHIFT + Return" ''hl.dsp.layout("togglesplit")'')
+          (bind "${mod} + CTRL + Q" "hl.dsp.exit()")
 
           # Focus (vim keys, as in qtile)
-          "$mod, h, movefocus, l"
-          "$mod, j, movefocus, d"
-          "$mod, k, movefocus, u"
-          "$mod, l, movefocus, r"
+          (bind "${mod} + H" ''hl.dsp.focus({ direction = "l" })'')
+          (bind "${mod} + J" ''hl.dsp.focus({ direction = "d" })'')
+          (bind "${mod} + K" ''hl.dsp.focus({ direction = "u" })'')
+          (bind "${mod} + L" ''hl.dsp.focus({ direction = "r" })'')
 
           # Move windows
-          "$mod SHIFT, h, movewindow, l"
-          "$mod SHIFT, j, movewindow, d"
-          "$mod SHIFT, k, movewindow, u"
-          "$mod SHIFT, l, movewindow, r"
+          (bind "${mod} + SHIFT + H" ''hl.dsp.window.move({ direction = "l" })'')
+          (bind "${mod} + SHIFT + J" ''hl.dsp.window.move({ direction = "d" })'')
+          (bind "${mod} + SHIFT + K" ''hl.dsp.window.move({ direction = "u" })'')
+          (bind "${mod} + SHIFT + L" ''hl.dsp.window.move({ direction = "r" })'')
 
           # Screenshots
-          ''$mod SHIFT, s, exec, ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${pkgs.wl-clipboard}/bin/wl-copy''
+          (bind "${mod} + SHIFT + S" (exec ''${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${pkgs.wl-clipboard}/bin/wl-copy''))
+
+          # Resize — the old `binde`, i.e. repeat while held
+          (bindOpts "${mod} + CTRL + H" "hl.dsp.window.resize({ x = -40, y = 0, relative = true })" {repeating = true;})
+          (bindOpts "${mod} + CTRL + J" "hl.dsp.window.resize({ x = 0, y = 40, relative = true })" {repeating = true;})
+          (bindOpts "${mod} + CTRL + K" "hl.dsp.window.resize({ x = 0, y = -40, relative = true })" {repeating = true;})
+          (bindOpts "${mod} + CTRL + L" "hl.dsp.window.resize({ x = 40, y = 0, relative = true })" {repeating = true;})
+
+          # Media and brightness keys — the old `bindel`, i.e. locked + repeating
+          (bindOpts "XF86AudioRaiseVolume" (exec "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+") {
+            locked = true;
+            repeating = true;
+          })
+          (bindOpts "XF86AudioLowerVolume" (exec "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") {
+            locked = true;
+            repeating = true;
+          })
+          # `light` is X11-only; brightnessctl is the Wayland equivalent.
+          (bindOpts "XF86MonBrightnessUp" (exec "${lib.getExe pkgs.brightnessctl} set 10%+") {
+            locked = true;
+            repeating = true;
+          })
+          (bindOpts "XF86MonBrightnessDown" (exec "${lib.getExe pkgs.brightnessctl} set 10%-") {
+            locked = true;
+            repeating = true;
+          })
+
+          # The old `bindl` — works while the lockscreen is up
+          (bindOpts "XF86AudioMute" (exec "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") {locked = true;})
+
+          # Super + left/right drag, matching the qtile mouse bindings
+          (bindOpts "${mod} + mouse:272" "hl.dsp.window.drag()" {mouse = true;})
+          (bindOpts "${mod} + mouse:273" "hl.dsp.window.resize()" {mouse = true;})
         ]
         ++ workspaceBinds;
-
-      # Repeating binds — resize and the media/brightness keys
-      binde = [
-        "$mod CTRL, h, resizeactive, -40 0"
-        "$mod CTRL, j, resizeactive, 0 40"
-        "$mod CTRL, k, resizeactive, 0 -40"
-        "$mod CTRL, l, resizeactive, 40 0"
-      ];
-
-      bindel = [
-        ", XF86AudioRaiseVolume, exec, ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-        ", XF86AudioLowerVolume, exec, ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        # `light` is X11-only; brightnessctl is the Wayland equivalent.
-        ", XF86MonBrightnessUp, exec, ${lib.getExe pkgs.brightnessctl} set 10%+"
-        ", XF86MonBrightnessDown, exec, ${lib.getExe pkgs.brightnessctl} set 10%-"
-      ];
-
-      bindl = [
-        ", XF86AudioMute, exec, ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-      ];
-
-      # Super + left/right drag, matching the qtile mouse bindings
-      bindm = [
-        "$mod, mouse:272, movewindow"
-        "$mod, mouse:273, resizewindow"
-      ];
     };
   };
 
@@ -139,7 +160,7 @@ in {
     enable = true;
     settings = {
       general = {
-        lock_cmd = "pidof hyprlock || ${lib.getExe config.programs.hyprlock.package}";
+        lock_cmd = "pidof hyprlock || ${lock}";
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd = "hyprctl dispatch dpms on";
       };
@@ -165,9 +186,6 @@ in {
     settings = {
       general.hide_cursor = true;
 
-      # Attrsets, not single-element lists: stylix's hyprlock target writes
-      # `background` and `input-field` as attrsets, and a list at the same path
-      # fails to merge ("defined multiple times").
       background = {
         blur_passes = 2;
         blur_size = 8;
@@ -181,55 +199,6 @@ in {
         fade_on_empty = false;
         placeholder_text = "";
       };
-    };
-  };
-
-  programs.waybar = {
-    enable = true;
-    systemd.enable = true;
-
-    settings.mainBar = {
-      layer = "top";
-      position = "top";
-      height = 32;
-
-      modules-left = ["hyprland/workspaces"];
-      modules-center = ["clock"];
-      modules-right = ["pulseaudio" "network" "battery" "tray"];
-
-      "hyprland/workspaces" = {
-        format = "{name}";
-        on-click = "activate";
-      };
-
-      clock = {
-        format = "{:%a %d %b  %H:%M}";
-        tooltip-format = "<tt>{calendar}</tt>";
-      };
-
-      pulseaudio = {
-        format = "  {volume}%";
-        format-muted = "  muted";
-        on-click = "${lib.getExe pkgs.pavucontrol}";
-      };
-
-      network = {
-        format-wifi = "  {essid}";
-        format-ethernet = "  wired";
-        format-disconnected = "  offline";
-      };
-
-      battery = {
-        format = "{icon}  {capacity}%";
-        format-charging = "  {capacity}%";
-        format-icons = ["" "" "" "" ""];
-        states = {
-          warning = 30;
-          critical = 15;
-        };
-      };
-
-      tray.spacing = 8;
     };
   };
 }
