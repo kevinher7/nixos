@@ -125,6 +125,8 @@
     };
 
     plugins = {
+      lspconfig.enable = true;
+
       conform-nvim = {
         enable = true;
 
