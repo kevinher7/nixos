@@ -16,6 +16,14 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
 
+      - name: Configure Numtide cache
+        run: |
+          sudo mkdir -p /etc/nix
+          cat <<'EOF' | sudo tee -a /etc/nix/nix.conf >/dev/null
+          extra-substituters = https://cache.numtide.com
+          extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
+          EOF
+
       # No store cache here: statix barely touches the store, so the ~4s
       # restore is a net loss for this job.
       - name: Run statix linting
@@ -31,6 +39,14 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
+
+      - name: Configure Numtide cache
+        run: |
+          sudo mkdir -p /etc/nix
+          cat <<'EOF' | sudo tee -a /etc/nix/nix.conf >/dev/null
+          extra-substituters = https://cache.numtide.com
+          extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
+          EOF
 
       - name: Cache Nix store
         uses: nix-community/cache-nix-action@v7
@@ -62,6 +78,14 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
+
+      - name: Configure Numtide cache
+        run: |
+          sudo mkdir -p /etc/nix
+          cat <<'EOF' | sudo tee -a /etc/nix/nix.conf >/dev/null
+          extra-substituters = https://cache.numtide.com
+          extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
+          EOF
 
       - name: Cache Nix store
         uses: nix-community/cache-nix-action@v7
