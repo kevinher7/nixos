@@ -125,7 +125,7 @@ in {
           (bindOpts "${mod} + CTRL + L" "hl.dsp.window.resize({ x = 40, y = 0, relative = true })" {repeating = true;})
 
           # Media and brightness keys — the old `bindel`, i.e. locked + repeating
-          (bindOpts "XF86AudioRaiseVolume" (exec "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+") {
+          (bindOpts "XF86AudioRaiseVolume" (exec "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+") {
             locked = true;
             repeating = true;
           })

@@ -309,7 +309,7 @@ keys = [
     Key(
         [],
         "XF86AudioRaiseVolume",
-        lazy.spawn("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"),
+        lazy.spawn("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"),
         desc="Raise Volume",
     ),
     Key(
