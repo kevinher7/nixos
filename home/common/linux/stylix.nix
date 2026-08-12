@@ -1,10 +1,10 @@
-{lib, ...}: {
+{osConfig, ...}: {
   stylix = {
     enable = true;
 
     # autoEnable = false; # Disable autoEnable to avoid conflicts with NixOS level
 
-    image = ../../../assets/wallpapers/girl-reading-book.png;
+    image = osConfig.myModules.theming.wallpaper;
     polarity = "dark";
 
     targets = {

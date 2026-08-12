@@ -8,7 +8,7 @@
   terminal = lib.getExe config.programs.alacritty.package;
   launcher = "${lib.getExe config.programs.rofi.finalPackage} -show drun";
   lock = "${lib.getExe pkgs.swaylock} -f";
-  wallpaper = ../../../assets/wallpapers/girl-reading-book.png;
+  wallpaper = config.stylix.image;
 
   workspaceBindings = builtins.listToAttrs (
     lib.concatMap (

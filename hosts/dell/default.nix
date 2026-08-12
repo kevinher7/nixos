@@ -29,6 +29,8 @@
   };
 
   myModules = {
+    theming.wallpaper = ../../assets/wallpapers/orion-nebula.jpg;
+
     input.waylandFrontend = true;
 
     networking = {

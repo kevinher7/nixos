@@ -7,9 +7,12 @@
   imports = [
     ../../modules/core/packages.nix
     ../../modules/darwin
+    ../../modules/theming/options.nix
     ../../modules/vars
     ../../modules/darwin
   ];
+
+  myModules.theming.wallpaper = ../../assets/wallpapers/red-mountain.png;
 
   myVars = {
     serverTailscaleIP = "100.87.121.69";

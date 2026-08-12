@@ -5,7 +5,7 @@
   ...
 }: let
   cfg = config.myPrograms.betterlockscreen;
-  lockImage = ../../assets/wallpapers/girl-reading-book.png;
+  lockImage = config.stylix.image;
   lockImageTarget = "${config.home.homeDirectory}/.config/betterlockscreen/lock.png";
 
   lockWrapper = pkgs.writeShellScriptBin "lock-with-betterlockscreen" ''

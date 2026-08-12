@@ -1,3 +1,6 @@
 _: {
-  imports = [./stylix.nix];
+  imports = [
+    ./options.nix
+    ./stylix.nix
+  ];
 }
