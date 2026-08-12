@@ -19,6 +19,7 @@
         "dom.forms.autocomplete.formautofill" = true;
 
         # UI behaviour
+        "ui.systemUsesDarkTheme" = 1;
         "sidebar.visibility" = "hide-sidebar";
         "findbar.highlightAll" = true;
         "browser.contentblocking.category" = "standard";
