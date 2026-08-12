@@ -1,9 +1,8 @@
 {pkgs, ...}: {
-  imports = [../common ../programs ../desktops/qtile];
+  imports = [../common ../programs ../desktops/sway];
 
   myPrograms = {
     alacritty.enable = true;
-    betterlockscreen.enable = true;
     kanshi.enable = true;
     qutebrowser.enable = true;
     rquickshare.enable = true;
@@ -21,7 +20,6 @@
   home.packages = with pkgs; [
     playerctl
     pavucontrol
-    pasystray
     pcmanfm
     papirus-icon-theme
   ];

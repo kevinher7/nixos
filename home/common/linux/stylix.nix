@@ -17,6 +17,7 @@
       nixvim.enable = false;
       opencode.enable = false;
       hyprland.enable = false;
+      sway.enable = false;
     };
   };
 }

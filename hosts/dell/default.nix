@@ -5,7 +5,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/desktop/qtile
+    ../../modules/desktop/sway
     ../../modules/system
     ../../modules/core
     ../../modules/theming
@@ -29,6 +29,8 @@
   };
 
   myModules = {
+    input.waylandFrontend = true;
+
     networking = {
       enable = true;
       inherit hostname;
@@ -43,11 +45,6 @@
       inherit profile;
     };
   };
-
-  programs.i3lock.enable = true;
-  hardware.acpilight.enable = true;
-
-  security.pam.services.i3lock-color.enable = true;
 
   # AMD Radeon integrated graphics.
   hardware.enableRedistributableFirmware = true;
