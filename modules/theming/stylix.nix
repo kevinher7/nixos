@@ -1,9 +1,13 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   stylix = {
     enable = true;
     autoEnable = true;
 
-    image = ../../assets/wallpapers/girl-reading-book.png;
+    image = config.myModules.theming.wallpaper;
     polarity = "dark";
 
     # Stylix's kmscon target still sets the removed `services.kmscon.{extraConfig,fonts}`

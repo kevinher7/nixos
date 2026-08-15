@@ -1,11 +1,12 @@
 {
+  lib,
   hostname,
   profile,
   ...
 }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/desktop/qtile
+    ../../modules/desktop/sway
     ../../modules/system
     ../../modules/core
     ../../modules/theming
@@ -19,6 +20,12 @@
 
   time.timeZone = "Asia/Tokyo";
 
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "steam"
+      "steam-unwrapped"
+    ];
+
   myVars = {
     gitUser = {
       name = "Kevin Hernandez";
@@ -29,6 +36,10 @@
   };
 
   myModules = {
+    theming.wallpaper = ../../assets/wallpapers/orion-nebula.jpg;
+
+    input.waylandFrontend = true;
+
     networking = {
       enable = true;
       inherit hostname;
@@ -43,11 +54,6 @@
       inherit profile;
     };
   };
-
-  programs.i3lock.enable = true;
-  hardware.acpilight.enable = true;
-
-  security.pam.services.i3lock-color.enable = true;
 
   # AMD Radeon integrated graphics.
   hardware.enableRedistributableFirmware = true;

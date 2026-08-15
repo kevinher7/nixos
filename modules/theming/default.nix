@@ -1,3 +1,12 @@
-_: {
-  imports = [./stylix.nix];
+{
+  lib,
+  osFamily,
+  ...
+}: {
+  imports = lib.optional (osFamily == "linux") ./stylix.nix;
+
+  options.myModules.theming.wallpaper = lib.mkOption {
+    type = lib.types.path;
+    description = "Wallpaper image used by Stylix and the desktop environment.";
+  };
 }

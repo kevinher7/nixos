@@ -1,5 +1,9 @@
-{pkgs, ...}: let
-  wallpaper = ../../../assets/wallpapers/girl-reading-book.png;
+{
+  config,
+  pkgs,
+  ...
+}: let
+  wallpaper = config.myModules.theming.wallpaper;
 in {
   services.xserver = {
     enable = true;

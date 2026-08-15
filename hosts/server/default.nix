@@ -66,6 +66,8 @@
   };
 
   myModules = {
+    theming.wallpaper = ../../assets/wallpapers/girl-reading-book.png;
+
     networking = {
       enable = true;
       inherit hostname;

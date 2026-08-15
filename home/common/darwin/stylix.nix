@@ -2,9 +2,10 @@
   lib,
   pkgs,
   inputs,
+  osConfig,
   ...
 }: let
-  wallpaper = ../../../assets/wallpapers/red-mountain.png;
+  wallpaper = osConfig.myModules.theming.wallpaper;
 in {
   # The Stylix nix-darwin module installs fonts system-wide but does not wire up
   # the Home Manager options on darwin, so import the HM module explicitly here.
