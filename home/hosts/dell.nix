@@ -46,6 +46,7 @@
   '';
 
   home.packages = with pkgs; [
+    steam
     playerctl
     pavucontrol
     pcmanfm

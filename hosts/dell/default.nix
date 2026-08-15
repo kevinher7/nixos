@@ -1,4 +1,5 @@
 {
+  lib,
   hostname,
   profile,
   ...
@@ -15,10 +16,15 @@
     ../../modules/input
     ../../modules/audio
     ../../modules/bluetooth
-    ../../modules/programs
   ];
 
   time.timeZone = "Asia/Tokyo";
+
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "steam"
+      "steam-unwrapped"
+    ];
 
   myVars = {
     gitUser = {
@@ -30,8 +36,6 @@
   };
 
   myModules = {
-    programs.steam.enable = true;
-
     theming.wallpaper = ../../assets/wallpapers/orion-nebula.jpg;
 
     input.waylandFrontend = true;
