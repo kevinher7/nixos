@@ -7,7 +7,7 @@
   imports = [
     ../../modules/core/packages.nix
     ../../modules/darwin
-    ../../modules/theming/options.nix
+    ../../modules/theming
     ../../modules/vars
     ../../modules/darwin
   ];
