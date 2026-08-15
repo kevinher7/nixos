@@ -15,6 +15,7 @@
     ../../modules/input
     ../../modules/audio
     ../../modules/bluetooth
+    ../../modules/programs
   ];
 
   time.timeZone = "Asia/Tokyo";
@@ -29,6 +30,8 @@
   };
 
   myModules = {
+    programs.steam.enable = true;
+
     theming.wallpaper = ../../assets/wallpapers/orion-nebula.jpg;
 
     input.waylandFrontend = true;
