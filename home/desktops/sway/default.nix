@@ -27,6 +27,8 @@
     ) (lib.range 1 9)
   );
 in {
+  imports = [./waybar.nix];
+
   # Tie Kanshi, swayidle, and other Wayland services to the Sway session.
   wayland.systemd.target = "sway-session.target";
 
@@ -73,8 +75,21 @@ in {
 
       output."*".bg = "${wallpaper} fill";
 
-      # Keep the native Sway bar independent from the disabled Stylix target.
-      bars = [{position = "top";}];
+      # Waybar provides the workspace and system status bar.
+      bars = [];
+
+      # A Sway reload can restore its automatic output layout without producing
+      # a hotplug event. Reapply the active Kanshi profile afterwards.
+      startup = [
+        {
+          command = "${pkgs.systemd}/bin/systemctl --user reload kanshi.service";
+          always = true;
+        }
+        {
+          command = "fcitx5 -d";
+          always = false;
+        }
+      ];
 
       keybindings =
         {
