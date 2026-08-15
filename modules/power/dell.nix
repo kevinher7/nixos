@@ -7,10 +7,9 @@
 in {
   config = lib.mkIf (cfg.enable && cfg.profile == "dell") {
     services.logind = {
-      powerKey = "suspend";
-      lidSwitch = "suspend-then-hibernate";
-
       settings.Login = {
+        HandlePowerKey = "suspend";
+        HandleLidSwitch = "suspend-then-hibernate";
         IdleAction = "suspend-then-hibernate";
         IdleActionSec = "10m";
       };
