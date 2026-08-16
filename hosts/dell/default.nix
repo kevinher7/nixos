@@ -20,6 +20,8 @@
 
   time.timeZone = "Asia/Tokyo";
 
+  programs.steam.enable = true;
+
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
       "steam"
