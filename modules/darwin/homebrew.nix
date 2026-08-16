@@ -39,6 +39,7 @@ _: {
       "stats"
       "steam"
       "tailscale-app"
+      "ticktick"
       "wispr-flow"
       "zoom"
     ];
