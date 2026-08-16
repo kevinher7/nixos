@@ -3,18 +3,25 @@
     plugins.telescope = {
       enable = true;
 
-      settings.defaults = {
-        file_ignore_patterns = [
-          "^.git/"
-          "^.mypy_cache/"
-          "^__pycache__/"
-          "^output/"
-          "^data/"
-          "%.png"
-          "%.jpg"
-        ];
+      settings = {
+        defaults = {
+          file_ignore_patterns = [
+            "^%.git/"
+            "^%.mypy_cache/"
+            "^__pycache__/"
+            "^output/"
+            "^data/"
+            "%.png"
+            "%.jpg"
+          ];
 
-        set_env.COLORTERM = "truecolor";
+          set_env.COLORTERM = "truecolor";
+        };
+
+        pickers = {
+          find_files.hidden = true;
+          live_grep.hidden = true;
+        };
       };
     };
   };
