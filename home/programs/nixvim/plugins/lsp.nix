@@ -119,6 +119,8 @@
           ];
         };
 
+        ts_ls.enable = true; # TypeScript & JavaScript
+
         neocmake.enable = true; # CMake
         tinymist.enable = true; # Typst
       };
@@ -146,6 +148,10 @@
             typst = ["typstyle"];
             json = ["prettierd"];
             jsonc = ["prettierd"];
+            javascript = ["prettierd"];
+            javascriptreact = ["prettierd"];
+            typescript = ["prettierd"];
+            typescriptreact = ["prettierd"];
           };
         };
       };
