@@ -69,6 +69,7 @@ jobs:
   # host builds in its own matrix job so they run in parallel.
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       matrix:
         host: [beans-btw, kebean, uribo-btw]
@@ -103,6 +104,9 @@ jobs:
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Prefetch flake inputs
+        run: nix flake archive
 
       - name: Build ${{ matrix.host }} configuration
         run: >
