@@ -11,8 +11,8 @@
 
     sessionVariables = {
       EDITOR = "nvim";
-      # Use macOS Touch ID to unlock the aws-vault keychain instead of a password.
       AWS_VAULT_BIOMETRICS = "1";
+      OP_BIOMETRIC_UNLOCK_ENABLED = "true";
     };
 
     profileExtra = ''
