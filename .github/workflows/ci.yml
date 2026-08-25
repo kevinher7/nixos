@@ -90,14 +90,6 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
 
-      - name: Configure Numtide cache
-        run: |
-          sudo mkdir -p /etc/nix
-          cat <<'EOF' | sudo tee -a /etc/nix/nix.conf >/dev/null
-          extra-substituters = https://cache.numtide.com
-          extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
-          EOF
-
       - name: Cache Nix store
         uses: nix-community/cache-nix-action@v7
         with:
@@ -114,6 +106,15 @@ jobs:
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      # Cachix creates a user config whose substituters take precedence over
+      # /etc/nix/nix.conf, so Numtide must be added to that config afterwards.
+      - name: Configure Numtide cache
+        run: |
+          cat <<'EOF' >> "$HOME/.config/nix/nix.conf"
+          extra-substituters = https://cache.numtide.com
+          extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
+          EOF
 
       - name: Verify Numtide cache
         run: |
