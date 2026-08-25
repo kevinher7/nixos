@@ -24,6 +24,11 @@ jobs:
           extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
           EOF
 
+      - name: Verify Numtide cache
+        run: |
+          nix config show substituters | grep --fixed-strings --quiet https://cache.numtide.com
+          nix config show trusted-public-keys | grep --fixed-strings --quiet niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
+
       # No store cache here: statix barely touches the store, so the ~4s
       # restore is a net loss for this job.
       - name: Run statix linting
@@ -47,6 +52,11 @@ jobs:
           extra-substituters = https://cache.numtide.com
           extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
           EOF
+
+      - name: Verify Numtide cache
+        run: |
+          nix config show substituters | grep --fixed-strings --quiet https://cache.numtide.com
+          nix config show trusted-public-keys | grep --fixed-strings --quiet niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
 
       - name: Cache Nix store
         uses: nix-community/cache-nix-action@v7
@@ -104,6 +114,11 @@ jobs:
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Verify Numtide cache
+        run: |
+          nix config show substituters | grep --fixed-strings --quiet https://cache.numtide.com
+          nix config show trusted-public-keys | grep --fixed-strings --quiet niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
 
       - name: Prefetch flake inputs
         run: nix flake archive
