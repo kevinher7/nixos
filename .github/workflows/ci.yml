@@ -6,6 +6,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -19,7 +23,7 @@ jobs:
       # No store cache here: statix barely touches the store, so the ~4s
       # restore is a net loss for this job.
       - name: Run statix linting
-        run: nix run nixpkgs#statix -- check .
+        run: nix run --inputs-from . nixpkgs#statix -- check .
 
   # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
   # so we evaluate it here as a safety net. The Linux hosts are covered by `build`.
@@ -31,17 +35,6 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
-
-      - name: Cache Nix store
-        uses: nix-community/cache-nix-action@v7
-        with:
-          primary-key: nix-${{ runner.os }}-eval-${{ hashFiles('flake.lock') }}
-          restore-prefixes-first-match: nix-${{ runner.os }}-eval-
-          gc-max-store-size-linux: 2G
-          purge: true
-          purge-prefixes: nix-${{ runner.os }}-eval-
-          purge-created: 0
-          purge-primary-key: never
 
       - name: Evaluate macbook configuration
         run: >
@@ -95,10 +88,7 @@ jobs:
           nix config show substituters | grep --fixed-strings --quiet https://cache.numtide.com
           nix config show trusted-public-keys | grep --fixed-strings --quiet niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
 
-      - name: Prefetch flake inputs
-        run: nix flake archive
-
       - name: Build ${{ matrix.host }} configuration
         run: >
-          nix run nixpkgs#nix-fast-build -- --skip-cached --no-nom
+          nix run --inputs-from . nixpkgs#nix-fast-build -- --skip-cached --no-nom
           --flake '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
