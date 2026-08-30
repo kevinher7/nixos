@@ -5,7 +5,25 @@
   ];
 
   services = {
-    xserver.windowManager.qtile.enable = true;
+    xserver.windowManager.qtile = {
+      enable = true;
+
+      # Qtile 0.37 installs qtile-generic.desktop while still declaring the
+      # provided session as "qtile". Keep the session name stable until the
+      # mismatch introduced by NixOS/nixpkgs#550623 is fixed upstream.
+      package = pkgs.python3Packages.qtile.overrideAttrs (oldAttrs: {
+        postInstall =
+          oldAttrs.postInstall
+          + ''
+            for sessionDirectory in xsessions wayland-sessions; do
+              genericSession="$out/share/$sessionDirectory/qtile-generic.desktop"
+              if [ -e "$genericSession" ]; then
+                mv "$genericSession" "$out/share/$sessionDirectory/qtile.desktop"
+              fi
+            done
+          '';
+      });
+    };
     libinput.touchpad.naturalScrolling = true;
   };
 
