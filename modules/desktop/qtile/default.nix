@@ -1,11 +1,44 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  fixQtileSessions = qtile:
+    pkgs.symlinkJoin {
+      name = "${qtile.name}-fixed-sessions";
+      paths = [qtile];
+
+      postBuild = ''
+        for sessionDirectory in xsessions wayland-sessions; do
+          genericSession="$out/share/$sessionDirectory/qtile-generic.desktop"
+          qtileSession="$out/share/$sessionDirectory/qtile.desktop"
+
+          if [ -e "$genericSession" ]; then
+            rm -f "$qtileSession"
+            mv "$genericSession" "$qtileSession"
+          fi
+        done
+      '';
+
+      passthru = {
+        inherit (qtile) pythonModule;
+        providedSessions = ["qtile"];
+        override = args: fixQtileSessions (qtile.override args);
+      };
+
+      inherit (qtile) meta;
+    };
+in {
   imports = [
     ./xserver.nix
     ./picom.nix
   ];
 
   services = {
-    xserver.windowManager.qtile.enable = true;
+    xserver.windowManager.qtile = {
+      enable = true;
+
+      # Qtile 0.37 installs qtile-generic.desktop while still declaring the
+      # provided session as "qtile". Keep the session name stable until the
+      # mismatch introduced by NixOS/nixpkgs#550623 is fixed upstream.
+      package = fixQtileSessions pkgs.python3Packages.qtile;
+    };
     libinput.touchpad.naturalScrolling = true;
   };
 
