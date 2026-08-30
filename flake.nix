@@ -136,12 +136,14 @@
           }
         ];
       };
-  in {
+
     nixosConfigurations = {
       beans-btw = mkNixosConfig "beans-btw" "chromebook" "kevin";
       kebean = mkNixosConfig "kebean" "dell" "kevin";
       uribo-btw = mkNixosConfig "uribo-btw" "server" "uribo";
     };
+  in {
+    inherit nixosConfigurations;
 
     darwinConfigurations = {
       kebee = mkDarwinConfig "kebee" "macbook" "beellm";
@@ -152,9 +154,20 @@
         (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${sys} ./treefmt.nix).config.build.wrapper
     );
 
-    checks.${system}.pre-commit-check = git-hooks-nix.lib.${system}.run {
-      src = ./.;
-      inherit (import ./git-hooks.nix {inherit pkgs;}) hooks;
-    };
+    checks.${system} =
+      nixpkgs.lib.mapAttrs'
+      (
+        hostname: configuration:
+          nixpkgs.lib.nameValuePair
+          "nixos-${hostname}"
+          configuration.config.system.build.toplevel
+      )
+      nixosConfigurations
+      // {
+        pre-commit-check = git-hooks-nix.lib.${system}.run {
+          src = ./.;
+          inherit (import ./git-hooks.nix {inherit pkgs;}) hooks;
+        };
+      };
   };
 }
