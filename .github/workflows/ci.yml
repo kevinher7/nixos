@@ -11,6 +11,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v22
+
+      # Building this flake check runs the complete git-hooks.nix suite.
+      # No store cache is restored: the hooks are small and setup costs more
+      # than this job can reasonably save.
+      - name: Run pre-commit checks
+        run: nix build --no-link --print-build-logs '.#checks.x86_64-linux.pre-commit-check'
+
   # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
   # so we evaluate it here as a safety net. Linux checks are covered by `build`.
   eval:
@@ -27,12 +42,15 @@ jobs:
           nix eval --show-trace
           '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
 
-  # Build every x86_64-linux flake check in one shared evaluation. This covers
-  # the pre-commit hooks and every NixOS host closure while avoiding duplicate
-  # runner setup and store-cache restoration for each host.
+  # Build the x86_64-linux host checks and push the results to Cachix. Each
+  # host runs in its own matrix job so they finish and report independently.
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [beans-btw, kebean, uribo-btw]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -43,11 +61,11 @@ jobs:
       - name: Cache Nix store
         uses: nix-community/cache-nix-action@v7
         with:
-          primary-key: nix-${{ runner.os }}-checks-${{ hashFiles('flake.lock') }}
-          restore-prefixes-first-match: nix-${{ runner.os }}-checks-
+          primary-key: nix-${{ runner.os }}-build-${{ matrix.host }}-${{ hashFiles('flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-build-${{ matrix.host }}-
           gc-max-store-size-linux: 2G
           purge: true
-          purge-prefixes: nix-${{ runner.os }}-checks-
+          purge-prefixes: nix-${{ runner.os }}-build-${{ matrix.host }}-
           purge-created: 0
           purge-primary-key: never
 
@@ -71,8 +89,8 @@ jobs:
           nix config show substituters | grep --fixed-strings --quiet https://cache.numtide.com
           nix config show trusted-public-keys | grep --fixed-strings --quiet niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
 
-      - name: Run Linux checks
+      - name: Build ${{ matrix.host }} check
         run: >
           nix run --inputs-from . nixpkgs#nix-fast-build --
-          --skip-cached --no-nom --no-link --stream-json-lines
-          --flake '.#checks.x86_64-linux'
+          --skip-cached --no-nom
+          --flake '.#checks.x86_64-linux."nixos-${{ matrix.host }}"'
