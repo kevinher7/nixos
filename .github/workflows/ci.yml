@@ -73,5 +73,6 @@ jobs:
 
       - name: Run Linux checks
         run: >
-          nix run --inputs-from . nixpkgs#nix-fast-build -- --skip-cached --no-nom --no-link
+          nix run --inputs-from . nixpkgs#nix-fast-build --
+          --skip-cached --no-nom --no-link --stream-json-lines
           --flake '.#checks.x86_64-linux'
