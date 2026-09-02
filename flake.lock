@@ -88,15 +88,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1784665499,
-        "narHash": "sha256-9BMxlTxCCDAeoNLtb1a/st7udtTIJep+wpUzquA29VU=",
-        "owner": "nix-community",
+        "lastModified": 1788011267,
+        "narHash": "sha256-mEq2kU+ljompTToZ44Afvm7d/rHJ5iMBl0tjZuyShJs=",
+        "owner": "Mic92",
         "repo": "bun2nix",
-        "rev": "0f2a1f0b6f42cebe3b149bf62d38754c5e0e9729",
+        "rev": "5765b0614591f75ee8ba5596e81ae85c167d1071",
         "type": "github"
       },
       "original": {
-        "owner": "nix-community",
+        "owner": "Mic92",
+        "ref": "fix-structured-attrs-hook",
         "repo": "bun2nix",
         "type": "github"
       }
@@ -282,11 +283,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1787814832,
-        "narHash": "sha256-xxPCzswSCZ63GYBfesxRJsWuj7Mk9YcAaHDb8X1tbjk=",
+        "lastModified": 1788319008,
+        "narHash": "sha256-uI42q49JpwAqojupibPMD2Q8XmTQVjFAO8iTZIuIBxA=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "be0eff8f6e0dd4f0edb15e80be8fab107f4768fa",
+        "rev": "551acc901092f826fd4f85b827f432dab5bba66c",
         "type": "github"
       },
       "original": {
@@ -318,11 +319,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787424095,
-        "narHash": "sha256-dWLO5AHhKaw6rdWCtTes8hnntT1r0/J5yhQGm0f0ZgU=",
+        "lastModified": 1787964612,
+        "narHash": "sha256-0N9nghg3nwzX6b6qc77EzjR9cu/Z+UR66FlfsCqiURs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "174eb786fb68e3a13e4e535a3deea479a0c07a6a",
+        "rev": "e8be7818e19ada32105a8af937a6a473b38167ca",
         "type": "github"
       },
       "original": {
@@ -533,11 +534,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786869745,
-        "narHash": "sha256-flVGMiaDbFWYBUv4ofFX6T5ZWuFt/hfgdrpFR83F4cQ=",
+        "lastModified": 1788321618,
+        "narHash": "sha256-RDggFkOClLRszmyp3GbB98ZJBQsy1FerLD+LqSf4cMk=",
         "owner": "kevinher7",
         "repo": "t3code",
-        "rev": "e96dfd0159cf41f3ca2f2ae1ade61d9b85630d60",
+        "rev": "a5d2335360ea0d246336318e84248f814a0c0f77",
         "type": "github"
       },
       "original": {
