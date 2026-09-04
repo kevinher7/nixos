@@ -41,11 +41,9 @@
     experimental-features = ["nix-command" "flakes"];
     extra-substituters = [
       "https://cache.numtide.com" # For LLM Agents
-      "https://nixpkgs-python.cachix.org" # For python 3.8 (dropped from nixpkgs)
     ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-      "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU="
     ];
   };
 
