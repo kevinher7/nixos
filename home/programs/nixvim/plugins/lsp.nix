@@ -138,6 +138,10 @@
             timeout_ms = 2000;
           };
 
+          default_format_opts.stop_after_first = true;
+
+          formatters.oxfmt.require_cwd = true;
+
           notify_on_error = true;
 
           formatters_by_ft = {
@@ -146,12 +150,12 @@
             cpp = ["clang_format"];
             nix = ["alejandra"];
             typst = ["typstyle"];
-            json = ["prettierd"];
-            jsonc = ["prettierd"];
-            javascript = ["prettierd"];
-            javascriptreact = ["prettierd"];
-            typescript = ["prettierd"];
-            typescriptreact = ["prettierd"];
+            json = ["oxfmt" "prettierd"];
+            jsonc = ["oxfmt" "prettierd"];
+            javascript = ["oxfmt" "prettierd"];
+            javascriptreact = ["oxfmt" "prettierd"];
+            typescript = ["oxfmt" "prettierd"];
+            typescriptreact = ["oxfmt" "prettierd"];
           };
         };
       };
