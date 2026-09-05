@@ -1,10 +1,12 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  treefmt,
+}: {
   hooks = {
-    alejandra = {
+    treefmt = {
       enable = true;
-      excludes = ["hardware-configuration\\.nix$"];
+      package = treefmt;
     };
-    statix.enable = true;
 
     check-yaml = {
       enable = true;

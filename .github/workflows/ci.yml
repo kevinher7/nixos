@@ -25,10 +25,8 @@ jobs:
         with:
           determinate: false
 
-      # No store cache here: statix barely touches the store, so the ~4s
-      # restore is a net loss for this job.
-      - name: Run statix linting
-        run: nix run --inputs-from . nixpkgs#statix -- check .
+      - name: Run pre-commit checks
+        run: nix build .#checks.x86_64-linux.pre-commit-check
 
   # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
   # so we evaluate it here as a safety net. The Linux hosts are covered by `build`.

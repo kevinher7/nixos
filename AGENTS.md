@@ -20,15 +20,14 @@ This repository uses [git-hooks.nix](https://github.com/cachix/git-hooks.nix) to
 Run the following command to generate and install the hooks into `.git/hooks`:
 
 ```bash
-nix build .#checks.x86_64-linux.pre-commit-check
-eval "$(nix eval --raw '.#checks.x86_64-linux.pre-commit-check.shellHook')"
+nix develop
 ```
 
 After installation, the following checks run automatically:
 
-- **pre-commit:** `alejandra` (formatting), `statix` (linting), `check-yaml`, `trailing-whitespace`, and `detect-private-key`
+- **pre-commit:** `treefmt` (alejandra + statix), `check-yaml`, `trailing-whitespace`, and `detect-private-key`
 - **commit-msg:** Conventional Commits enforcement (`feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`)
 
 ### CI
 
-The same checks are run in CI via `nix flake check` (once exported). For now, the CI runs `statix` and evaluates both NixOS configurations on every push and PR.
+On every push and PR, the `lint` job builds `checks.x86_64-linux.pre-commit-check`, which runs the same hooks over the whole tree. The `eval` job evaluates the darwin host (`kebee`), and the `build` job builds the three Linux hosts and pushes the results to Cachix.
