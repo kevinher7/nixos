@@ -56,6 +56,7 @@
   };
 
   outputs = {
+    self,
     nixpkgs,
     home-manager,
     nix-darwin,
@@ -68,8 +69,8 @@
     ...
   } @ inputs: let
     system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
     forEachSystem = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"];
+    treefmtFor = sys: (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${sys} ./treefmt.nix).config.build.wrapper;
 
     # Helper Function to Create NixOS Configs
     mkNixosConfig = hostname: profile: username:
@@ -147,14 +148,26 @@
       kebee = mkDarwinConfig "kebee" "macbook" "beellm";
     };
 
-    formatter = forEachSystem (
-      sys:
-        (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${sys} ./treefmt.nix).config.build.wrapper
-    );
+    formatter = forEachSystem treefmtFor;
 
-    checks.${system}.pre-commit-check = git-hooks-nix.lib.${system}.run {
-      src = ./.;
-      inherit (import ./git-hooks.nix {inherit pkgs;}) hooks;
-    };
+    checks = forEachSystem (sys: {
+      pre-commit-check = git-hooks-nix.lib.${sys}.run {
+        src = ./.;
+        inherit
+          (import ./git-hooks.nix {
+            pkgs = nixpkgs.legacyPackages.${sys};
+            treefmt = treefmtFor sys;
+          })
+          hooks
+          ;
+      };
+    });
+
+    devShells = forEachSystem (sys: {
+      default = nixpkgs.legacyPackages.${sys}.mkShell {
+        inherit (self.checks.${sys}.pre-commit-check) shellHook;
+        packages = self.checks.${sys}.pre-commit-check.enabledPackages;
+      };
+    });
   };
 }

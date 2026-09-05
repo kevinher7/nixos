@@ -24,12 +24,11 @@ This guide assumes you already have NixOS installed.
 
 2. **Install Git Hooks** 🪝
 
-   This repository uses `git-hooks.nix` to enforce formatting, linting, and conventional commits.
-
    ```bash
-   nix build .#checks.x86_64-linux.pre-commit-check
-   eval "$(nix eval --raw '.#checks.x86_64-linux.pre-commit-check.shellHook')"
+   nix develop
    ```
+
+   This installs the git hooks (formatting, linting, conventional commits). See `AGENTS.md` for details.
 
 3. **Secrets & Encryption** 🔐
 
@@ -75,7 +74,7 @@ This guide assumes you already have NixOS installed.
 
 ## 🧙 Commodity Aliases
 
-A few convenience aliases are defined in `home/common/bash.nix` to make daily interactions smoother:
+A few convenience aliases are defined in `home/common/linux/bash.nix` to make daily interactions smoother:
 
 | Alias  | Command                                                        | Description                                                                                |
 | ------ | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -165,7 +164,7 @@ When you buy a domain later, simply swap the domain in `modules/services/nginx-p
 
 ## 💻 Using OpenCode from a Tailscale-Connected Host
 
-OpenCode is configured to run as a **systemd user service** on the server (`home/programs/opencode.nix`), binding to `0.0.0.0` on port `4096`:
+OpenCode is configured to run as a **systemd user service** on the server (`home/programs/opencode/`), binding to `0.0.0.0` on port `4096`:
 
 ```nix
 programs.opencode = {
