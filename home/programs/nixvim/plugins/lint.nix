@@ -14,6 +14,10 @@
         sh = ["shellcheck"];
         bash = ["shellcheck"];
         markdown = ["markdownlint"];
+        javascript = ["oxlint"];
+        javascriptreact = ["oxlint"];
+        typescript = ["oxlint"];
+        typescriptreact = ["oxlint"];
       };
     };
   };
