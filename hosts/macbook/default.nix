@@ -8,8 +8,6 @@
     ../../modules/core/packages.nix
     ../../modules/darwin
     ../../modules/theming
-    ../../modules/vars
-    ../../modules/darwin
   ];
 
   myModules.theming.wallpaper = ../../assets/wallpapers/red-mountain.png;
