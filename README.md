@@ -198,3 +198,9 @@ och
 ```
 
 This binds the OpenCode web UI to all interfaces, making it immediately reachable over Tailscale without any extra firewall fuss.
+
+## License
+
+This configuration is licensed under the MIT License. See [LICENSE](LICENSE) for the full text.
+
+The wallpapers under `assets/wallpapers/` are third-party images and are not covered by that license.
