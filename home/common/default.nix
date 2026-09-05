@@ -7,7 +7,7 @@
   ...
 }: {
   imports =
-    [./git.nix]
+    [./git.nix ./direnv.nix]
     ++ lib.optional (osFamily == "linux") ./linux
     ++ lib.optional (osFamily == "darwin") ./darwin;
 
