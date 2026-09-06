@@ -296,6 +296,26 @@
         "type": "github"
       }
     },
+    "mail-bean": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788704511,
+        "narHash": "sha256-3KockhpizSYslhcEl3FKoU/46Rf6uAIYoPKLslLDTj0=",
+        "owner": "kevinher7",
+        "repo": "mail-bean",
+        "rev": "dfc968bef2c3301249bcf9c3169205451c04fc75",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kevinher7",
+        "repo": "mail-bean",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -415,6 +435,7 @@
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
+        "mail-bean": "mail-bean",
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim",

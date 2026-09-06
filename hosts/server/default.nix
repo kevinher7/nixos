@@ -93,6 +93,8 @@
       domain = "budget.${config.myVars.domain}";
     };
 
+    mailBean.enable = true;
+
     llm.enable = true;
 
     openWebui.enable = true;
