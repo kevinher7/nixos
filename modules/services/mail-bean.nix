@@ -7,6 +7,7 @@
 }: let
   cfg = config.myHomelab.mailBean;
   mailBeanPackages = inputs.mail-bean.packages.${pkgs.stdenv.hostPlatform.system};
+  runLog = "/var/lib/mail-bean/runs.json";
 in {
   options.myHomelab.mailBean = {
     enable = lib.mkEnableOption "mail-bean Gmail to Actual Budget importer";
@@ -17,6 +18,12 @@ in {
       type = lib.types.str;
       default = "hourly";
       description = "systemd OnCalendar expression for how often to import.";
+    };
+
+    runLogPort = lib.mkOption {
+      type = lib.types.port;
+      default = 8083;
+      description = "Localhost port nginx serves the run log on, for the Homepage widget.";
     };
   };
 
@@ -42,6 +49,7 @@ in {
       environment = {
         MAIL_BEAN_ACTUAL_SERVER_URL = "http://127.0.0.1:${toString config.myHomelab.actual.port}";
         MAIL_BEAN_ACTUAL_DATA_DIR = "/var/lib/mail-bean";
+        MAIL_BEAN_RUN_LOG = runLog;
       };
 
       serviceConfig = {
@@ -61,6 +69,16 @@ in {
         Persistent = true;
         RandomizedDelaySec = "5m";
       };
+    };
+
+    services.nginx.virtualHosts.mail-bean-runs = {
+      listen = [
+        {
+          addr = "127.0.0.1";
+          port = cfg.runLogPort;
+        }
+      ];
+      locations."= /runs.json".alias = runLog;
     };
   };
 }
