@@ -18,6 +18,18 @@ in {
       default = "hourly";
       description = "systemd OnCalendar expression for how often to import.";
     };
+
+    runLog = lib.mkOption {
+      type = lib.types.str;
+      default = "/var/lib/mail-bean/runs.json";
+      description = "JSON file mail-bean keeps its last run summaries in. Must be writable by the mail-bean user.";
+    };
+
+    runLogPort = lib.mkOption {
+      type = lib.types.port;
+      default = 8083;
+      description = "Localhost port nginx serves the run log on, for the Homepage widget.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -42,6 +54,7 @@ in {
       environment = {
         MAIL_BEAN_ACTUAL_SERVER_URL = "http://127.0.0.1:${toString config.myHomelab.actual.port}";
         MAIL_BEAN_ACTUAL_DATA_DIR = "/var/lib/mail-bean";
+        MAIL_BEAN_RUN_LOG = cfg.runLog;
       };
 
       serviceConfig = {
@@ -61,6 +74,16 @@ in {
         Persistent = true;
         RandomizedDelaySec = "5m";
       };
+    };
+
+    services.nginx.virtualHosts.mail-bean-runs = {
+      listen = [
+        {
+          addr = "127.0.0.1";
+          port = cfg.runLogPort;
+        }
+      ];
+      locations."= /runs.json".alias = cfg.runLog;
     };
   };
 }

@@ -95,6 +95,25 @@ in {
                 };
               }
             ]
+            ++ lib.optionals cfg.mailBean.enable [
+              {
+                "mail-bean" = {
+                  icon = "mdi-email-sync";
+                  description = "Bank emails into Actual, last runs";
+                  widget = {
+                    type = "customapi";
+                    url = "http://127.0.0.1:${toString cfg.mailBean.runLogPort}/runs.json";
+                    refreshInterval = 300000;
+                    display = "dynamic-list";
+                    mappings = {
+                      name = "at";
+                      label = "created";
+                      limit = 5;
+                    };
+                  };
+                };
+              }
+            ]
             ++ [
               {
                 "Tailscale" = {
