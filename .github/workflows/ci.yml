@@ -66,8 +66,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
         with:
           determinate: false
-          # Upstream nix-installer enables store optimisation on Linux. The hard links it
-          # creates do not survive cache-nix-action's tar restore (nix-community/cache-nix-action#170).
+          # Optimised-store hard links break cache-nix-action restores (nix-community/cache-nix-action#170)
           extra-conf: auto-optimise-store = false
 
       - name: Cache Nix store
