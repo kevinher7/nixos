@@ -53,6 +53,11 @@
       url = "github:kevinher7/t3code/personal";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    mail-bean = {
+      url = "github:kevinher7/mail-bean";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
