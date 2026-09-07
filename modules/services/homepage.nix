@@ -106,9 +106,12 @@ in {
                     refreshInterval = 300000;
                     display = "dynamic-list";
                     mappings = {
-                      name = "at";
-                      label = "created";
+                      name = "created";
+                      label = "at";
                       limit = 5;
+                      format = "relativeDate";
+                      style = "long";
+                      numeric = "auto";
                     };
                   };
                 };
