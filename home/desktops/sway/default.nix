@@ -27,7 +27,7 @@
     ) (lib.range 1 9)
   );
 in {
-  imports = [./waybar.nix];
+  imports = [./quickshell.nix];
 
   # Tie Kanshi, swayidle, and other Wayland services to the Sway session.
   wayland.systemd.target = "sway-session.target";
@@ -75,7 +75,7 @@ in {
 
       output."*".bg = "${wallpaper} fill";
 
-      # Waybar provides the workspace and system status bar.
+      # Quickshell provides the workspace and system status bar.
       bars = [];
 
       # A Sway reload can restore its automatic output layout without producing
