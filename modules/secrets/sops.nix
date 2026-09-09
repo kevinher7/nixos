@@ -13,12 +13,6 @@ _: {
         mode = "0400";
       };
 
-      duckdns_token = {
-        owner = "acme";
-        group = "acme";
-        mode = "0400";
-      };
-
       cloudflare_dns_api_token = {
         owner = "acme";
         group = "acme";
