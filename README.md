@@ -128,37 +128,37 @@ All machines are connected via **[Tailscale](https://tailscale.com/)**, which fo
 
 ---
 
-## 🦆 DuckDNS & HTTPS
+## ☁️ Cloudflare DNS & HTTPS
 
-The server uses **[DuckDNS](https://www.duckdns.org/)** as a free dynamic DNS provider, giving the home lab a stable domain (`uribogoat.duckdns.org`) without needing a static IP or purchased domain.
+The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted by **[Cloudflare](https://www.cloudflare.com/)**. Cloudflare provides DNS only; all service traffic goes directly to the server over Tailscale.
 
 ### How It Works
 
-- **Dynamic DNS**: DuckDNS keeps `uribogoat.duckdns.org` pointed at your current public IP (updated automatically if needed).
-- **Subdomains**: Each service gets its own subdomain:
-  - `vault.uribogoat.duckdns.org` → Vaultwarden
-  - `pihole.uribogoat.duckdns.org` → Pi-hole
-  - `code.uribogoat.duckdns.org` → OpenCode
-- **DNS-01 Challenge**: Let's Encrypt certificates are obtained via DNS validation rather than HTTP. NixOS updates a TXT record on DuckDNS via API, proves domain ownership, and receives the certificate. **No public firewall ports (80/443) need to be open.**
+- **Private routing**: DNS-only A records point to the server's stable Tailscale IP. The records are publicly resolvable, but the services are reachable only from the tailnet.
+- **Service domains**:
+  - `beanhaven.net` → Homepage
+  - `vault.beanhaven.net` → Vaultwarden
+  - `pihole.beanhaven.net` → Pi-hole
+  - `code.beanhaven.net` → OpenCode
+  - `t3code.beanhaven.net` → T3 Code
+  - `budget.beanhaven.net` → Actual Budget
+  - `ai.beanhaven.net` → Open WebUI
+- **DNS-01 Challenge**: Let's Encrypt certificates are obtained through Cloudflare DNS validation. No public firewall ports 80 or 443 need to be opened.
 
-### Setting Up the DuckDNS Token
+### Setting Up the Cloudflare Token
 
-1. Go to [duckdns.org](https://www.duckdns.org/), log in, and copy your token.
+1. Create a Cloudflare API token scoped to the `beanhaven.net` zone with `Zone / Zone / Read` and `Zone / DNS / Edit` permissions.
 2. Add it to the encrypted secrets:
    ```bash
-   nix-shell -p sops --run "sops secrets/secrets.yaml"
+   nix shell nixpkgs#sops --command sops secrets/secrets.yaml
    ```
 3. Add the key:
    ```yaml
-   duckdns_token: your-token-here
+   cloudflare_dns_api_token: your-token-here
    ```
 4. Save and exit — `sops` re-encrypts automatically.
 
-The `security.acme` module references this token to perform DNS-01 challenges declaratively.
-
-### Future: Custom Domain
-
-When you buy a domain later, simply swap the domain in `modules/services/nginx-proxy.nix` and update the ACME certificate block. The DNS-01 approach works with most providers (Cloudflare, Route53, etc.), so migration is straightforward.
+The `security.acme` module uses this token only to create and remove the TXT records needed for DNS-01 challenges.
 
 ---
 

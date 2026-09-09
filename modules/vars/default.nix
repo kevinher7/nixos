@@ -8,7 +8,7 @@
         virtual hosts, ACME certificates and split-horizon DNS. Subdomains are
         composed at the point of use, e.g. "vault.''${config.myVars.domain}".
       '';
-      example = "uribogoat.duckdns.org";
+      example = "example.com";
     };
 
     acmeEmail = lib.mkOption {
