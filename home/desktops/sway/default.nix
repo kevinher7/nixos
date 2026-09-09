@@ -27,7 +27,10 @@
     ) (lib.range 1 9)
   );
 in {
-  imports = [./quickshell.nix];
+  imports = [
+    ./autotiling.nix
+    ./quickshell.nix
+  ];
 
   # Tie Kanshi, swayidle, and other Wayland services to the Sway session.
   wayland.systemd.target = "sway-session.target";
@@ -105,6 +108,8 @@ in {
           "${mod}+f" = "fullscreen toggle";
           "${mod}+t" = "floating toggle";
           "${mod}+space" = "focus mode_toggle";
+          "${mod}+Shift+v" = "splith";
+          "${mod}+v" = "splitv";
           "${mod}+Shift+Return" = "layout toggle split";
           "${mod}+Ctrl+q" = "exit";
 
