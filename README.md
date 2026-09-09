@@ -160,6 +160,17 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
 
 The `security.acme` module uses this token only to create and remove the TXT records needed for DNS-01 challenges.
 
+### Tailscale Split DNS
+
+Some mobile carriers and DNS resolvers block public DNS answers containing Tailscale addresses as protection against DNS rebinding. To keep the homelab names working on mobile data, configure a restricted nameserver in the [Tailscale DNS admin page](https://login.tailscale.com/admin/dns):
+
+1. Add `1.1.1.1` as a custom nameserver.
+2. Restrict it to `beanhaven.net` so only the homelab domain uses it.
+3. Optionally add `1.0.0.1` with the same restriction for redundancy.
+4. Ensure **Use Tailscale DNS settings** is enabled on each client.
+
+This split-DNS route avoids affected local resolvers without overriding DNS for unrelated domains. See Tailscale's [DNS rebinding guidance](https://tailscale.com/docs/reference/faq/dns-rebinding) and [split-DNS documentation](https://tailscale.com/docs/reference/dns-in-tailscale).
+
 ---
 
 ## 💻 Using OpenCode from a Tailscale-Connected Host
