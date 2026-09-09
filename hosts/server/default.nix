@@ -17,7 +17,7 @@
   ];
 
   myVars = {
-    domain = "uribogoat.duckdns.org";
+    domain = "beanhaven.net";
     acmeEmail = "kevinhernem@gmail.com";
     serverTailscaleIP = "100.87.121.69";
 

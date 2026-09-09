@@ -12,19 +12,12 @@ in {
   };
 
   config = lib.mkIf cfg.nginxProxy.enable {
-    # DuckDNS token for ACME DNS-01 challenge
-    sops.secrets.duckdns_token = {
-      owner = "acme";
-      group = "acme";
-      mode = "0400";
-    };
-
-    sops.templates."acme-duckdns.env" = {
+    sops.templates."acme-cloudflare.env" = {
       owner = "acme";
       group = "acme";
       mode = "0400";
       content = ''
-        DUCKDNS_TOKEN=${config.sops.placeholder.duckdns_token}
+        CF_DNS_API_TOKEN=${config.sops.placeholder.cloudflare_dns_api_token}
       '';
     };
 
@@ -43,10 +36,8 @@ in {
           ++ lib.optionals cfg.t3code.enable [cfg.t3code.domain]
           ++ lib.optionals cfg.actual.enable [cfg.actual.domain]
           ++ lib.optionals cfg.openWebui.enable [cfg.openWebui.domain];
-        dnsProvider = "duckdns";
-        environmentFile = config.sops.templates."acme-duckdns.env".path;
-        # Disable local propagation check — Let's Encrypt validates directly
-        dnsPropagationCheck = false;
+        dnsProvider = "cloudflare";
+        environmentFile = config.sops.templates."acme-cloudflare.env".path;
       };
     };
 

@@ -17,7 +17,7 @@ in {
     localDomainIP = lib.mkOption {
       type = lib.types.str;
       default = config.myVars.lan.serverIP;
-      description = "IP address to resolve local DuckDNS domains to via dnsmasq. Should be the Tailscale IP if you want cross-network access from tailnet devices.";
+      description = "IP address to resolve the homelab domain to via dnsmasq. Should be the Tailscale IP if you want cross-network access from tailnet devices.";
     };
 
     upstreamDNS = lib.mkOption {
