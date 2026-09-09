@@ -25,6 +25,10 @@
         "browser.contentblocking.category" = "standard";
         "extensions.pictureinpicture.enable_picture_in_picture_overrides" = true;
 
+        # Memory management
+        "browser.tabs.unloadOnLowMemory" = true;
+        "browser.sessionstore.restore_pinned_tabs_on_demand" = true;
+
         # Zen-specific
         "zen.view.compact.enable-at-startup" = false;
         "zen.view.compact.should-enable-at-startup" = true;
