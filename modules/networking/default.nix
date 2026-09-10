@@ -27,6 +27,16 @@ in {
         default = false;
         description = "Enable Tailscale SSH server (--ssh flag)";
       };
+
+      operatorUser = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = ''
+          User allowed to run tailscale commands without sudo. This grants
+          control over the whole node, not only over Serve mappings.
+        '';
+        example = "kevin";
+      };
     };
   };
 
@@ -47,7 +57,9 @@ in {
       tailscale = lib.mkIf cfg.networking.tailscale.enable {
         enable = true;
         inherit (cfg.networking.tailscale) openFirewall;
-        extraSetFlags = lib.optional cfg.networking.tailscale.ssh "--ssh";
+        extraSetFlags =
+          lib.optional cfg.networking.tailscale.ssh "--ssh"
+          ++ lib.optional (cfg.networking.tailscale.operatorUser != null) "--operator=${cfg.networking.tailscale.operatorUser}";
       };
 
       openssh.enable = true;
