@@ -213,12 +213,16 @@ This binds the OpenCode web UI to all interfaces, making it immediately reachabl
 ## 🤖 T3 Code on Every NixOS Host
 
 Every NixOS host runs its own T3 Code server (`modules/t3code/`) as the normal
-user. The backend stays on `127.0.0.1:3773` and Tailscale Serve publishes it as
-HTTPS on the host's MagicDNS name:
+user, with the backend on `127.0.0.1:3773`. The laptops publish it as HTTPS on
+their MagicDNS name through Tailscale Serve:
 
-- `https://uribo-btw.<tailnet>.ts.net`
 - `https://kebean.<tailnet>.ts.net`
 - `https://beans-btw.<tailnet>.ts.net`
+
+The server keeps using nginx on `t3code.beanhaven.net` instead. Tailscale Serve
+would take port 443 on the host's tailnet address, which is the same address and
+port every homelab domain already resolves to, so enabling it there breaks
+Vaultwarden, Pi-hole and the rest along with it.
 
 The browser at `t3code.beanhaven.net` talks to each host directly, so
 `uribo-btw` never proxies agent traffic for the others. Every machine owns its

@@ -76,7 +76,6 @@
         enable = true;
         openFirewall = true;
         ssh = true;
-        operatorUser = "uribo";
       };
     };
 
@@ -85,10 +84,7 @@
       inherit profile;
     };
 
-    t3code = {
-      enable = true;
-      tailscaleServe.enable = true;
-    };
+    t3code.enable = true;
   };
 
   myHomelab = {
