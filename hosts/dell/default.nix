@@ -16,6 +16,7 @@
     ../../modules/input
     ../../modules/audio
     ../../modules/bluetooth
+    ../../modules/t3code
   ];
 
   time.timeZone = "Asia/Tokyo";
@@ -48,12 +49,18 @@
       tailscale = {
         enable = true;
         ssh = false;
+        operatorUser = "kevin";
       };
     };
 
     power = {
       enable = true;
       inherit profile;
+    };
+
+    t3code = {
+      enable = true;
+      tailscaleServe.enable = true;
     };
   };
 
