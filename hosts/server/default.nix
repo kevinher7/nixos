@@ -14,6 +14,7 @@
     ../../modules/power
     ../../modules/secrets
     ../../modules/services
+    ../../modules/t3code
   ];
 
   myVars = {
@@ -82,6 +83,8 @@
       enable = true;
       inherit profile;
     };
+
+    t3code.enable = true;
   };
 
   myHomelab = {

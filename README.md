@@ -99,6 +99,7 @@ Reusable, domain-specific system modules. These are pure NixOS configurations gr
 - **`core/`** — Base system settings, package sets, and user definitions.
 - **`networking/`** — NetworkManager, firewall, and Tailscale options.
 - **`services/`** — Home lab services (Vaultwarden, Pi-hole, native Nginx reverse proxy).
+- **`t3code/`** — The T3 Code headless server, imported by every NixOS host.
 - **`desktop/`**, **`audio/`**, **`input/`** — Hardware and user-interface layers for the laptop profile.
 - **`theming/`**, **`login/`**, **`power/`**, **`secrets/`** — Stylix, display managers, power profiles, and sops-nix integration.
 
@@ -208,6 +209,52 @@ och
 ```
 
 This binds the OpenCode web UI to all interfaces, making it immediately reachable over Tailscale without any extra firewall fuss.
+
+## 🤖 T3 Code on Every NixOS Host
+
+Every NixOS host runs its own T3 Code server (`modules/t3code/`) as the normal
+user, with the backend on `127.0.0.1:3773`. The laptops publish it as HTTPS on
+their MagicDNS name through Tailscale Serve:
+
+- `https://kebean.<tailnet>.ts.net`
+- `https://beans-btw.<tailnet>.ts.net`
+
+The server keeps using nginx on `t3code.beanhaven.net` instead. Tailscale Serve
+would take port 443 on the host's tailnet address, which is the same address and
+port every homelab domain already resolves to, so enabling it there breaks
+Vaultwarden, Pi-hole and the rest along with it.
+
+The browser at `t3code.beanhaven.net` talks to each host directly, so
+`uribo-btw` never proxies agent traffic for the others. Every machine owns its
+projects, provider logins and sessions. Agents run in `~/projects`, and state
+lives in `/var/lib/t3code`.
+
+### Pairing a Host
+
+Tailscale Serve mappings can only be changed by the node operator, which is why
+`myModules.networking.tailscale.operatorUser` names the T3 Code user. Be aware
+that the operator can drive the whole `tailscale` CLI, not only Serve mappings.
+
+Pair each host once, as the service user rather than root, so the credentials
+land in the same state directory the service uses:
+
+```bash
+sudo -u kevin t3 pair --tailscale --base-dir /var/lib/t3code
+```
+
+Open the printed link in the browser profile you use for
+`t3code.beanhaven.net` and label the environment with the hostname. Pairing
+survives service restarts and reboots. Clearing site data or switching browser
+profile means pairing again. Use `t3 auth` to list or revoke old sessions.
+
+Providers authenticate per host, so `codex` and `claude` need a login on each
+machine as that machine's user.
+
+### Turning It Off
+
+Set `myModules.t3code.enable = false` on the host and rebuild, then drop the
+mapping with `tailscale serve --https=443 off`. Leave `/var/lib/t3code` alone so
+the environment and its sessions stay recoverable.
 
 ## License
 
