@@ -52,7 +52,7 @@ in {
 
     workingDirectory = lib.mkOption {
       type = lib.types.str;
-      default = "/home/${cfg.user}/nixos-config";
+      default = "/home/${cfg.user}/projects";
       description = "Directory provider sessions start in and the project picker opens at.";
     };
 
@@ -116,6 +116,7 @@ in {
 
     systemd.tmpfiles.rules = [
       "d ${cfg.baseDir} 0700 ${cfg.user} users - -"
+      "d ${cfg.workingDirectory} 0755 ${cfg.user} users - -"
     ];
   };
 }
