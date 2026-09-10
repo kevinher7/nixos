@@ -7,6 +7,7 @@
     qutebrowser.enable = true;
     rquickshare.enable = true;
     nixvim.enable = true;
+    t3code.cli.enable = true;
   };
 
   home.packages = with pkgs; [
