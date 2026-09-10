@@ -81,7 +81,7 @@ in {
                   href = "https://${cfg.t3code.domain}";
                   icon = "https://${cfg.t3code.domain}/favicon.ico";
                   description = "Headless coding agent UI";
-                  siteMonitor = "http://${cfg.t3code.host}:${toString cfg.t3code.port}";
+                  siteMonitor = "http://${config.myModules.t3code.host}:${toString config.myModules.t3code.port}";
                 };
               }
             ]
