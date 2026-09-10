@@ -8,6 +8,15 @@
 }: let
   cfg = config.myModules.t3code;
   t3Packages = inputs.t3code.packages.${pkgs.stdenv.hostPlatform.system};
+
+  # `t3 serve` only logs a warning when it cannot reach tailscaled, so without
+  # this wait the unit comes up healthy while nothing answers on the tailnet.
+  waitForTailscale = pkgs.writeShellScript "t3code-wait-for-tailscale" ''
+    until ${lib.getExe pkgs.tailscale} status --json --peers=false |
+      ${lib.getExe pkgs.jq} -e '.BackendState == "Running"' >/dev/null; do
+      sleep 1
+    done
+  '';
 in {
   options.myModules.t3code = {
     enable = lib.mkEnableOption "T3 Code headless server";
@@ -46,28 +55,60 @@ in {
       default = "/home/${cfg.user}/nixos-config";
       description = "Directory provider sessions start in and the project picker opens at.";
     };
+
+    tailscaleServe = {
+      enable = lib.mkEnableOption "publishing the T3 Code server over Tailscale Serve";
+
+      httpsPort = lib.mkOption {
+        type = lib.types.port;
+        default = 443;
+        description = "HTTPS port Tailscale Serve publishes the server on.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.tailscaleServe.enable -> config.myModules.networking.tailscale.operatorUser == cfg.user;
+        message = "myModules.t3code.tailscaleServe needs myModules.networking.tailscale.operatorUser set to \"${cfg.user}\", otherwise tailscale serve is denied and the server stays unreachable.";
+      }
+    ];
+
     systemd.services.t3code = {
       description = "T3 Code headless server";
-      after = ["network.target"];
+      after =
+        ["network.target"]
+        ++ lib.optionals cfg.tailscaleServe.enable ["tailscaled.service" "tailscaled-set.service"];
+      wants = lib.optionals cfg.tailscaleServe.enable ["tailscaled.service"];
       wantedBy = ["multi-user.target"];
 
       serviceConfig = {
         Type = "simple";
         User = cfg.user;
         Environment = "PATH=${
-          lib.makeBinPath [
-            pkgs.bashInteractive
-            pkgs.coreutils
-            pkgs.git
-            pkgs.nodejs
-            pkgs.openssh
-          ]
+          lib.makeBinPath ([
+              pkgs.bashInteractive
+              pkgs.coreutils
+              pkgs.git
+              pkgs.nodejs
+              pkgs.openssh
+            ]
+            ++ lib.optional cfg.tailscaleServe.enable pkgs.tailscale)
         }:/run/current-system/sw/bin:/etc/profiles/per-user/${cfg.user}/bin:/home/${cfg.user}/.nix-profile/bin";
         WorkingDirectory = cfg.workingDirectory;
-        ExecStart = "${lib.getExe cfg.package} serve --host ${cfg.host} --port ${toString cfg.port} --base-dir ${cfg.baseDir}";
+        ExecStartPre = lib.optional cfg.tailscaleServe.enable waitForTailscale;
+        ExecStart = lib.concatStringsSep " " ([
+            (lib.getExe cfg.package)
+            "serve"
+            "--host ${cfg.host}"
+            "--port ${toString cfg.port}"
+            "--base-dir ${cfg.baseDir}"
+          ]
+          ++ lib.optionals cfg.tailscaleServe.enable [
+            "--tailscale-serve"
+            "--tailscale-serve-port ${toString cfg.tailscaleServe.httpsPort}"
+          ]);
         Restart = "on-failure";
         RestartSec = 5;
       };
