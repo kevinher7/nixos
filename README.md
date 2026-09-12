@@ -192,6 +192,10 @@ for every enabled harness. Claude and OpenCode also get `/nix-lint`.
 `myPrograms.agents.work-toolkit.enable` installs the Claude-only work plugin on
 the macbook, exposing its namespaced commands, skills, and specialist agents.
 Update the `agent-toolkit` flake input and rebuild to deploy content changes.
+While the toolkit is private, configure GitHub read access for Nix outside this
+repository on each fetching host and in CI. Do not embed tokens in the flake.
+Private toolkit content enters the Nix store; avoid publishing it to public
+binary caches.
 
 Before the first switch, back up and remove obsolete loose skills, agents, and
 commands that have moved into the work plugin; Home Manager does not remove
