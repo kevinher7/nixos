@@ -156,6 +156,10 @@
     formatter = forEachSystem treefmtFor;
 
     checks = forEachSystem (sys: {
+      agents = import ./tests/agents.nix {
+        inherit self;
+        pkgs = nixpkgs.legacyPackages.${sys};
+      };
       pre-commit-check = git-hooks-nix.lib.${sys}.run {
         src = ./.;
         inherit

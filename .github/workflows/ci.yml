@@ -28,6 +28,9 @@ jobs:
       - name: Run pre-commit checks
         run: nix build .#checks.x86_64-linux.pre-commit-check
 
+      - name: Check agent host policy and configuration
+        run: nix build .#checks.x86_64-linux.agents
+
   # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
   # so we evaluate it here as a safety net. The Linux hosts are covered by `build`.
   eval:
