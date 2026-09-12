@@ -7,7 +7,10 @@
     qutebrowser.enable = true;
     rquickshare.enable = true;
     nixvim.enable = true;
-    opencode.enable = true;
+    agents = {
+      codex.enable = true;
+      opencode.enable = true;
+    };
     t3code.cli.enable = true;
     zen-browser.enable = true;
   };

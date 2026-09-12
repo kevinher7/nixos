@@ -8,7 +8,7 @@
     ./rquickshare.nix
     ./tmux.nix
     ./nixvim
-    ./opencode
+    ./agents
     ./openvpn
     ./t3code.nix
     ./zen-browser
@@ -23,7 +23,12 @@
     rquickshare.enable = lib.mkEnableOption "rquickshare file sharing";
     tmux.enable = lib.mkEnableOption "tmux terminal multiplexer";
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
-    opencode.enable = lib.mkEnableOption "opencode AI assistant";
+    agents = {
+      claude-code.enable = lib.mkEnableOption "Claude Code CLI (macbook only)";
+      codex.enable = lib.mkEnableOption "Codex CLI";
+      opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
+      work-toolkit.enable = lib.mkEnableOption "Claude-only work toolkit on the macbook";
+    };
     openvpn.enable = lib.mkEnableOption "openvpn split-tunnel wrapper (ovpn/ovpn-down/ovpn-status)";
     t3code = {
       cli.enable = lib.mkEnableOption "t3code CLI (`t3 serve`)";

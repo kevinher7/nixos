@@ -9,9 +9,9 @@
   osConfig,
   ...
 }: let
-  cfg = config.myPrograms.opencode;
+  cfg = config.myPrograms.agents;
 in {
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf cfg.opencode.enable (
     {
       home.packages = with pkgs; [
         prettier
@@ -21,9 +21,11 @@ in {
       programs.opencode = {
         enable = true;
         package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
+        context = ./CONTEXT.md;
+        skills = "${inputs.agent-toolkit}/skills";
 
         commands = {
-          lint = ./commands/lint.md;
+          nix-lint = builtins.readFile "${inputs.agent-toolkit}/commands/nix-lint.md";
         };
 
         settings = {

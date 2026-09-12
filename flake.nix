@@ -49,6 +49,11 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    agent-toolkit = {
+      url = "github:kevinher7/agent-toolkit";
+      flake = false;
+    };
+
     t3code = {
       url = "github:kevinher7/t3code/personal";
       inputs.nixpkgs.follows = "nixpkgs";
