@@ -10,7 +10,7 @@
   agentPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 in {
   config = lib.mkIf cfg.claude-code.enable {
-    home.packages = [pkgs.python3 pkgs.jq pkgs.rtk];
+    home.packages = [pkgs.jq pkgs.rtk];
 
     home.file = {
       ".claude/RTK.md".source = ./RTK.md;
