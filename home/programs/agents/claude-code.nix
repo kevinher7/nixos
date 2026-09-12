@@ -3,7 +3,6 @@
   inputs,
   pkgs,
   lib,
-  osFamily,
   ...
 }: let
   cfg = config.myPrograms.agents;
@@ -11,7 +10,7 @@
   agentPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 in {
   config = lib.mkIf cfg.claude-code.enable {
-    home.packages = [pkgs.python3 pkgs.jq pkgs.rtk agentPkgs.herdr];
+    home.packages = [pkgs.python3 pkgs.jq pkgs.rtk];
 
     home.file = {
       ".claude/RTK.md".source = ./RTK.md;
@@ -97,18 +96,6 @@ in {
                 {
                   type = "command";
                   command = "${lib.getExe pkgs.rtk} hook claude";
-                }
-              ];
-            }
-          ];
-          SessionStart = lib.mkIf (osFamily == "darwin") [
-            {
-              matcher = "*";
-              hooks = [
-                {
-                  type = "command";
-                  command = "${lib.getExe pkgs.bash} ${lib.escapeShellArg "${claudeDir}/hooks/herdr-agent-state.sh"} session";
-                  timeout = 10;
                 }
               ];
             }

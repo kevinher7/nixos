@@ -16,6 +16,7 @@ bulk-port skills or silently choose between harness-specific workflows.
 - `nixos` owns packages, settings, global `CONTEXT.md`, integration hooks,
   dependencies, and host enablement.
 - Claude Code and the work plugin belong **only on the macbook**.
+- Remove herdr entirely: no package, hook file, or SessionStart integration.
 - Preserve the Chromebook's current setup: Codex, but no Claude or OpenCode.
 - No content migration or live activation is authorized by this handoff alone.
 
@@ -152,7 +153,7 @@ Do not retire the null-source transition until all consumers can fetch the input
 
 ### Configuration ownership
 
-- Claude settings, formatting/herdr hooks, RTK instructions, and status line are
+- Claude settings, formatting hook, RTK instructions, and status line are
   Nix-owned. Runtime writes to those files must not compete with Home Manager.
 - RTK's activation-time `init` is removed rather than allowed to patch settings
   or context. The RTK PreToolUse hook remains declarative.
@@ -178,7 +179,10 @@ Do not retire the null-source transition until all consumers can fetch the input
       declaration does not ensure an already-installed cask is uninstalled.
       Check whether Kevin wants the bundled desktop app retained separately.
 - [ ] Activate on the macbook; check `type -a claude codex opencode` and versions.
-- [ ] Test formatting, status line, RTK rewriting, and herdr in a real session.
+- [ ] Test formatting, status line, and RTK rewriting in a real session.
+- [ ] Remove the obsolete local `~/.claude/hooks/herdr-agent-state.sh` after
+      backup; the new configuration does not install it or invoke it. Confirm
+      herdr is absent from the active Nix profile after switching.
 - [ ] Test baseline skills in each enabled harness and work workflows in Claude.
 - [ ] Verify Claude plugin agents are discovered through Home Manager symlinks.
 - [ ] Verify OpenCode uses `~/.config/opencode/skills/` (plural).

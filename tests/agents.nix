@@ -42,7 +42,8 @@
     noCodexCask = lib.all (cask: cask.name != "codex") macbookSystem.config.homebrew.casks;
     noRtkInit = !(macbook.home.activation ? rtkInit);
     rtkHook = lib.hasSuffix "/bin/rtk hook claude" (builtins.head (builtins.head macbook.programs.claude-code.settings.hooks.PreToolUse).hooks).command;
-    herdrHook = builtins.length macbook.programs.claude-code.settings.hooks.SessionStart == 1;
+    noHerdrHook = !(macbook.programs.claude-code.settings.hooks ? SessionStart);
+    noHerdrPackage = lib.all (home: lib.all (package: lib.getName package != "herdr") home.home.packages) ([macbook] ++ linuxHomes);
     noSourceNoPlugin = withoutSource.programs.claude-code.plugins == {};
     noSourceNoSkills = withoutSource.programs.claude-code.skills == {} && withoutSource.programs.codex.skills == {} && withoutSource.programs.opencode.skills == {};
     preserveCodexSettings = withoutSource.programs.codex.settings == null;
@@ -60,7 +61,6 @@ in
     pkgs.runCommand "agent-configuration-check" {
       nativeBuildInputs = [pkgs.python3 pkgs.bash pkgs.jq];
     } ''
-      bash -n ${../home/programs/agents/hooks/herdr-agent-state.sh}
       bash -n ${../home/programs/agents/statusline-context.sh}
       python3 -c 'import ast, pathlib, sys; ast.parse(pathlib.Path(sys.argv[1]).read_text())' \
         ${../home/programs/agents/hooks/format-on-save.py}
