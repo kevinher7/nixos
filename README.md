@@ -189,8 +189,8 @@ settings, hooks, status line, and RTK integration are declarative; do not run
 The separate `agent-toolkit` repository will supply reusable content through a
 pinned non-flake input. Until it is populated and connected,
 `myPrograms.agents.toolkitSource` is null, existing skills are left unmanaged,
-and the work plugin is not installed. See [MIGRATION_PLAN.md](MIGRATION_PLAN.md)
-for the content inventory, integration contract, and first-switch checklist.
+and the work plugin is not installed. `myPrograms.agents.work-toolkit.enable`
+controls the macbook-only work content once the toolkit source is configured.
 Do not switch without backing up conflicting local files. The removed Homebrew
 Codex cask may also need an explicit uninstall to stop shadowing the Nix CLI.
 

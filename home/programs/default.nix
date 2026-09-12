@@ -31,7 +31,7 @@
       claude-code.enable = lib.mkEnableOption "Claude Code CLI (macbook only)";
       codex.enable = lib.mkEnableOption "Codex CLI";
       opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
-      work.enable = lib.mkEnableOption "Claude-only work plugin on the macbook";
+      work-toolkit.enable = lib.mkEnableOption "Claude-only work toolkit on the macbook";
       toolkitSource = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
         default =

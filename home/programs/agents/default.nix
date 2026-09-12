@@ -19,13 +19,13 @@ in {
       message = "Claude Code is supported only on the macbook profile.";
     }
     {
-      assertion = !cfg.work.enable || cfg.claude-code.enable;
+      assertion = !cfg.work-toolkit.enable || cfg.claude-code.enable;
       message = "The work plugin requires myPrograms.agents.claude-code.enable.";
     }
   ];
 
-  warnings = lib.optional (cfg.work.enable && cfg.toolkitSource == null) ''
+  warnings = lib.optional (cfg.work-toolkit.enable && cfg.toolkitSource == null) ''
     The agent-toolkit source is not configured. The work plugin is not installed;
-    existing loose content is unchanged. Complete MIGRATION_PLAN.md before cutover.
+    existing loose content is unchanged. Complete the attended content migration before cutover.
   '';
 }

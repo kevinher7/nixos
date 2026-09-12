@@ -25,7 +25,7 @@ in {
       skills = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/skills";
       agentsDir = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/agents";
       commandsDir = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/commands";
-      plugins = lib.mkIf (cfg.work.enable && cfg.toolkitSource != null) {
+      plugins = lib.mkIf (cfg.work-toolkit.enable && cfg.toolkitSource != null) {
         work = "${cfg.toolkitSource}/plugins/work";
       };
 

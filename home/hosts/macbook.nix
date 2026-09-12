@@ -10,7 +10,7 @@
       claude-code.enable = true;
       codex.enable = true;
       opencode.enable = true;
-      work.enable = true;
+      work-toolkit.enable = true;
     };
     t3code = {
       cli.enable = true;
