@@ -30,6 +30,12 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    sops.secrets.github_runner_token = {
+      owner = "root";
+      group = "root";
+      mode = "0400";
+    };
+
     # nixos-containers bind-mounts /nix/store and the daemon socket from the
     # host, so builds run under the host nix-daemon. Container resource limits
     # isolate workflow shell steps only; they do not constrain those builds.

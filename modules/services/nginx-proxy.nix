@@ -12,6 +12,12 @@ in {
   };
 
   config = lib.mkIf cfg.nginxProxy.enable {
+    sops.secrets.cloudflare_dns_api_token = {
+      owner = "acme";
+      group = "acme";
+      mode = "0400";
+    };
+
     sops.templates."acme-cloudflare.env" = {
       owner = "acme";
       group = "acme";

@@ -148,6 +148,13 @@ in {
   };
 
   config = lib.mkIf cfg.pihole.enable {
+    sops.secrets.pihole_password = {
+      neededForUsers = false;
+      owner = "pihole";
+      group = "pihole";
+      mode = "0400";
+    };
+
     sops.templates."pihole.toml" = {
       owner = "pihole";
       group = "pihole";
