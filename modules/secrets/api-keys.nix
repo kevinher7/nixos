@@ -16,7 +16,7 @@ in {
       openrouter_api_key = apiKey;
     };
 
-    templates."llm.env" = {
+    templates."opencode.env" = {
       owner = username;
       mode = "0400";
       content = ''
