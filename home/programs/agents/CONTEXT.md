@@ -8,4 +8,3 @@
   the task or user calls for it. A little duplication is cheaper than the wrong
   abstraction.
 - Follow YAGNI: solve the current problem instead of speculative future needs.
-- Use the unslop skill for code cleanup when it is available.
