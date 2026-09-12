@@ -22,13 +22,10 @@ in {
         enable = true;
         package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
         context = ./CONTEXT.md;
-        skills = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/skills";
+        skills = "${inputs.agent-toolkit}/skills";
 
         commands = {
-          lint =
-            if cfg.toolkitSource == null
-            then ./commands/lint.md
-            else builtins.readFile "${cfg.toolkitSource}/commands/lint.md";
+          nix-lint = builtins.readFile "${inputs.agent-toolkit}/commands/nix-lint.md";
         };
 
         settings = {

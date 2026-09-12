@@ -13,6 +13,6 @@ in {
     context = ./CONTEXT.md;
     # Preserve local MCP/plugin/project settings until the attended cutover.
     settings = null;
-    skills = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/skills";
+    skills = "${inputs.agent-toolkit}/skills";
   };
 }

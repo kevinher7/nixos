@@ -23,9 +23,4 @@ in {
       message = "The work plugin requires myPrograms.agents.claude-code.enable.";
     }
   ];
-
-  warnings = lib.optional (cfg.work-toolkit.enable && cfg.toolkitSource == null) ''
-    The agent-toolkit source is not configured. The work plugin is not installed;
-    existing loose content is unchanged. Complete the attended content migration before cutover.
-  '';
 }

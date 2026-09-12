@@ -22,11 +22,10 @@ in {
       package = agentPkgs.claude-code;
       context = builtins.readFile ./CONTEXT.md + "\n@RTK.md\n";
       hooksDir = ./hooks;
-      skills = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/skills";
-      agentsDir = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/agents";
-      commandsDir = lib.mkIf (cfg.toolkitSource != null) "${cfg.toolkitSource}/commands";
-      plugins = lib.mkIf (cfg.work-toolkit.enable && cfg.toolkitSource != null) {
-        work = "${cfg.toolkitSource}/plugins/work";
+      skills = "${inputs.agent-toolkit}/skills";
+      commandsDir = "${inputs.agent-toolkit}/commands";
+      plugins = lib.mkIf cfg.work-toolkit.enable {
+        work = "${inputs.agent-toolkit}/plugins/work";
       };
 
       settings = {

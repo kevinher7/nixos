@@ -186,11 +186,17 @@ settings, hooks, status line, and RTK integration are declarative; do not run
 `rtk init` or integration installers that rewrite those files. Codex's existing
 `config.toml` remains unmanaged pending its attended settings migration.
 
-The separate `agent-toolkit` repository will supply reusable content through a
-pinned non-flake input. Until it is populated and connected,
-`myPrograms.agents.toolkitSource` is null, existing skills are left unmanaged,
-and the work plugin is not installed. `myPrograms.agents.work-toolkit.enable`
-controls the macbook-only work content once the toolkit source is configured.
+The [agent-toolkit](https://github.com/kevinher7/agent-toolkit) repository supplies
+reusable content through a pinned non-flake input. Its shared skills are installed
+for every enabled harness. Claude and OpenCode also get `/nix-lint`.
+`myPrograms.agents.work-toolkit.enable` installs the Claude-only work plugin on
+the macbook, exposing its namespaced commands, skills, and specialist agents.
+Update the `agent-toolkit` flake input and rebuild to deploy content changes.
+
+Before the first switch, back up and remove obsolete loose skills, agents, and
+commands that have moved into the work plugin; Home Manager does not remove
+previously unmanaged files. Verify other harnesses do not discover leftover work
+content through Claude's directories.
 Do not switch without backing up conflicting local files. The removed Homebrew
 Codex cask may also need an explicit uninstall to stop shadowing the Nix CLI.
 

@@ -1,8 +1,4 @@
-{
-  lib,
-  inputs,
-  ...
-}: {
+{lib, ...}: {
   imports = [
     ./ghostty.nix
     ./alacritty.nix
@@ -32,18 +28,6 @@
       codex.enable = lib.mkEnableOption "Codex CLI";
       opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
       work-toolkit.enable = lib.mkEnableOption "Claude-only work toolkit on the macbook";
-      toolkitSource = lib.mkOption {
-        type = lib.types.nullOr lib.types.path;
-        default =
-          if inputs ? agent-toolkit
-          then inputs.agent-toolkit.outPath
-          else null;
-        defaultText = lib.literalExpression "inputs.agent-toolkit.outPath or null";
-        description = ''
-          Agent toolkit source with skills/, agents/, commands/, and plugins/work/.
-          Null leaves existing content unmanaged during the attended migration.
-        '';
-      };
     };
     openvpn.enable = lib.mkEnableOption "openvpn split-tunnel wrapper (ovpn/ovpn-down/ovpn-status)";
     t3code = {
