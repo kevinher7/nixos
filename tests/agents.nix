@@ -43,7 +43,7 @@
     noRtkInit = !(macbook.home.activation ? rtkInit);
     rtkHook = lib.hasSuffix "/bin/rtk hook claude" (builtins.head (builtins.head macbook.programs.claude-code.settings.hooks.PreToolUse).hooks).command;
     noHerdrHook = !(macbook.programs.claude-code.settings.hooks ? SessionStart);
-    noHerdrPackage = lib.all (home: lib.all (package: lib.getName package != "herdr") home.home.packages) ([macbook] ++ linuxHomes);
+    noHerdrHookFile = !(builtins.pathExists ../home/programs/agents/hooks/herdr-agent-state.sh);
     noSourceNoPlugin = withoutSource.programs.claude-code.plugins == {};
     noSourceNoSkills = withoutSource.programs.claude-code.skills == {} && withoutSource.programs.codex.skills == {} && withoutSource.programs.opencode.skills == {};
     preserveCodexSettings = withoutSource.programs.codex.settings == null;
