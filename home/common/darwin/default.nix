@@ -1,13 +1,8 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./zsh.nix
     ./starship.nix
     ./stylix.nix
-    ./rtk.nix
   ];
 
   home.packages = with pkgs; [
@@ -15,7 +10,6 @@
     bun
     cmake
     ninja
-    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.herdr
     fnm
     gitleaks
     google-cloud-sdk

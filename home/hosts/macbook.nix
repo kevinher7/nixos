@@ -6,7 +6,12 @@
   myPrograms = {
     ghostty.enable = true;
     nixvim.enable = true;
-    opencode.enable = true;
+    agents = {
+      claude-code.enable = true;
+      codex.enable = true;
+      opencode.enable = true;
+      work-toolkit.enable = true;
+    };
     t3code = {
       cli.enable = true;
       desktop.enable = true;

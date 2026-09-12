@@ -174,9 +174,35 @@ This split-DNS route avoids affected local resolvers without overriding DNS for 
 
 ---
 
+## Coding agents
+
+`home/programs/agents/` configures the coding harnesses through
+`myPrograms.agents`. Codex is enabled on every host; Claude Code and its Neovim
+integration are macbook-only. OpenCode runs on the macbook, Dell, and server,
+with the web service enabled only on the server.
+
+Shared global instructions live in `home/programs/agents/CONTEXT.md`. Claude's
+settings, hooks, status line, and RTK integration are declarative; do not run
+`rtk init` or integration installers that rewrite those files. Codex's existing
+`config.toml` remains unmanaged pending its attended settings migration.
+
+The [agent-toolkit](https://github.com/kevinher7/agent-toolkit) repository supplies
+reusable content through a pinned non-flake input. Its shared skills are installed
+for every enabled harness. Claude and OpenCode also get `/nix-lint`.
+`myPrograms.agents.work-toolkit.enable` installs the Claude-only work plugin on
+the macbook, exposing its namespaced commands, skills, and specialist agents.
+Update the `agent-toolkit` flake input and rebuild to deploy content changes.
+
+Before the first switch, back up and remove obsolete loose skills, agents, and
+commands that have moved into the work plugin; Home Manager does not remove
+previously unmanaged files. Verify other harnesses do not discover leftover work
+content through Claude's directories.
+Do not switch without backing up conflicting local files. The removed Homebrew
+Codex cask may also need an explicit uninstall to stop shadowing the Nix CLI.
+
 ## 💻 Using OpenCode from a Tailscale-Connected Host
 
-OpenCode is configured to run as a **systemd user service** on the server (`home/programs/opencode/`), binding to `0.0.0.0` on port `4096`:
+OpenCode is configured to run as a **systemd user service** on the server (`home/programs/agents/opencode.nix`), binding to `0.0.0.0` on port `4096`:
 
 ```nix
 programs.opencode = {

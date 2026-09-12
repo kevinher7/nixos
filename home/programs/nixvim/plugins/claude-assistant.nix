@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
   claude-assistant-nvim = pkgs.vimUtils.buildVimPlugin {
     pname = "claude-assistant.nvim";
     version = "unstable-2026-07-14";
@@ -11,7 +16,7 @@
     };
   };
 in {
-  programs.nixvim = {
+  programs.nixvim = lib.mkIf config.myPrograms.agents.claude-code.enable {
     plugins.claudecode = {
       enable = true;
       # claude-assistant owns claudecode.setup() below so it can inject its

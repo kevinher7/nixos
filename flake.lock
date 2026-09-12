@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "agent-toolkit": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789204476,
+        "narHash": "sha256-TkoT5AeQH4AbgvqjG6LDLpIFlGhF22/AU502aMFFFgg=",
+        "owner": "kevinher7",
+        "repo": "agent-toolkit",
+        "rev": "d991f9635ff4965cf523a3b2871c92484dc178b9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kevinher7",
+        "repo": "agent-toolkit",
+        "type": "github"
+      }
+    },
     "base16": {
       "inputs": {
         "fromYaml": "fromYaml"
@@ -432,6 +448,7 @@
     },
     "root": {
       "inputs": {
+        "agent-toolkit": "agent-toolkit",
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",

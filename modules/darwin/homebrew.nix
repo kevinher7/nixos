@@ -29,7 +29,6 @@ _: {
       "1password-cli"
       "aerospace"
       "cap"
-      "codex"
       "dbeaver-community"
       "ghostty"
       "docker-desktop"
