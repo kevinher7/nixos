@@ -20,7 +20,11 @@ in {
     programs.claude-code = {
       enable = true;
       package = agentPkgs.claude-code;
-      context = builtins.readFile ./CONTEXT.md + "\n@RTK.md\n";
+      context =
+        builtins.readFile ./CONTEXT.md
+        + "\n"
+        + builtins.readFile "${inputs.agent-toolkit}/skills/unslop/SKILL.md"
+        + "\n@RTK.md\n";
       hooksDir = ./hooks;
       skills = "${inputs.agent-toolkit}/skills";
       commandsDir = "${inputs.agent-toolkit}/commands";
