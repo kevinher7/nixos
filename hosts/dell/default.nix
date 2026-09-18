@@ -9,6 +9,7 @@
     ../../modules/desktop/sway
     ../../modules/system
     ../../modules/core
+    ../../modules/secrets
     ../../modules/theming
     ../../modules/networking
     ../../modules/login
