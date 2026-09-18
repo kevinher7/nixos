@@ -22,5 +22,15 @@
     };
 
     stylix.targets.vicinae.enable = true;
+
+    # The packaged entry replaces the server, bypassing the systemd service.
+    xdg.desktopEntries.vicinae = {
+      name = "Vicinae";
+      genericName = "Launcher";
+      exec = "${lib.getExe config.programs.vicinae.package} toggle";
+      icon = "vicinae";
+      terminal = false;
+      categories = ["Utility" "Accessibility"];
+    };
   };
 }
