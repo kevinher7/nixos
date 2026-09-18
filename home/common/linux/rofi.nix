@@ -6,13 +6,9 @@
   programs.rofi = {
     enable = true;
 
-    terminal = "${lib.getExe config.programs.alacritty.package}";
-
-    modes = [
-      "drun"
-    ];
-
-    extraConfig = {
+    settings = {
+      terminal = "${lib.getExe config.programs.alacritty.package}";
+      modes = ["drun"];
       icon-theme = "Papirus";
       show-icons = true;
       drun-display-format = "{icon} {name}";
