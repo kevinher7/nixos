@@ -107,7 +107,10 @@ in {
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
           "${mod}+t" = "floating toggle";
-          "${mod}+space" = "focus mode_toggle";
+          "${mod}+space" =
+            if config.programs.vicinae.enable
+            then "exec ${lib.getExe config.programs.vicinae.package} toggle"
+            else "focus mode_toggle";
           "${mod}+Shift+v" = "splith";
           "${mod}+v" = "splitv";
           "${mod}+Shift+Return" = "layout toggle split";
@@ -149,7 +152,10 @@ in {
           "XF86MonBrightnessUp" = "exec ${lib.getExe pkgs.brightnessctl} set 10%+";
           "XF86MonBrightnessDown" = "exec ${lib.getExe pkgs.brightnessctl} set 10%-";
         }
-        // workspaceBindings;
+        // workspaceBindings
+        // lib.optionalAttrs config.programs.vicinae.enable {
+          "${mod}+Shift+space" = "focus mode_toggle";
+        };
     };
   };
 
