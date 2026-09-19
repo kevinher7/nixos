@@ -8,6 +8,15 @@
     programs.vicinae = {
       enable = true;
       enableFirefoxIntegration = false;
+      extensions = [
+        (pkgs.fetchzip {
+          name = "store.vicinae.bluetooth";
+          url = "https://api.vicinae.com/v1/store/gelei/bluetooth/download";
+          extension = "zip";
+          stripRoot = false;
+          hash = "sha256-tRVUysCT5kVTaoULZF/OJmI8v8OG7PNaZPTIUMJUZCo=";
+        })
+      ];
       systemd = {
         enable = true;
         target = config.wayland.systemd.target;
@@ -16,7 +25,7 @@
         telemetry.system_info = false;
         input_server.enabled = false;
         providers.clipboard.preferences.monitoring = false;
-        providers.scripts.entrypoints."toggle-bluetooth.sh".alias = "bt";
+        providers."store.vicinae.bluetooth".entrypoints.devices.alias = "bt";
         favorites = [];
         search_files_in_root = false;
         pop_to_root_on_close = true;
@@ -27,12 +36,6 @@
     };
 
     stylix.targets.vicinae.enable = false;
-
-    xdg.dataFile."vicinae/scripts/toggle-bluetooth.sh".source = lib.getExe (pkgs.writeShellApplication {
-      name = "toggle-bluetooth";
-      runtimeInputs = [pkgs.bluez pkgs.coreutils];
-      text = builtins.readFile ./vicinae/toggle-bluetooth.sh;
-    });
 
     # The packaged entry replaces the server, bypassing the systemd service.
     xdg.desktopEntries.vicinae = {
