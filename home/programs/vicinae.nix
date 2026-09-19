@@ -27,14 +27,15 @@
 
     xdg.dataFile."vicinae/scripts/toggle-bluetooth.sh".source = lib.getExe (pkgs.writeShellApplication {
       name = "toggle-bluetooth";
-      runtimeInputs = [pkgs.bluez];
+      runtimeInputs = [pkgs.bluez pkgs.coreutils];
       text = ''
         # @vicinae.schemaVersion 1
         # @vicinae.title Toggle Bluetooth
         # @vicinae.mode silent
 
         export LC_ALL=C
-        if ! controller=$(bluetoothctl --timeout 5 show 2>&1); then
+        # Vicinae stops silent commands after 10s; keep the total timeout below it.
+        if ! controller=$(timeout 2s bluetoothctl show 2>&1); then
           printf 'Cannot read Bluetooth adapter: %s\n' "$controller"
           exit 1
         fi
@@ -50,12 +51,12 @@
           exit 1
         fi
 
-        if ! result=$(bluetoothctl --timeout 5 power "$power" 2>&1); then
+        if ! result=$(timeout 4s bluetoothctl power "$power" 2>&1); then
           printf 'Cannot turn Bluetooth %s: %s\n' "$power" "$result"
           exit 1
         fi
 
-        if ! controller=$(bluetoothctl --timeout 5 show 2>&1) ||
+        if ! controller=$(timeout 2s bluetoothctl show 2>&1) ||
            [[ ! $controller =~ Powered:[[:space:]]+$expected ]]; then
           printf 'Bluetooth did not turn %s: %s\n' "$power" "$result"
           exit 1
