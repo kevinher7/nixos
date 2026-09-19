@@ -31,10 +31,10 @@
       text = ''
         # @vicinae.schemaVersion 1
         # @vicinae.title Toggle Bluetooth
-        # @vicinae.mode silent
+        # @vicinae.mode compact
 
         export LC_ALL=C
-        # Vicinae stops silent commands after 10s; keep the total timeout below it.
+        # Vicinae stops compact commands after 10s; keep the total timeout below it.
         if ! controller=$(timeout 2s bluetoothctl show 2>&1); then
           printf 'Cannot read Bluetooth adapter: %s\n' "$controller"
           exit 1
