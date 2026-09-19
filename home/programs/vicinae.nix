@@ -20,10 +20,13 @@
         favorites = [];
         search_files_in_root = false;
         pop_to_root_on_close = true;
+        close_on_focus_loss = true;
+        # Exclusive keyboard focus prevents the launcher from losing focus.
+        launcher_window.layer_shell.keyboard_interactivity = "on_demand";
       };
     };
 
-    stylix.targets.vicinae.enable = true;
+    stylix.targets.vicinae.enable = false;
 
     xdg.dataFile."vicinae/scripts/toggle-bluetooth.sh".source = lib.getExe (pkgs.writeShellApplication {
       name = "toggle-bluetooth";
