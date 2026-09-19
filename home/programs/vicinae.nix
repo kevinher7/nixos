@@ -21,8 +21,8 @@
         search_files_in_root = false;
         pop_to_root_on_close = true;
         close_on_focus_loss = true;
-        # Exclusive keyboard focus prevents the launcher from losing focus.
-        launcher_window.layer_shell.keyboard_interactivity = "on_demand";
+        # Let Sway manage focus so clicking another window dismisses the launcher.
+        launcher_window.layer_shell.enabled = false;
       };
     };
 

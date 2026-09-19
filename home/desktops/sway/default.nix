@@ -69,6 +69,13 @@ in {
       window = {
         border = 2;
         titlebar = false;
+        commands = lib.optionals config.programs.vicinae.enable [
+          {
+            criteria.app_id = "^vicinae$";
+            criteria.title = "^Vicinae Launcher$";
+            command = "floating enable, move position center";
+          }
+        ];
       };
 
       floating = {
