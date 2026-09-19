@@ -11,6 +11,7 @@
     ./agents
     ./openvpn
     ./t3code.nix
+    ./vicinae.nix
     ./zen-browser
   ];
 
@@ -35,5 +36,6 @@
       desktop.enable = lib.mkEnableOption "t3code desktop app (macOS only)";
     };
     zen-browser.enable = lib.mkEnableOption "zen browser (twilight)";
+    vicinae.enable = lib.mkEnableOption "vicinae launcher";
   };
 }

@@ -12,6 +12,7 @@
       opencode.enable = true;
     };
     t3code.cli.enable = true;
+    vicinae.enable = true;
     zen-browser.enable = true;
   };
 
