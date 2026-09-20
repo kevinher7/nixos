@@ -8,15 +8,6 @@
     programs.vicinae = {
       enable = true;
       enableFirefoxIntegration = false;
-      extensions = [
-        (pkgs.fetchzip {
-          name = "store.vicinae.bluetooth";
-          url = "https://api.vicinae.com/v1/store/gelei/bluetooth/download";
-          extension = "zip";
-          stripRoot = false;
-          hash = "sha256-tRVUysCT5kVTaoULZF/OJmI8v8OG7PNaZPTIUMJUZCo=";
-        })
-      ];
       systemd = {
         enable = true;
         target = config.wayland.systemd.target;
@@ -25,7 +16,7 @@
         telemetry.system_info = false;
         input_server.enabled = false;
         providers.clipboard.preferences.monitoring = false;
-        providers."store.vicinae.bluetooth".entrypoints.devices.alias = "bt";
+        providers.applications.entrypoints.bluetui.alias = "bt";
         favorites = [];
         search_files_in_root = false;
         pop_to_root_on_close = true;
@@ -36,6 +27,15 @@
     };
 
     stylix.targets.vicinae.enable = false;
+
+    xdg.desktopEntries.bluetui = {
+      name = "Bluetui";
+      genericName = "Bluetooth Manager";
+      exec = lib.getExe pkgs.bluetui;
+      icon = "bluetooth";
+      terminal = true;
+      categories = ["Utility" "System"];
+    };
 
     # The packaged entry replaces the server, bypassing the systemd service.
     xdg.desktopEntries.vicinae = {
