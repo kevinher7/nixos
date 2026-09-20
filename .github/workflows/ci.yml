@@ -29,6 +29,25 @@ jobs:
       - name: Run pre-commit checks
         run: nix build .#checks.x86_64-linux.pre-commit-check
 
+  # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
+  # so we evaluate it here as a safety net. It stays on a hosted runner so it
+  # runs in parallel with `build` instead of adding to its critical path.
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+        with:
+          determinate: false
+
+      - name: Evaluate macbook configuration
+        run: >
+          nix eval --show-trace
+          '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
+
   # Runs on the self-hosted runner, a NixOS container on uribo-btw sharing the
   # host's /nix/store, so Nix and the host's substituters are already there.
   # Building implies evaluation, so the Linux hosts need no separate eval
@@ -51,13 +70,6 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipAddingSubstituter: true
           useDaemon: false
-
-      # macbook (kebee) is aarch64-darwin and cannot be built on Linux, so it
-      # is evaluated as a safety net.
-      - name: Evaluate macbook configuration
-        run: >
-          nix eval --show-trace
-          '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
 
       # Two eval workers, restarted past 2 GiB each, keep evaluation of all
       # hosts inside the runner container's memory limit.
