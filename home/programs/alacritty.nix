@@ -38,8 +38,8 @@ in {
             action = "Paste";
           }
           {
-            key = "N";
-            mods = "Control|Shift";
+            key = "Enter";
+            mods = "Control";
             action = "CreateNewWindow";
           }
         ];
