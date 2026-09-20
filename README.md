@@ -98,7 +98,7 @@ Reusable, domain-specific system modules. These are pure NixOS configurations gr
 
 - **`core/`** — Base system settings, package sets, and user definitions.
 - **`networking/`** — NetworkManager, firewall, and Tailscale options.
-- **`services/`** — Home lab services (Vaultwarden, Pi-hole, native Nginx reverse proxy).
+- **`services/`** — Home lab services (Vaultwarden, Pi-hole, native Nginx reverse proxy, the CI runner container).
 - **`t3code/`** — The T3 Code headless server, imported by every NixOS host.
 - **`desktop/`**, **`audio/`**, **`input/`** — Hardware and user-interface layers for the laptop profile.
 - **`theming/`**, **`login/`**, **`power/`**, **`secrets/`** — Stylix, display managers, power profiles, and sops-nix integration.
@@ -120,6 +120,7 @@ The server host (`uribo-btw`) acts as a lightweight home lab running native NixO
 - **🗝️ Vaultwarden** — Self-hosted Bitwarden-compatible password manager.
 - **🛑 Pi-hole** — Network-wide ad blocking and local DNS.
 - **🌐 Nginx** — Native reverse proxy with automatic HTTPS via Let's Encrypt (DNS-01 challenge).
+- **🏗️ CI runner** — Self-hosted GitHub Actions runner in a fenced NixOS container that builds the Linux hosts against the server's `/nix/store`.
 
 All machines are connected via **[Tailscale](https://tailscale.com/)**, which forms an encrypted mesh network (tailnet) between devices no matter where they are. This means:
 

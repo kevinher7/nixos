@@ -30,4 +30,4 @@ After installation, the following checks run automatically:
 
 ### CI
 
-On every push and PR, the `lint` job builds `checks.x86_64-linux.pre-commit-check`, which runs the same hooks over the whole tree. The `eval` job evaluates the darwin host (`kebee`), and the `build` job builds the three Linux hosts and pushes the results to Cachix.
+On every push and PR, the `lint` job builds `checks.x86_64-linux.pre-commit-check` on a hosted runner, which runs the same hooks over the whole tree. The `build` job runs on the self-hosted runner (a NixOS container on `uribo-btw` that shares the server's `/nix/store`), evaluates the darwin host (`kebee`), builds the three Linux hosts and pushes the results to Cachix.
