@@ -48,6 +48,15 @@ in {
           extraPackages = [pkgs.git pkgs.cachix];
         };
 
+        # The module only restarts on success (re-registration after each
+        # job). Registration can also fail on boot before host NAT is up, or
+        # outlive the default 90s when GitHub's pipeline endpoint is slow.
+        systemd.services.github-runner-nixos-ci.serviceConfig = {
+          Restart = lib.mkForce "always";
+          RestartSec = "30s";
+          TimeoutStartSec = "5min";
+        };
+
         system.stateVersion = config.system.stateVersion;
       };
     };
