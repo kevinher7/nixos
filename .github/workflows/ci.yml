@@ -14,6 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Stays on a hosted runner so a broken self-hosted runner never blocks lint.
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -28,79 +29,37 @@ jobs:
       - name: Run pre-commit checks
         run: nix build .#checks.x86_64-linux.pre-commit-check
 
-  # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
-  # so we evaluate it here as a safety net. The Linux hosts are covered by `build`.
-  eval:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
-        with:
-          determinate: false
-
-      - name: Evaluate macbook configuration
-        run: >
-          nix eval --show-trace
-          '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
-
-  # Build the x86_64-linux hosts and push the results to Cachix. Building
-  # implies evaluation, so these hosts don't need a separate eval step. Each
-  # host builds in its own matrix job so they run in parallel.
+  # Runs on the self-hosted runner, a NixOS container on uribo-btw sharing the
+  # host's /nix/store, so Nix and the host's substituters are already there.
+  # Building implies evaluation, so the Linux hosts need no separate eval
+  # step. One ephemeral runner would serialize a matrix, so a single
+  # nix-fast-build call builds every nixosConfiguration at once.
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, nixos, x86_64-linux]
     timeout-minutes: 20
-    permissions:
-      contents: read
-      actions: write
-    strategy:
-      matrix:
-        host: [beans-btw, kebean, uribo-btw]
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
-        with:
-          determinate: false
-          # Optimised-store hard links break cache-nix-action restores (nix-community/cache-nix-action#170)
-          extra-conf: auto-optimise-store = false
-
-      - name: Cache Nix store
-        uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
-        with:
-          primary-key: nix-${{ runner.os }}-build-${{ matrix.host }}-${{ hashFiles('flake.lock') }}
-          restore-prefixes-first-match: nix-${{ runner.os }}-build-${{ matrix.host }}-
-          gc-max-store-size-linux: 2G
-          purge: true
-          purge-prefixes: nix-${{ runner.os }}-build-${{ matrix.host }}-
-          purge-created: 0
-          purge-primary-key: never
-
+      # The daemon mode relies on a post-build-hook, which the host nix-daemon
+      # ignores for the untrusted runner user. Push new store paths after the
+      # build instead.
       - name: Setup Cachix
         uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          useDaemon: false
 
-      # Cachix creates a user config whose substituters take precedence over
-      # /etc/nix/nix.conf, so Numtide must be added to that config afterwards.
-      - name: Configure Numtide cache
-        run: |
-          cat <<'EOF' >> "$HOME/.config/nix/nix.conf"
-          extra-substituters = https://cache.numtide.com
-          extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
-          EOF
+      # macbook (kebee) is aarch64-darwin and cannot be built on Linux, so it
+      # is evaluated as a safety net.
+      - name: Evaluate macbook configuration
+        run: >
+          nix eval --show-trace
+          '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
 
-      - name: Verify Numtide cache
-        run: |
-          nix config show substituters | grep --fixed-strings --quiet https://cache.numtide.com
-          nix config show trusted-public-keys | grep --fixed-strings --quiet niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
-
-      - name: Build ${{ matrix.host }} configuration
+      - name: Build NixOS configurations
         run: >
           nix run --inputs-from . nixpkgs#nix-fast-build -- --skip-cached --no-nom
-          --flake '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
+          --flake '.#nixosConfigurations'
+          --select 'hosts: builtins.mapAttrs (_: host: host.config.system.build.toplevel) hosts'

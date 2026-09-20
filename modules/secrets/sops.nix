@@ -18,6 +18,12 @@ _: {
         group = "acme";
         mode = "0400";
       };
+
+      github_runner_token = {
+        owner = "root";
+        group = "root";
+        mode = "0400";
+      };
     };
   };
 }
