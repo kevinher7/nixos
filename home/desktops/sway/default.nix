@@ -5,7 +5,31 @@
   ...
 }: let
   mod = "Mod4";
-  terminal = lib.getExe config.programs.alacritty.package;
+  alacritty = lib.getExe config.programs.alacritty.package;
+  terminal = lib.getExe (pkgs.writeShellApplication {
+    name = "launch-alacritty";
+    runtimeInputs = [pkgs.coreutils pkgs.jq pkgs.procps pkgs.sway];
+    text = ''
+      focused_pid="$(
+        swaymsg -t get_tree \
+          | jq -r '.. | objects | select(.focused == true and .app_id == "Alacritty") | .pid'
+      )"
+
+      working_directory=
+      if [[ -n "$focused_pid" ]]; then
+        shell_pid="$(pgrep -o -P "$focused_pid" || true)"
+        if [[ -n "$shell_pid" ]]; then
+          working_directory="$(readlink "/proc/$shell_pid/cwd" || true)"
+        fi
+      fi
+
+      if [[ -d "$working_directory" ]]; then
+        exec ${alacritty} --working-directory "$working_directory"
+      fi
+
+      exec ${alacritty}
+    '';
+  });
   launcher = "${lib.getExe config.programs.rofi.finalPackage} -show drun";
   lock = "${lib.getExe pkgs.swaylock} -f";
   wallpaper = config.stylix.image;
