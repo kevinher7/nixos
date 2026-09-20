@@ -59,8 +59,11 @@ jobs:
           nix eval --show-trace
           '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
 
+      # Two eval workers, restarted past 2 GiB each, keep evaluation of all
+      # hosts inside the runner container's memory limit.
       - name: Build NixOS configurations
         run: >
           nix run --inputs-from . nixpkgs#nix-fast-build -- --skip-cached --no-nom
+          --eval-workers 2 --eval-max-memory-size 2048
           --flake '.#nixosConfigurations'
           --select 'hosts: builtins.mapAttrs (_: host: host.config.system.build.toplevel) hosts'

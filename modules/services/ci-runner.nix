@@ -87,10 +87,14 @@ in {
     # yield to Pi-hole under contention. nix-daemon is limited too because
     # that is where builds run. MemoryHigh throttles it instead of
     # OOM-killing the server's own rebuilds.
+    #
+    # Evaluation runs inside the container. Without MemorySwapMax=0 a job
+    # that hits MemoryMax thrashes swap for minutes before it is killed.
     systemd.services = {
       "container@ci-runner".serviceConfig = {
         CPUWeight = 20;
-        MemoryMax = "4G";
+        MemoryMax = "6G";
+        MemorySwapMax = 0;
       };
 
       nix-daemon.serviceConfig = {
