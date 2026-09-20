@@ -114,10 +114,6 @@ in {
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
           "${mod}+t" = "floating toggle";
-          "${mod}+space" =
-            if config.programs.vicinae.enable
-            then "exec ${lib.getExe config.programs.vicinae.package} toggle"
-            else "focus mode_toggle";
           "${mod}+Shift+v" = "splith";
           "${mod}+v" = "splitv";
           "${mod}+Shift+Return" = "layout toggle split";
@@ -161,6 +157,7 @@ in {
         }
         // workspaceBindings
         // lib.optionalAttrs config.programs.vicinae.enable {
+          "${mod}+space" = "exec ${lib.getExe config.programs.vicinae.package} toggle";
           "${mod}+Shift+space" = "focus mode_toggle";
         };
     };
