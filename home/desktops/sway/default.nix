@@ -69,6 +69,13 @@ in {
       window = {
         border = 2;
         titlebar = false;
+        commands = lib.optionals config.programs.vicinae.enable [
+          {
+            criteria.app_id = "^vicinae$";
+            criteria.title = "^Vicinae Launcher$";
+            command = "floating enable, move position center";
+          }
+        ];
       };
 
       floating = {
@@ -107,7 +114,6 @@ in {
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
           "${mod}+t" = "floating toggle";
-          "${mod}+space" = "focus mode_toggle";
           "${mod}+Shift+v" = "splith";
           "${mod}+v" = "splitv";
           "${mod}+Shift+Return" = "layout toggle split";
@@ -149,7 +155,11 @@ in {
           "XF86MonBrightnessUp" = "exec ${lib.getExe pkgs.brightnessctl} set 10%+";
           "XF86MonBrightnessDown" = "exec ${lib.getExe pkgs.brightnessctl} set 10%-";
         }
-        // workspaceBindings;
+        // workspaceBindings
+        // lib.optionalAttrs config.programs.vicinae.enable {
+          "${mod}+space" = "exec ${lib.getExe config.programs.vicinae.package} toggle";
+          "${mod}+Shift+space" = "focus mode_toggle";
+        };
     };
   };
 
