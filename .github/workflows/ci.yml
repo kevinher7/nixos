@@ -41,14 +41,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # The daemon mode relies on a post-build-hook, which the host nix-daemon
-      # ignores for the untrusted runner user. Push new store paths after the
-      # build instead.
+      # The runner user is not a trusted Nix user: it cannot add substituters
+      # (the host already declares this cache) and the daemon ignores its
+      # post-build-hook, so push new store paths after the build instead.
       - name: Setup Cachix
         uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipAddingSubstituter: true
           useDaemon: false
 
       # macbook (kebee) is aarch64-darwin and cannot be built on Linux, so it
