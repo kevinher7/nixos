@@ -37,11 +37,6 @@ in {
             mods = "Control";
             action = "Paste";
           }
-          {
-            key = "Enter";
-            mods = "Control";
-            action = "CreateNewWindow";
-          }
         ];
       };
     };
