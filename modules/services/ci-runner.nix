@@ -8,10 +8,12 @@
   tokenFile = config.sops.secrets.github_runner_token.path;
   netns = "ci-runner";
   netnsPath = "/run/netns/${netns}";
+  # tap devices report "state UNKNOWN" even when up, so check the flags and
+  # the default route slirp4netns installs with --configure instead.
   waitForEgress = pkgs.writeShellScript "wait-for-ci-runner-egress" ''
     attempt=0
     while [ "$attempt" -lt 20 ]; do
-      if ${pkgs.iproute2}/bin/ip netns exec ${netns} ${pkgs.iproute2}/bin/ip link show tap0 | ${pkgs.gnugrep}/bin/grep -q "state UP" && [ -n "$(${pkgs.iproute2}/bin/ip netns exec ${netns} ${pkgs.iproute2}/bin/ip route show default)" ]; then
+      if ${pkgs.iproute2}/bin/ip netns exec ${netns} ${pkgs.iproute2}/bin/ip link show tap0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "LOWER_UP" && [ -n "$(${pkgs.iproute2}/bin/ip netns exec ${netns} ${pkgs.iproute2}/bin/ip route show default)" ]; then
         exit 0
       fi
 
@@ -44,11 +46,14 @@ in {
       config = {pkgs, ...}: {
         nix.settings.experimental-features = ["nix-command" "flakes"];
 
+        # The container skips the host network setup service that feeds
+        # networking.nameservers to resolvconf, so write resolv.conf directly.
         networking = {
           enableIPv6 = false;
           useHostResolvConf = false;
-          nameservers = ["1.1.1.1"];
+          resolvconf.enable = false;
         };
+        environment.etc."resolv.conf".text = "nameserver 1.1.1.1\n";
 
         services.github-runners.nixos-ci = {
           enable = true;
