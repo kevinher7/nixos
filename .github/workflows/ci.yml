@@ -6,12 +6,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      use_self_hosted:
-        description: Run Linux builds on the self-hosted runner
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -56,66 +50,29 @@ jobs:
 
   # Build one host at a time to avoid concurrent evaluation and build pressure.
   build:
-    if: github.event_name != 'workflow_dispatch' || inputs.use_self_hosted != true
-    runs-on: ubuntu-latest
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && 'nixos' || 'ubuntu-latest' }}
     timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install Nix
+        if: runner.environment == 'github-hosted'
         uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
         with:
           determinate: false
 
-      - name: Setup Cachix
-        uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
-        with:
-          name: kevinher7-nixos
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: true
-          useDaemon: false
-
-      - name: Build NixOS configurations
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          outputs=()
-          for host in beans-btw kebean uribo-btw; do
-            output=$(nix build \
-              --no-link \
-              --print-out-paths \
-              --max-jobs 1 \
-              --cores 2 \
-              ".#nixosConfigurations.${host}.config.system.build.toplevel")
-            outputs+=("$output")
-          done
-
-          cachix push kevinher7-nixos "${outputs[@]}"
-
-  # This job cannot run unless a maintainer manually opts in. It uses the
-  # prospective runner's exact labels, so normal CI remains on GitHub-hosted
-  # infrastructure while the runner is disabled or under investigation.
-  build-self-hosted:
-    if: github.event_name == 'workflow_dispatch' && inputs.use_self_hosted == true && github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, nixos, x86_64-linux]
-    timeout-minutes: 20
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
       # Store scanning can upload paths created by unrelated host activity.
-      # Push only the system outputs produced below. The runner user is not a
-      # trusted Nix user and the host daemon already has the cache configured,
-      # so do not try to write the substituter into nix.conf.
+      # Push only the system outputs produced below. On the self-hosted runner
+      # the runner user is not a trusted Nix user and the host daemon already
+      # has the cache configured, so do not write the substituter into nix.conf.
       - name: Setup Cachix
         uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
-          skipAddingSubstituter: true
+          skipAddingSubstituter: ${{ runner.environment == 'self-hosted' }}
           useDaemon: false
 
       - name: Build NixOS configurations
