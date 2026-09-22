@@ -49,9 +49,6 @@ jobs:
           '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
 
   # Build one host at a time to avoid concurrent evaluation and build pressure.
-  # Pushes to main and PRs from branches in this repository run on the
-  # self-hosted runner on uribo-btw, which keeps a warm Nix store. PRs from
-  # forks stay on GitHub-hosted runners so untrusted code never reaches it.
   build:
     runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && 'nixos' || 'ubuntu-latest' }}
     timeout-minutes: 20
