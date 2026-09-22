@@ -7,6 +7,7 @@
   cfg = config.myHomelab.ciRunner;
   tokenFile = config.sops.secrets.github_runner_token.path;
   netns = "ci-runner";
+  gcrootsDir = "/var/lib/ci-runner/gcroots";
   netnsPath = "/run/netns/${netns}";
   # tap devices report "state UNKNOWN" even when up, so check the flags and
   # the default route slirp4netns installs with --configure instead.
@@ -38,9 +39,18 @@ in {
       networkNamespace = netnsPath;
       timeoutStartSec = "5min";
 
-      bindMounts.${tokenFile} = {
-        hostPath = tokenFile;
-        isReadOnly = true;
+      bindMounts = {
+        ${tokenFile} = {
+          hostPath = tokenFile;
+          isReadOnly = true;
+        };
+
+        # Writable from the container so CI can leave GC roots that the host
+        # daemon can resolve; see the CI workflow.
+        ${gcrootsDir} = {
+          hostPath = gcrootsDir;
+          isReadOnly = false;
+        };
       };
 
       config = {pkgs, ...}: {
@@ -77,6 +87,10 @@ in {
 
     # The namespace and slirp helper come up with the container. slirp
     # provides outbound access without host veth, NAT, or firewall rules. IPv6 stays disabled because --enable-ipv6 is omitted.
+    # Sticky and world-writable, like /tmp, because the container's runner
+    # user has no matching host account.
+    systemd.tmpfiles.rules = ["d ${gcrootsDir} 1777 root root -"];
+
     systemd.services = {
       ci-runner-netns = {
         description = "Network namespace for the CI runner";

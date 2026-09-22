@@ -80,7 +80,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          outputs=()
+          : > "$RUNNER_TEMP/outputs"
           for host in beans-btw kebean uribo-btw; do
             output=$(nix build \
               --no-link \
@@ -88,7 +88,27 @@ jobs:
               --max-jobs 1 \
               --cores 2 \
               ".#nixosConfigurations.${host}.config.system.build.toplevel")
-            outputs+=("$output")
+            echo "${host} ${output}" >> "$RUNNER_TEMP/outputs"
           done
 
-          cachix push kevinher7-nixos "${outputs[@]}"
+      # Root main's closures on uribo-btw so Harmonia keeps serving them
+      # across garbage collection. Each push overwrites the previous root, so
+      # one generation per host survives. The directory is bind-mounted from
+      # the host, so the roots stay valid outside the ephemeral container.
+      - name: Keep main closures on the self-hosted cache
+        if: github.ref == 'refs/heads/main' && runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          while read -r host output; do
+            nix-store --add-root "/var/lib/ci-runner/gcroots/${host}" --realise "$output" > /dev/null
+          done < "$RUNNER_TEMP/outputs"
+
+      - name: Push main closures to Cachix
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cut -d ' ' -f 2 "$RUNNER_TEMP/outputs" | xargs cachix push kevinher7-nixos
