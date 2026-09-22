@@ -25,6 +25,19 @@ in {
         font = {
           size = lib.mkForce 10;
         };
+
+        keyboard.bindings = [
+          {
+            key = "C";
+            mods = "Control";
+            action = "Copy";
+          }
+          {
+            key = "V";
+            mods = "Control";
+            action = "Paste";
+          }
+        ];
       };
     };
   };

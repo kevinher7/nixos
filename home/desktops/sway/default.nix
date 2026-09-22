@@ -5,7 +5,31 @@
   ...
 }: let
   mod = "Mod4";
-  terminal = lib.getExe config.programs.alacritty.package;
+  alacritty = lib.getExe config.programs.alacritty.package;
+  terminal = lib.getExe (pkgs.writeShellApplication {
+    name = "launch-alacritty";
+    runtimeInputs = [pkgs.coreutils pkgs.jq pkgs.procps pkgs.sway];
+    text = ''
+      focused_pid="$(
+        swaymsg -t get_tree \
+          | jq -r '.. | objects | select(.focused == true and .app_id == "Alacritty") | .pid'
+      )"
+
+      working_directory=
+      if [[ -n "$focused_pid" ]]; then
+        shell_pid="$(pgrep -o -P "$focused_pid" || true)"
+        if [[ -n "$shell_pid" ]]; then
+          working_directory="$(readlink "/proc/$shell_pid/cwd" || true)"
+        fi
+      fi
+
+      if [[ -d "$working_directory" ]]; then
+        exec ${alacritty} --working-directory "$working_directory"
+      fi
+
+      exec ${alacritty}
+    '';
+  });
   launcher = "${lib.getExe config.programs.rofi.finalPackage} -show drun";
   lock = "${lib.getExe pkgs.swaylock} -f";
   wallpaper = config.stylix.image;
@@ -69,6 +93,13 @@ in {
       window = {
         border = 2;
         titlebar = false;
+        commands = lib.optionals config.programs.vicinae.enable [
+          {
+            criteria.app_id = "^vicinae$";
+            criteria.title = "^Vicinae Launcher$";
+            command = "floating enable, move position center";
+          }
+        ];
       };
 
       floating = {
@@ -107,7 +138,6 @@ in {
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
           "${mod}+t" = "floating toggle";
-          "${mod}+space" = "focus mode_toggle";
           "${mod}+Shift+v" = "splith";
           "${mod}+v" = "splitv";
           "${mod}+Shift+Return" = "layout toggle split";
@@ -149,7 +179,11 @@ in {
           "XF86MonBrightnessUp" = "exec ${lib.getExe pkgs.brightnessctl} set 10%+";
           "XF86MonBrightnessDown" = "exec ${lib.getExe pkgs.brightnessctl} set 10%-";
         }
-        // workspaceBindings;
+        // workspaceBindings
+        // lib.optionalAttrs config.programs.vicinae.enable {
+          "${mod}+space" = "exec ${lib.getExe config.programs.vicinae.package} toggle";
+          "${mod}+Shift+space" = "focus mode_toggle";
+        };
     };
   };
 
