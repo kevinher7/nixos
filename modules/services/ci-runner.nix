@@ -33,7 +33,7 @@ in {
     # host, so builds run under the host nix-daemon. Container resource limits
     # isolate workflow shell steps only; they do not constrain those builds.
     containers.ci-runner = {
-      autoStart = false;
+      autoStart = true;
       ephemeral = true;
       networkNamespace = netnsPath;
       timeoutStartSec = "5min";
@@ -75,9 +75,8 @@ in {
       };
     };
 
-    # The namespace and slirp helper are created only when the container is
-    # manually started. slirp provides outbound access without host veth, NAT,
-    # or firewall rules. IPv6 stays disabled because --enable-ipv6 is omitted.
+    # The namespace and slirp helper come up with the container. slirp
+    # provides outbound access without host veth, NAT, or firewall rules. IPv6 stays disabled because --enable-ipv6 is omitted.
     systemd.services = {
       ci-runner-netns = {
         description = "Network namespace for the CI runner";
