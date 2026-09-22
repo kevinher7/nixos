@@ -106,13 +106,16 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Store scanning can upload paths created by unrelated host activity.
-      # Push only the system outputs produced below.
+      # Push only the system outputs produced below. The runner user is not a
+      # trusted Nix user and the host daemon already has the cache configured,
+      # so do not try to write the substituter into nix.conf.
       - name: Setup Cachix
         uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
+          skipAddingSubstituter: true
           useDaemon: false
 
       - name: Build NixOS configurations
