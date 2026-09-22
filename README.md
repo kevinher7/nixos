@@ -124,7 +124,7 @@ The server host (`uribo-btw`) acts as a lightweight home lab running native NixO
 
 The prototype uses a separate network namespace with `slirp4netns` for outbound access and denies LAN, tailnet, loopback, and IPv6-local ranges through systemd IP filtering. Its workflow shell is isolated, but builds submitted to the shared host Nix daemon remain outside the container's resource limits.
 
-To reproduce a benchmark, manually start `container@ci-runner`, dispatch CI from `main` with `use_self_hosted=true`, and compare that workflow's duration with hosted runs.
+To reproduce a benchmark, manually start `container@ci-runner`, dispatch CI from `main` with `use_self_hosted=true`, and compare that workflow's duration with hosted runs. On warm runs the self-hosted build job takes about 100 seconds against roughly 300 seconds on GitHub-hosted runners.
 
 All machines are connected via **[Tailscale](https://tailscale.com/)**, which forms an encrypted mesh network (tailnet) between devices no matter where they are. This means:
 
