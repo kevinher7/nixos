@@ -79,6 +79,8 @@ in {
           Restart = lib.mkForce "always";
           RestartSec = "30s";
           TimeoutStartSec = "5min";
+          # The runner unit mounts the filesystem read-only; CI writes GC roots here.
+          ReadWritePaths = [gcrootsDir];
         };
 
         system.stateVersion = config.system.stateVersion;
