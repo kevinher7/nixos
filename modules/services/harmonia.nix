@@ -22,8 +22,6 @@ in {
   };
 
   config = lib.mkIf cfg.harmonia.enable {
-    # harmonia runs with DynamicUser and loads the key through systemd
-    # credentials, so root ownership is enough.
     sops.secrets.harmonia_signing_key = {
       owner = "root";
       group = "root";
@@ -36,8 +34,7 @@ in {
       settings.bind = "127.0.0.1:${toString cfg.harmonia.port}";
     };
 
-    # This host resolves through Tailscale MagicDNS, which does not know the
-    # homelab domain, and the shared substituter list includes this cache.
+    # MagicDNS on this host does not resolve the homelab domain.
     networking.hosts."127.0.0.1" = [cfg.harmonia.domain];
 
     services.nginx.virtualHosts.${cfg.harmonia.domain} = {
