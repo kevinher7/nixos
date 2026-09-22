@@ -5,6 +5,13 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      use_self_hosted:
+        description: Run Linux builds on the self-hosted runner
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -14,6 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Stays on a hosted runner so a broken self-hosted runner never blocks lint.
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -21,23 +29,23 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
         with:
           determinate: false
 
       - name: Run pre-commit checks
         run: nix build .#checks.x86_64-linux.pre-commit-check
 
-  # macbook (kebee) is aarch64-darwin and cannot be built on a Linux runner,
-  # so we evaluate it here as a safety net. The Linux hosts are covered by `build`.
-  eval:
+  # macbook (kebee) is aarch64-darwin and cannot be built on Linux, so it is
+  # evaluated on hosted infrastructure as a safety net.
+  darwin-eval:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
         with:
           determinate: false
 
@@ -46,61 +54,81 @@ jobs:
           nix eval --show-trace
           '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
 
-  # Build the x86_64-linux hosts and push the results to Cachix. Building
-  # implies evaluation, so these hosts don't need a separate eval step. Each
-  # host builds in its own matrix job so they run in parallel.
+  # Build one host at a time to avoid concurrent evaluation and build pressure.
   build:
+    if: github.event_name != 'workflow_dispatch' || inputs.use_self_hosted != true
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    permissions:
-      contents: read
-      actions: write
-    strategy:
-      matrix:
-        host: [beans-btw, kebean, uribo-btw]
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
         with:
           determinate: false
-          # Optimised-store hard links break cache-nix-action restores (nix-community/cache-nix-action#170)
-          extra-conf: auto-optimise-store = false
-
-      - name: Cache Nix store
-        uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
-        with:
-          primary-key: nix-${{ runner.os }}-build-${{ matrix.host }}-${{ hashFiles('flake.lock') }}
-          restore-prefixes-first-match: nix-${{ runner.os }}-build-${{ matrix.host }}-
-          gc-max-store-size-linux: 2G
-          purge: true
-          purge-prefixes: nix-${{ runner.os }}-build-${{ matrix.host }}-
-          purge-created: 0
-          purge-primary-key: never
 
       - name: Setup Cachix
         uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+          useDaemon: false
 
-      # Cachix creates a user config whose substituters take precedence over
-      # /etc/nix/nix.conf, so Numtide must be added to that config afterwards.
-      - name: Configure Numtide cache
+      - name: Build NixOS configurations
+        shell: bash
         run: |
-          cat <<'EOF' >> "$HOME/.config/nix/nix.conf"
-          extra-substituters = https://cache.numtide.com
-          extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
-          EOF
+          set -euo pipefail
 
-      - name: Verify Numtide cache
+          outputs=()
+          for host in beans-btw kebean uribo-btw; do
+            output=$(nix build \
+              --no-link \
+              --print-out-paths \
+              --max-jobs 1 \
+              --cores 2 \
+              ".#nixosConfigurations.${host}.config.system.build.toplevel")
+            outputs+=("$output")
+          done
+
+          cachix push kevinher7-nixos "${outputs[@]}"
+
+  # This job cannot run unless a maintainer manually opts in. It uses the
+  # prospective runner's exact labels, so normal CI remains on GitHub-hosted
+  # infrastructure while the runner is disabled or under investigation.
+  build-self-hosted:
+    if: github.event_name == 'workflow_dispatch' && inputs.use_self_hosted == true && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, nixos, x86_64-linux]
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Store scanning can upload paths created by unrelated host activity.
+      # Push only the system outputs produced below.
+      - name: Setup Cachix
+        uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
+        with:
+          name: kevinher7-nixos
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+          useDaemon: false
+
+      - name: Build NixOS configurations
+        shell: bash
         run: |
-          nix config show substituters | grep --fixed-strings --quiet https://cache.numtide.com
-          nix config show trusted-public-keys | grep --fixed-strings --quiet niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
+          set -euo pipefail
 
-      - name: Build ${{ matrix.host }} configuration
-        run: >
-          nix run --inputs-from . nixpkgs#nix-fast-build -- --skip-cached --no-nom
-          --flake '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
+          outputs=()
+          for host in beans-btw kebean uribo-btw; do
+            output=$(nix build \
+              --no-link \
+              --print-out-paths \
+              --max-jobs 1 \
+              --cores 2 \
+              ".#nixosConfigurations.${host}.config.system.build.toplevel")
+            outputs+=("$output")
+          done
+
+          cachix push kevinher7-nixos "${outputs[@]}"

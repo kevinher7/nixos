@@ -30,4 +30,4 @@ After installation, the following checks run automatically:
 
 ### CI
 
-On every push and PR, the `lint` job builds `checks.x86_64-linux.pre-commit-check`, which runs the same hooks over the whole tree. The `eval` job evaluates the darwin host (`kebee`), and the `build` job builds the three Linux hosts and pushes the results to Cachix.
+On every push and PR, CI runs on GitHub-hosted runners: `lint` builds `checks.x86_64-linux.pre-commit-check`, `darwin-eval` evaluates `kebee`, and `build` builds the three Linux hosts sequentially before pushing their explicit outputs to Cachix. The self-hosted runner container on `uribo-btw` is declared but not auto-started; its network isolation has been verified live. A maintainer may dispatch its guarded job only from `main` after manually starting `container@ci-runner`. It shares the host Nix daemon, so container resource limits do not constrain Nix builds.

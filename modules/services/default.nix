@@ -9,5 +9,6 @@ _: {
     ./mail-bean.nix
     ./llm.nix
     ./open-webui.nix
+    ./ci-runner.nix
   ];
 }
