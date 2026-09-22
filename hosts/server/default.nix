@@ -104,6 +104,11 @@
 
     ciRunner.enable = true;
 
+    harmonia = {
+      enable = true;
+      domain = "cache.${config.myVars.domain}";
+    };
+
     vaultwarden = {
       enable = true;
       domain = "https://vault.${config.myVars.domain}";

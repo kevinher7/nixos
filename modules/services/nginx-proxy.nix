@@ -35,7 +35,8 @@ in {
           ]
           ++ lib.optionals cfg.t3code.enable [cfg.t3code.domain]
           ++ lib.optionals cfg.actual.enable [cfg.actual.domain]
-          ++ lib.optionals cfg.openWebui.enable [cfg.openWebui.domain];
+          ++ lib.optionals cfg.openWebui.enable [cfg.openWebui.domain]
+          ++ lib.optionals cfg.harmonia.enable [cfg.harmonia.domain];
         dnsProvider = "cloudflare";
         environmentFile = config.sops.templates."acme-cloudflare.env".path;
       };

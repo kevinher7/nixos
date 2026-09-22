@@ -10,5 +10,6 @@ _: {
     ./llm.nix
     ./open-webui.nix
     ./ci-runner.nix
+    ./harmonia.nix
   ];
 }

@@ -11,13 +11,19 @@ _: {
     settings = {
       experimental-features = ["nix-command" "flakes"];
       extra-substituters = [
+        # uribo-btw serves what CI built there; priority puts it ahead of the
+        # public caches and cachix stays as fallback.
+        "https://cache.beanhaven.net?priority=10"
         "https://cache.numtide.com" # For LLM Agents
         "https://kevinher7-nixos.cachix.org" # CI generated builds
       ];
       extra-trusted-public-keys = [
+        "cache.beanhaven.net-1:QM0p2ysuKFpvBiCNy0Jv79uOXjxEPzvGC2nBbDP4Shk="
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
         "kevinher7-nixos.cachix.org-1:+Jcip/7h4fDQ2aHDQltrpnM8JgOxO754mjxRm26Rv0c="
       ];
+      # Do not stall every substitution when uribo-btw is unreachable.
+      connect-timeout = 5;
     };
 
     gc = {
