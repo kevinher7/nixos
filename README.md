@@ -120,11 +120,11 @@ The server host (`uribo-btw`) acts as a lightweight home lab running native NixO
 - **🗝️ Vaultwarden** — Self-hosted Bitwarden-compatible password manager.
 - **🛑 Pi-hole** — Network-wide ad blocking and local DNS.
 - **🌐 Nginx** — Native reverse proxy with automatic HTTPS via Let's Encrypt (DNS-01 challenge).
-- **🏗️ CI runner prototype** — A self-hosted GitHub Actions runner is declared in a fenced NixOS container. Its network isolation has been verified live on `uribo-btw`, but it stays disabled until the workflow is switched over. Standard CI continues on GitHub-hosted runners.
+- **🏗️ CI runner prototype** — A self-hosted GitHub Actions runner is declared in a fenced NixOS container. Its network isolation has been verified live on `uribo-btw`. The container is declared but not auto-started; a maintainer starts it by hand for opt-in runs. Standard CI continues on GitHub-hosted runners.
 
 The prototype uses a separate network namespace with `slirp4netns` for outbound access and denies LAN, tailnet, loopback, and IPv6-local ranges through systemd IP filtering. Its workflow shell is isolated, but builds submitted to the shared host Nix daemon remain outside the container's resource limits.
 
-To reproduce a benchmark, first review a temporary enablement and validate the runtime network restrictions. Then manually start `container@ci-runner`, dispatch CI from `main` with `use_self_hosted=true`, and compare that workflow's duration with hosted runs.
+To reproduce a benchmark, manually start `container@ci-runner`, dispatch CI from `main` with `use_self_hosted=true`, and compare that workflow's duration with hosted runs.
 
 All machines are connected via **[Tailscale](https://tailscale.com/)**, which forms an encrypted mesh network (tailnet) between devices no matter where they are. This means:
 
