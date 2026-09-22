@@ -5,6 +5,13 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      use_self_hosted:
+        description: Run Linux builds on the self-hosted runner
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -29,37 +36,99 @@ jobs:
       - name: Run pre-commit checks
         run: nix build .#checks.x86_64-linux.pre-commit-check
 
-  # Runs on the self-hosted runner, a NixOS container on uribo-btw sharing the
-  # host's /nix/store, so Nix and the host's substituters are already there.
-  # Building implies evaluation, so the Linux hosts need no separate eval
-  # step. One ephemeral runner would serialize a matrix, so a single
-  # nix-fast-build call builds every nixosConfiguration at once.
+  # macbook (kebee) is aarch64-darwin and cannot be built on Linux, so it is
+  # evaluated on hosted infrastructure as a safety net.
+  darwin-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+        with:
+          determinate: false
+
+      - name: Evaluate macbook configuration
+        run: >
+          nix eval --show-trace
+          '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
+
+  # Build one host at a time to avoid concurrent evaluation and build pressure.
   build:
+    if: github.event_name != 'workflow_dispatch' || inputs.use_self_hosted != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+        with:
+          determinate: false
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
+        with:
+          name: kevinher7-nixos
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+          useDaemon: false
+
+      - name: Build NixOS configurations
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          outputs=()
+          for host in beans-btw kebean uribo-btw; do
+            output=$(nix build \
+              --no-link \
+              --print-out-paths \
+              --max-jobs 1 \
+              --cores 2 \
+              ".#nixosConfigurations.${host}.config.system.build.toplevel")
+            outputs+=("$output")
+          done
+
+          cachix push kevinher7-nixos "${outputs[@]}"
+
+  # This job cannot run unless a maintainer manually opts in. It uses the
+  # prospective runner's exact labels, so normal CI remains on GitHub-hosted
+  # infrastructure while the runner is disabled or under investigation.
+  build-self-hosted:
+    if: github.event_name == 'workflow_dispatch' && inputs.use_self_hosted == true && github.ref == 'refs/heads/main'
     runs-on: [self-hosted, nixos, x86_64-linux]
     timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # The daemon mode relies on a post-build-hook, which the host nix-daemon
-      # ignores for the untrusted runner user. Push new store paths after the
-      # build instead.
+      # Store scanning can upload paths created by unrelated host activity.
+      # Push only the system outputs produced below.
       - name: Setup Cachix
         uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
         with:
           name: kevinher7-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
           useDaemon: false
 
-      # macbook (kebee) is aarch64-darwin and cannot be built on Linux, so it
-      # is evaluated as a safety net.
-      - name: Evaluate macbook configuration
-        run: >
-          nix eval --show-trace
-          '.#darwinConfigurations."kebee".config.system.build.toplevel.outPath'
-
       - name: Build NixOS configurations
-        run: >
-          nix run --inputs-from . nixpkgs#nix-fast-build -- --skip-cached --no-nom
-          --flake '.#nixosConfigurations'
-          --select 'hosts: builtins.mapAttrs (_: host: host.config.system.build.toplevel) hosts'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          outputs=()
+          for host in beans-btw kebean uribo-btw; do
+            output=$(nix build \
+              --no-link \
+              --print-out-paths \
+              --max-jobs 1 \
+              --cores 2 \
+              ".#nixosConfigurations.${host}.config.system.build.toplevel")
+            outputs+=("$output")
+          done
+
+          cachix push kevinher7-nixos "${outputs[@]}"

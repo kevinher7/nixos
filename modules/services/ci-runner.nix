@@ -1,13 +1,26 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.myHomelab.ciRunner;
   tokenFile = config.sops.secrets.github_runner_token.path;
-  veth = "ve-ci-runner";
-  lanNetwork = "192.168.0.0/24";
-  tailnetNetwork = "100.64.0.0/10";
+  netns = "ci-runner";
+  netnsPath = "/run/netns/${netns}";
+  waitForEgress = pkgs.writeShellScript "wait-for-ci-runner-egress" ''
+    attempt=0
+    while [ "$attempt" -lt 20 ]; do
+      if ${pkgs.iproute2}/bin/ip netns exec ${netns} ${pkgs.iproute2}/bin/ip link show tap0 | ${pkgs.gnugrep}/bin/grep -q "state UP" && [ -n "$(${pkgs.iproute2}/bin/ip netns exec ${netns} ${pkgs.iproute2}/bin/ip route show default)" ]; then
+        exit 0
+      fi
+
+      attempt=$((attempt + 1))
+      ${pkgs.coreutils}/bin/sleep 1
+    done
+
+    exit 1
+  '';
 in {
   options.myHomelab.ciRunner = {
     enable = lib.mkEnableOption "self-hosted GitHub Actions runner in a NixOS container";
@@ -15,14 +28,13 @@ in {
 
   config = lib.mkIf cfg.enable {
     # nixos-containers bind-mounts /nix/store and the daemon socket from the
-    # host, so builds run under the host nix-daemon. The container isolates
-    # only the workflow's shell steps.
+    # host, so builds run under the host nix-daemon. Container resource limits
+    # isolate workflow shell steps only; they do not constrain those builds.
     containers.ci-runner = {
-      autoStart = true;
+      autoStart = false;
       ephemeral = true;
-      privateNetwork = true;
-      hostAddress = "10.233.1.1";
-      localAddress = "10.233.1.2";
+      networkNamespace = netnsPath;
+      timeoutStartSec = "5min";
 
       bindMounts.${tokenFile} = {
         hostPath = tokenFile;
@@ -32,8 +44,8 @@ in {
       config = {pkgs, ...}: {
         nix.settings.experimental-features = ["nix-command" "flakes"];
 
-        # Pi-hole lives on the LAN this container is fenced off from.
         networking = {
+          enableIPv6 = false;
           useHostResolvConf = false;
           nameservers = ["1.1.1.1"];
         };
@@ -48,9 +60,6 @@ in {
           extraPackages = [pkgs.git pkgs.cachix];
         };
 
-        # The module only restarts on success (re-registration after each
-        # job). Registration can also fail on boot before host NAT is up, or
-        # outlive the default 90s when GitHub's pipeline endpoint is slow.
         systemd.services.github-runner-nixos-ci.serviceConfig = {
           Restart = lib.mkForce "always";
           RestartSec = "30s";
@@ -61,41 +70,55 @@ in {
       };
     };
 
-    networking = {
-      nat = {
-        enable = true;
-        internalInterfaces = [veth];
-        externalInterface = config.networking.defaultGateway.interface;
-
-        # -I, not -A: the nat module has already appended an ACCEPT for
-        # veth -> enp2s0, and enp2s0 is the LAN. The chain is recreated on
-        # every firewall reload, so this stays idempotent.
-        extraCommands = ''
-          iptables -w -I nixos-filter-forward -i ${veth} -d ${lanNetwork} -j DROP
-          iptables -w -I nixos-filter-forward -i ${veth} -d ${tailnetNetwork} -j DROP
-        '';
-      };
-
-      # -I so it beats the port rules that open Pi-hole DNS/DHCP on every
-      # interface. Covers all host addresses, LAN and tailnet included.
-      firewall.extraCommands = ''
-        iptables -w -I nixos-fw -i ${veth} -j DROP
-      '';
-    };
-
-    # Weight (default 100) rather than a quota: builds use idle cores but
-    # yield to Pi-hole under contention. nix-daemon is limited too because
-    # that is where builds run. MemoryHigh throttles it instead of
-    # OOM-killing the server's own rebuilds.
+    # The namespace and slirp helper are created only when the container is
+    # manually started. slirp provides outbound access without host veth, NAT,
+    # or firewall rules. IPv6 stays disabled because --enable-ipv6 is omitted.
     systemd.services = {
-      "container@ci-runner".serviceConfig = {
-        CPUWeight = 20;
-        MemoryMax = "4G";
+      ci-runner-netns = {
+        description = "Network namespace for the CI runner";
+        partOf = ["container@ci-runner.service"];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStartPre = "-${pkgs.iproute2}/bin/ip netns del ${netns}";
+          ExecStart = "${pkgs.iproute2}/bin/ip netns add ${netns}";
+          ExecStop = "-${pkgs.iproute2}/bin/ip netns del ${netns}";
+        };
       };
 
-      nix-daemon.serviceConfig = {
-        CPUWeight = 20;
-        MemoryHigh = "6G";
+      ci-runner-egress = {
+        description = "Outbound network access for the CI runner";
+        partOf = ["container@ci-runner.service"];
+        requires = ["ci-runner-netns.service"];
+        after = ["ci-runner-netns.service"];
+        bindsTo = ["ci-runner-netns.service"];
+        serviceConfig = {
+          ExecStart = "${pkgs.slirp4netns}/bin/slirp4netns --configure --disable-host-loopback --disable-dns --netns-type=path ${netnsPath} tap0";
+          ExecStartPost = waitForEgress;
+          Restart = "on-failure";
+          RestartSec = "5s";
+          IPAddressDeny = [
+            "127.0.0.0/8"
+            "169.254.0.0/16"
+            "10.0.0.0/8"
+            "172.16.0.0/12"
+            "192.168.0.0/16"
+            "100.64.0.0/10"
+            "::1/128"
+            "fe80::/10"
+            "fc00::/7"
+          ];
+        };
+      };
+
+      "container@ci-runner" = {
+        requires = ["ci-runner-egress.service"];
+        after = ["ci-runner-egress.service"];
+        bindsTo = ["ci-runner-egress.service"];
+        serviceConfig = {
+          CPUWeight = 20;
+          MemoryMax = "4G";
+        };
       };
     };
   };

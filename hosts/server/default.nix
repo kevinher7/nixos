@@ -102,8 +102,6 @@
 
     openWebui.enable = true;
 
-    ciRunner.enable = true;
-
     vaultwarden = {
       enable = true;
       domain = "https://vault.${config.myVars.domain}";
