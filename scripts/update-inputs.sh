@@ -6,14 +6,12 @@ set -euo pipefail
 repo_root=$(git rev-parse --show-toplevel)
 cd "$repo_root"
 
-default_inputs="llm-agents,agent-toolkit,t3code,mail-bean"
+available=(agent-toolkit llm-agents mail-bean t3code zen-browser)
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
   echo "error: working tree has uncommitted changes" >&2
   exit 1
 fi
-
-mapfile -t available < <(nix flake metadata --json | jq -r '.locks.nodes.root.inputs | keys[]')
 
 if (($# > 0)); then
   picks=("$@")
@@ -28,7 +26,7 @@ else
     echo "error: gum not found; run via 'nix run .#update-inputs' or pass input names as arguments" >&2
     exit 1
   fi
-  mapfile -t picks < <(gum choose --no-limit --header "Inputs to update" --selected "$default_inputs" "${available[@]}")
+  mapfile -t picks < <(gum choose --no-limit --header "Inputs to update" "${available[@]}")
 fi
 
 if ((${#picks[@]} == 0)); then

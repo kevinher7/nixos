@@ -83,7 +83,7 @@ A few convenience aliases are defined in `home/common/linux/bash.nix` to make da
 | `cdnc` | `cd ~/nixos-config`                                            | Instantly teleport to the config directory.                                                |
 
 To bump a subset of flake inputs and open a PR, run `nix run .#update-inputs`.
-It shows a checklist (agent inputs preselected), updates `flake.lock` on a new
+It shows a checklist of the fast-moving inputs, updates `flake.lock` on a new
 branch, and creates the PR with the same body format as the weekly workflow.
 Pass input names as arguments to skip the prompt.
 

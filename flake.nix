@@ -180,7 +180,7 @@
         type = "app";
         program = nixpkgs.lib.getExe (pkgs.writeShellApplication {
           name = "update-inputs";
-          runtimeInputs = with pkgs; [git gh gum jq nodejs];
+          runtimeInputs = with pkgs; [git gh gum nodejs];
           text = builtins.readFile ./scripts/update-inputs.sh;
         });
       };
