@@ -1,33 +1,26 @@
-# NixOS Configuration
+# NixOS configuration
 
-The current project is my personal NixOS configuration in a very modular way.
+The current repo is my personal NixOS configuration. This configures my system for Linux and MacOS hosts (via nix-darwin)
 
-The server host also contains my home lab with different services
+I have a homelab in my server host running services that are accessible via tailscale for me and other devices.
 
-## Code Style
+## Hosts
 
-- When adding new programs or features consider keeping the modularity of the config
-- Do not propose ugly overrides or warppers unless deemed absolutely necessary
-- Use `nix fmt` to format and run linter on files after finishing your work
-- Please prefer using `git mv` when refactoring files into other other locations to keep history clean
+All hosts are x86_64-linux except `kebee`, which is aarch64-darwin via nix-darwin.
 
-## Git Hooks
+- `beans-btw`, profile `chromebook`, user `kevin`. Laptop, qtile on X11.
+- `kebean`, profile `dell`, user `kevin`. Laptop, sway on Wayland.
+- `uribo-btw`, profile `server`, user `uribo`. Headless homelab and CI runner.
+- `kebee`, profile `macbook`, user `beellm`. Work laptop.
 
-This repository uses [git-hooks.nix](https://github.com/cachix/git-hooks.nix) to enforce code quality and commit conventions.
+`mkNixosConfig` and `mkDarwinConfig` in `flake.nix` wire each host to
+`hosts/<profile>/` and `home/hosts/<profile>.nix`, passing `hostname`,
+`profile`, `username`, and `osFamily` to both.
 
-### Installing the hooks
+## Coding Guidelines
 
-Run the following command to generate and install the hooks into `.git/hooks`:
+- Do not propose or add overrides or wrappers as the default choice. Always search for the built in options or more idiomatic choices for making changes.
+- The configuration should be modular. New programs or features have to me modular in the same way.
+- Refactor using `git mv` to preserve history,
+- Avoid adding comments to the code. The configuration should explain itself without the need of comments.
 
-```bash
-nix develop
-```
-
-After installation, the following checks run automatically:
-
-- **pre-commit:** `treefmt` (alejandra + statix), `check-yaml`, `trailing-whitespace`, and `detect-private-key`
-- **commit-msg:** Conventional Commits enforcement (`feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`)
-
-### CI
-
-On every push and PR, `lint` builds `checks.x86_64-linux.pre-commit-check` and `darwin-eval` evaluates `kebee` on GitHub-hosted runners. `build` builds the three Linux hosts sequentially; it runs on the self-hosted runner container on `uribo-btw` for pushes to `main` and same-repo PRs, and on GitHub-hosted runners for fork PRs. Only pushes to `main` root the closures under `/var/lib/ci-runner/gcroots` for the Harmonia cache at `cache.beanhaven.net` and push them to Cachix. The container auto-starts, its network isolation has been verified live, and it shares the host Nix daemon, so container resource limits do not constrain Nix builds.
