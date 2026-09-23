@@ -34,9 +34,6 @@ in {
       settings.bind = "127.0.0.1:${toString cfg.harmonia.port}";
     };
 
-    # MagicDNS on this host does not resolve the homelab domain.
-    networking.hosts."127.0.0.1" = [cfg.harmonia.domain];
-
     services.nginx.virtualHosts.${cfg.harmonia.domain} = {
       forceSSL = true;
       useACMEHost = config.myVars.domain;

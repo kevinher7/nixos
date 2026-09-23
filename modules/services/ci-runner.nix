@@ -38,19 +38,14 @@ in {
       ephemeral = true;
       networkNamespace = netnsPath;
       timeoutStartSec = "5min";
+      # Own UID range so container root is not host root.
+      privateUsers = "pick";
 
-      bindMounts = {
-        ${tokenFile} = {
-          hostPath = tokenFile;
-          isReadOnly = true;
-        };
+      extraFlags = ["--load-credential=github_runner_token:${tokenFile}"];
 
-        # Writable from the container so CI can leave GC roots that the host
-        # daemon can resolve; see the CI workflow.
-        ${gcrootsDir} = {
-          hostPath = gcrootsDir;
-          isReadOnly = false;
-        };
+      bindMounts.${gcrootsDir} = {
+        hostPath = gcrootsDir;
+        isReadOnly = false;
       };
 
       config = {pkgs, ...}: {
@@ -68,7 +63,7 @@ in {
         services.github-runners.nixos-ci = {
           enable = true;
           url = "https://github.com/kevinher7/nixos";
-          inherit tokenFile;
+          tokenFile = "/run/host/credentials/github_runner_token";
           ephemeral = true;
           replace = true;
           extraLabels = ["nixos" "x86_64-linux"];
@@ -89,9 +84,29 @@ in {
 
     # The namespace and slirp helper come up with the container. slirp
     # provides outbound access without host veth, NAT, or firewall rules. IPv6 stays disabled because --enable-ipv6 is omitted.
-    # Sticky and world-writable, like /tmp, because the container's runner
-    # user has no matching host account.
-    systemd.tmpfiles.rules = ["d ${gcrootsDir} 1777 root root -"];
+    systemd.tmpfiles.rules = ["d ${gcrootsDir} 0777 root root -"];
+
+    systemd.services.nix-daemon.serviceConfig = {
+      IPAddressAllow = ["100.100.100.100/32" "fd7a:115c:a1e0::53/128"];
+      IPAddressDeny = [
+        "127.0.0.0/8"
+        "169.254.0.0/16"
+        "10.0.0.0/8"
+        "172.16.0.0/12"
+        "192.168.0.0/16"
+        "100.64.0.0/10"
+        "::1/128"
+        "fe80::/10"
+        "fc00::/7"
+      ];
+      MemoryMax = "8G";
+      CPUWeight = 20;
+    };
+
+    nix.settings = {
+      min-free = 50 * 1024 * 1024 * 1024;
+      max-free = 100 * 1024 * 1024 * 1024;
+    };
 
     systemd.services = {
       ci-runner-netns = {
