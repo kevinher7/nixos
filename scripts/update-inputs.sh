@@ -24,6 +24,10 @@ if (($# > 0)); then
     fi
   done
 else
+  if ! command -v gum >/dev/null; then
+    echo "error: gum not found; run via 'nix run .#update-inputs' or pass input names as arguments" >&2
+    exit 1
+  fi
   mapfile -t picks < <(gum choose --no-limit --header "Inputs to update" --selected "$default_inputs" "${available[@]}")
 fi
 
