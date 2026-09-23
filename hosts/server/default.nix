@@ -27,8 +27,6 @@
       email = "kevinhernem@gmail.com";
     };
 
-    opencodePort = 4096;
-
     lan = {
       gateway = "192.168.0.1";
       serverIP = "192.168.0.2";

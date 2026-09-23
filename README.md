@@ -79,7 +79,6 @@ A few convenience aliases are defined in `home/common/linux/bash.nix` to make da
 | Alias  | Command                                                        | Description                                                                                |
 | ------ | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | `nrs`  | `sudo nixos-rebuild switch --flake ~/nixos-config#${hostname}` | Rebuilds the current host directly from the local flake. No need to remember the hostname. |
-| `och`  | `opencode serve --hostname 0.0.0.0 --port 4096`                | Manually launches the OpenCode web interface bound to all interfaces.                      |
 | `cdnc` | `cd ~/nixos-config`                                            | Instantly teleport to the config directory.                                                |
 
 To bump a subset of flake inputs and open a PR, run `nix run .#update-inputs`.
@@ -151,7 +150,6 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
   - `beanhaven.net` → Homepage
   - `vault.beanhaven.net` → Vaultwarden
   - `pihole.beanhaven.net` → Pi-hole
-  - `code.beanhaven.net` → OpenCode
   - `t3code.beanhaven.net` → T3 Code
   - `budget.beanhaven.net` → Actual Budget
   - `ai.beanhaven.net` → Open WebUI
@@ -189,8 +187,7 @@ This split-DNS route avoids affected local resolvers without overriding DNS for 
 
 `home/programs/agents/` configures the coding harnesses through
 `myPrograms.agents`. Codex is enabled on every host; Claude Code and its Neovim
-integration are macbook-only. OpenCode runs on the macbook, Dell, and server,
-with the web service enabled only on the server.
+integration are macbook-only. OpenCode runs on the macbook, Dell, and server.
 
 Shared global instructions live in `home/programs/agents/CONTEXT.md`. Claude's
 settings, hooks, status line, and RTK integration are declarative; do not run
@@ -210,42 +207,6 @@ previously unmanaged files. Verify other harnesses do not discover leftover work
 content through Claude's directories.
 Do not switch without backing up conflicting local files. The removed Homebrew
 Codex cask may also need an explicit uninstall to stop shadowing the Nix CLI.
-
-## 💻 Using OpenCode from a Tailscale-Connected Host
-
-OpenCode is configured to run as a **systemd user service** on the server (`home/programs/agents/opencode.nix`), binding to `0.0.0.0` on port `4096`:
-
-```nix
-programs.opencode = {
-  enable = true;
-  web = {
-    enable = true;
-    extraArgs = [ "--hostname" "0.0.0.0" "--port" "4096" ];
-  };
-};
-```
-
-Because it listens on all interfaces, it is accessible via the server's **Tailscale IP address** from any other device on your tailnet.
-
-### To access it:
-
-1. Make sure your client device is connected to the same Tailscale network.
-2. Find the server's Tailscale IP (e.g., `100.x.y.z`).
-3. Open your browser and navigate to:
-
-   ```
-   http://<server-tailscale-ip>:4096
-   ```
-
-### Manual Launch
-
-If the systemd service is not running, you can also launch it manually from the server using the predefined alias:
-
-```bash
-och
-```
-
-This binds the OpenCode web UI to all interfaces, making it immediately reachable over Tailscale without any extra firewall fuss.
 
 ## 🤖 T3 Code on Every NixOS Host
 
