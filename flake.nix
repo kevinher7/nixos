@@ -173,6 +173,19 @@
       };
     });
 
+    apps = forEachSystem (sys: let
+      pkgs = nixpkgs.legacyPackages.${sys};
+    in {
+      update-inputs = {
+        type = "app";
+        program = nixpkgs.lib.getExe (pkgs.writeShellApplication {
+          name = "update-inputs";
+          runtimeInputs = with pkgs; [git gh gum jq nodejs];
+          text = builtins.readFile ./scripts/update-inputs.sh;
+        });
+      };
+    });
+
     devShells = forEachSystem (sys: {
       default = nixpkgs.legacyPackages.${sys}.mkShell {
         inherit (self.checks.${sys}.pre-commit-check) shellHook;
