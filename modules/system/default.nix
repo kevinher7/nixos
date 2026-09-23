@@ -1,4 +1,8 @@
-_: {
+{
+  hostname,
+  lib,
+  ...
+}: {
   boot.loader = {
     systemd-boot = {
       enable = true;
@@ -10,11 +14,14 @@ _: {
   nix = {
     settings = {
       experimental-features = ["nix-command" "flakes"];
-      extra-substituters = [
-        "https://cache.beanhaven.net?priority=10" # CI builds on uribo-btw, ahead of public caches
-        "https://cache.numtide.com" # For LLM Agents
-        "https://kevinher7-nixos.cachix.org" # CI generated builds
-      ];
+      extra-substituters =
+        # CI builds on uribo-btw, ahead of public caches. The server itself
+        # already has them and its daemon is denied loopback.
+        lib.optional (hostname != "uribo-btw") "https://cache.beanhaven.net?priority=10"
+        ++ [
+          "https://cache.numtide.com" # For LLM Agents
+          "https://kevinher7-nixos.cachix.org" # CI generated builds
+        ];
       extra-trusted-public-keys = [
         "cache.beanhaven.net-1:QM0p2ysuKFpvBiCNy0Jv79uOXjxEPzvGC2nBbDP4Shk="
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
