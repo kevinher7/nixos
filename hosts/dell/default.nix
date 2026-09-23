@@ -34,8 +34,6 @@
       name = "Kevin Hernandez";
       email = "kevinhernem@gmail.com";
     };
-
-    opencodePort = 4096;
   };
 
   myModules = {

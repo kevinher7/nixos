@@ -66,14 +66,6 @@ in {
                   siteMonitor = "http://localhost:${toString cfg.vaultwarden.port}";
                 };
               }
-              {
-                "OpenCode" = {
-                  href = "https://code.${domain}";
-                  icon = "opencode";
-                  description = "Web-based AI assistant";
-                  siteMonitor = "http://localhost:${toString config.myVars.opencodePort}";
-                };
-              }
             ]
             ++ lib.optionals cfg.t3code.enable [
               {
