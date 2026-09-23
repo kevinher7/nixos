@@ -41,12 +41,8 @@ in {
       # Own UID range so container root is not host root.
       privateUsers = "pick";
 
-      # nspawn reads the token as host root and hands it to the container as a
-      # credential; a bind mount of the ramfs secret cannot be id-mapped.
       extraFlags = ["--load-credential=github_runner_token:${tokenFile}"];
 
-      # Writable from the container so CI can leave GC roots that the host
-      # daemon can resolve; see the CI workflow.
       bindMounts.${gcrootsDir} = {
         hostPath = gcrootsDir;
         isReadOnly = false;
@@ -88,16 +84,9 @@ in {
 
     # The namespace and slirp helper come up with the container. slirp
     # provides outbound access without host veth, NAT, or firewall rules. IPv6 stays disabled because --enable-ipv6 is omitted.
-    # World-writable because the container's runner user has no host account
-    # and its mapped uid may change; only this container mounts the directory.
     systemd.tmpfiles.rules = ["d ${gcrootsDir} 0777 root root -"];
 
-    # CI builds run in the host daemon, outside the container's limits and
-    # network namespace. Fixed-output derivations get network access even in
-    # the sandbox, so deny the daemon everything but public addresses, and
-    # bound it so a runaway build cannot take Pi-hole down with it.
     systemd.services.nix-daemon.serviceConfig = {
-      # Tailscale's MagicDNS resolver sits inside the denied tailnet range.
       IPAddressAllow = ["100.100.100.100/32" "fd7a:115c:a1e0::53/128"];
       IPAddressDeny = [
         "127.0.0.0/8"
