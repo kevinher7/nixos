@@ -51,7 +51,7 @@ jobs:
   # Build one host at a time to avoid concurrent evaluation and build pressure.
   build:
     runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && 'nixos' || 'ubuntu-latest' }}
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -83,12 +83,16 @@ jobs:
 
           : > "$RUNNER_TEMP/outputs"
           for host in beans-btw kebean uribo-btw; do
-            output=$(nix build \
+            echo "::group::Build ${host}"
+            TIMEFORMAT="${host}: %3lR elapsed"
+            time output=$(nix build \
               --no-link \
               --print-out-paths \
+              --print-build-logs \
               --max-jobs 1 \
               --cores 2 \
               ".#nixosConfigurations.${host}.config.system.build.toplevel")
+            echo "::endgroup::"
             echo "${host} ${output}" >> "$RUNNER_TEMP/outputs"
           done
 
