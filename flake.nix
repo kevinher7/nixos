@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     stylix = {
-      url = "github:nix-community/stylix/master";
+      url = "github:nix-community/stylix/a1198612edba320a39c5cc5c4ab30dbee6fd66ea";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
