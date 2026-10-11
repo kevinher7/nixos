@@ -37,6 +37,7 @@
         ssh = false;
         operatorUser = "kevin";
       };
+      ssh.authorizedClients = ["kebee"];
     };
 
     power = {
