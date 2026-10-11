@@ -2,7 +2,14 @@
   config,
   lib,
   ...
-}: {
+}: let
+  aerospace = lib.getExe config.programs.aerospace.package;
+  joinNewWindow = direction: ''
+    exec-and-forget workspace="$(${aerospace} echo --window-id "$AEROSPACE_WINDOW_ID" -- '%{workspace}')" &&
+      [ "$(${aerospace} list-windows --workspace "$workspace" --count)" -gt 2 ] &&
+      ${aerospace} join-with --window-id "$AEROSPACE_WINDOW_ID" ${direction}
+  '';
+in {
   config = lib.mkIf config.myPrograms.aerospace.enable {
     xdg.enable = true;
 
@@ -19,8 +26,12 @@
         on-focused-monitor-changed = ["move-mouse monitor-lazy-center"];
         on-window-detected = [
           {
-            "if" = "true";
-            run = "split opposite";
+            "if" = "test %{window-parent-container-layout} = h_tiles";
+            run = joinNewWindow "left";
+          }
+          {
+            "if" = "test %{window-parent-container-layout} = v_tiles";
+            run = joinNewWindow "up";
           }
         ];
 
