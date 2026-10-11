@@ -75,6 +75,7 @@
         openFirewall = true;
         ssh = true;
       };
+      ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
     };
 
     power = {
