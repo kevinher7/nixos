@@ -162,6 +162,15 @@
           text = builtins.readFile ./scripts/update-inputs.sh;
         });
       };
+      fleet-deploy = {
+        type = "app";
+        program = nixpkgs.lib.getExe (pkgs.writeShellApplication {
+          name = "fleet-deploy";
+          runtimeInputs = with pkgs; [git openssh];
+          excludeShellChecks = ["SC1087" "SC2029" "SC2329"];
+          text = builtins.readFile ./scripts/fleet-deploy.sh;
+        });
+      };
     });
 
     devShells = forEachSystem (sys: {
