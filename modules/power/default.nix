@@ -1,7 +1,7 @@
 {lib, ...}: {
   imports = [
     ./server.nix
-    ./chromebook.nix
+    ./laptop.nix
     ./dell.nix
   ];
 
