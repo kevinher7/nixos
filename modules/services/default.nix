@@ -8,7 +8,6 @@ _: {
     ./actual.nix
     ./mail-bean.nix
     ./llm.nix
-    ./open-webui.nix
     ./ci-runner.nix
     ./harmonia.nix
   ];
