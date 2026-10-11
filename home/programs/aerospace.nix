@@ -17,7 +17,12 @@
         enable-normalization-flatten-containers = true;
         enable-normalization-opposite-orientation-for-nested-containers = true;
         on-focused-monitor-changed = ["move-mouse monitor-lazy-center"];
-        on-window-detected = [{run = "split opposite";}];
+        on-window-detected = [
+          {
+            "if" = "true";
+            run = "split opposite";
+          }
+        ];
 
         mode.main.binding = {
           cmd-enter = "exec-and-forget osascript -e 'tell application \"Ghostty\" to new window'";
