@@ -32,14 +32,6 @@ in {
       defaultEditor = true;
       luaLoader.enable = true;
 
-      clipboard = {
-        providers = {
-          xsel.enable = true;
-        };
-
-        # register = "unnamedplus";
-      };
-
       opts = {
         relativenumber = true;
         number = true;

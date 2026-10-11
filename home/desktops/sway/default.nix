@@ -52,6 +52,7 @@
   );
 in {
   imports = [
+    ../rofi.nix
     ./autotiling.nix
     ./quickshell.nix
   ];
