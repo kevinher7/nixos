@@ -152,7 +152,6 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
   - `pihole.beanhaven.net` → Pi-hole
   - `t3code.beanhaven.net` → T3 Code
   - `budget.beanhaven.net` → Actual Budget
-  - `ai.beanhaven.net` → Open WebUI
 - **DNS-01 Challenge**: Let's Encrypt certificates are obtained through Cloudflare DNS validation. No public firewall ports 80 or 443 need to be opened.
 
 ### Setting Up the Cloudflare Token

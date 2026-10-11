@@ -98,8 +98,6 @@
 
     llm.enable = true;
 
-    openWebui.enable = true;
-
     ciRunner.enable = true;
 
     harmonia = {
