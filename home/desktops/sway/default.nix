@@ -52,10 +52,11 @@
   );
 in {
   imports = [
-    ../rofi.nix
     ./autotiling.nix
     ./quickshell.nix
   ];
+
+  myPrograms.rofi.enable = true;
 
   # Tie Kanshi, swayidle, and other Wayland services to the Sway session.
   wayland.systemd.target = "sway-session.target";

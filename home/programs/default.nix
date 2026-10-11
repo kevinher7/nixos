@@ -6,6 +6,7 @@
     ./betterlockscreen.nix
     ./qutebrowser.nix
     ./rquickshare.nix
+    ./rofi.nix
     ./nixvim
     ./agents
     ./openvpn
@@ -21,6 +22,7 @@
     betterlockscreen.enable = lib.mkEnableOption "betterlockscreen screen locker";
     qutebrowser.enable = lib.mkEnableOption "qutebrowser browser";
     rquickshare.enable = lib.mkEnableOption "rquickshare file sharing";
+    rofi.enable = lib.mkEnableOption "rofi application launcher";
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     agents = {
       claude-code.enable = lib.mkEnableOption "Claude Code CLI";

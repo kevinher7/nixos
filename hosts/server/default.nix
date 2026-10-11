@@ -9,7 +9,7 @@
     ../../modules/core
     ../../modules/theming
     ../../modules/networking
-    ../../modules/power/server.nix
+    ../../modules/power
     ../../modules/secrets
     ../../modules/services
     ../../modules/t3code
@@ -58,6 +58,8 @@
   };
 
   myModules = {
+    power.profile = "server";
+
     theming.wallpaper = ../../assets/wallpapers/girl-reading-book.png;
 
     networking = {

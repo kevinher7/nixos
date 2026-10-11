@@ -7,7 +7,7 @@
     ../../modules/theming
     ../../modules/networking
     ../../modules/login
-    ../../modules/power/laptop.nix
+    ../../modules/power
     ../../modules/input
     ../../modules/audio
     ../../modules/bluetooth
@@ -23,6 +23,8 @@
     ];
 
   myModules = {
+    power.profile = "laptop";
+
     theming.wallpaper = ../../assets/wallpapers/orion-nebula.jpg;
 
     input.waylandFrontend = true;

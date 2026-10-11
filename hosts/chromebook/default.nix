@@ -7,13 +7,15 @@ _: {
     ../../modules/theming
     ../../modules/networking
     ../../modules/login
-    ../../modules/power/laptop.nix
+    ../../modules/power
     ../../modules/input
     ../../modules/audio
     ../../modules/t3code
   ];
 
   myModules = {
+    power.profile = "laptop";
+
     theming.wallpaper = ../../assets/wallpapers/girl-reading-book.png;
 
     networking = {
