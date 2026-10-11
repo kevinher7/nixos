@@ -70,6 +70,8 @@ in {
       };
     };
 
+    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [80 443];
+
     # Ensure nginx can read ACME certificates
     users.users.nginx.extraGroups = ["acme"];
 

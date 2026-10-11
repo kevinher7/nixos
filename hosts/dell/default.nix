@@ -49,6 +49,7 @@
         ssh = false;
         operatorUser = "kevin";
       };
+      ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
     };
 
     power = {
