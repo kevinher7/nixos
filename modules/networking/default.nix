@@ -1,12 +1,19 @@
 {
   config,
   lib,
+  username,
   ...
 }: let
   cfg = config.myModules;
+  sshKeys = import ./ssh-keys.nix;
 in {
   options.myModules.networking = {
     enable = lib.mkEnableOption "Networking Configuration";
+
+    ssh.authorizedClients = lib.mkOption {
+      type = lib.types.listOf (lib.types.enum (builtins.attrNames sshKeys));
+      description = "Hosts from ssh-keys.nix whose key may log in as the main user";
+    };
 
     tailscale = {
       enable = lib.mkEnableOption "Tailscale VPN";
@@ -36,6 +43,9 @@ in {
   };
 
   config = lib.mkIf cfg.networking.enable {
+    users.users.${username}.openssh.authorizedKeys.keys =
+      map (client: sshKeys.${client}) cfg.networking.ssh.authorizedClients;
+
     networking = {
       networkmanager.enable = true;
 
@@ -43,7 +53,7 @@ in {
         enable = true;
         allowedUDPPorts = [5353];
 
-        trustedInterfaces = ["tailscale0"];
+        interfaces.tailscale0.allowedTCPPorts = [22];
       };
     };
 
@@ -56,7 +66,15 @@ in {
           ++ lib.optional (cfg.networking.tailscale.operatorUser != null) "--operator=${cfg.networking.tailscale.operatorUser}";
       };
 
-      openssh.enable = true;
+      openssh = {
+        enable = true;
+        openFirewall = false;
+        settings = {
+          PasswordAuthentication = false;
+          KbdInteractiveAuthentication = false;
+          PermitRootLogin = "no";
+        };
+      };
 
       avahi = {
         enable = true;

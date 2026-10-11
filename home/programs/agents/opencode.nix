@@ -25,9 +25,22 @@ in {
 
       settings = {
         permission = {
-          "*" = "allow";
-          "doom_loop" = "allow";
-          "external_directory" = "allow";
+          "*" = "ask";
+          read = "allow";
+          glob = "allow";
+          grep = "allow";
+          list = "allow";
+          lsp = "allow";
+          skill = "allow";
+          todoread = "allow";
+          todowrite = "allow";
+          bash = {
+            "*" = "ask";
+            "git status*" = "allow";
+            "git diff*" = "allow";
+            "git log*" = "allow";
+            "git show*" = "allow";
+          };
         };
 
         formatter = {

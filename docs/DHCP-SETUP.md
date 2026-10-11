@@ -11,7 +11,7 @@ This guide assumes:
 - You are on the current state of this repository
 - The **server** host has a **static IP** configured on `enp2s0` (`192.168.0.2`)
 - The Pi-hole module already has DHCP options defined (but `active = false`)
-- Pi-hole DNS is already working (port 53, web UI on port 8080)
+- Pi-hole DNS is already working (port 53, web UI at `https://pihole.beanhaven.net`)
 
 ## Current State of the Config
 
@@ -93,7 +93,7 @@ cat /etc/resolv.conf
 # Should show 192.168.0.2
 ```
 
-In the Pi-hole web UI (`http://192.168.0.2:8080`):
+In the Pi-hole web UI (`https://pihole.beanhaven.net`):
 
 - Go to **Settings → DHCP**
 - Check **"Currently active DHCP leases"** — your device should appear

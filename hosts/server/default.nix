@@ -69,6 +69,7 @@
         openFirewall = true;
         ssh = true;
       };
+      ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
     };
 
     t3code.enable = true;
@@ -122,6 +123,7 @@
       };
 
       openFirewallDHCP = true;
+      openFirewallWeb = false;
     };
   };
 }

@@ -36,6 +36,7 @@
         ssh = false;
         operatorUser = "kevin";
       };
+      ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
     };
 
     t3code = {
