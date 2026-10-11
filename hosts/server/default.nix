@@ -2,6 +2,7 @@
   config,
   hostname,
   profile,
+  username,
   lib,
   ...
 }: {
@@ -38,6 +39,8 @@
   };
 
   time.timeZone = "Asia/Tokyo";
+
+  users.users.${username}.linger = true;
 
   networking = {
     useDHCP = lib.mkForce false;

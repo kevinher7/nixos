@@ -1,10 +1,8 @@
 {
-  hostname,
+  config,
   lib,
   ...
-}: let
-  ciRunnerHost = "uribo-btw";
-in {
+}: {
   boot.loader = {
     systemd-boot = {
       enable = true;
@@ -17,7 +15,7 @@ in {
     settings = {
       experimental-features = ["nix-command" "flakes"];
       extra-substituters =
-        lib.optional (hostname != ciRunnerHost) "https://cache.beanhaven.net?priority=10"
+        lib.optional (!config.services.harmonia.cache.enable) "https://cache.beanhaven.net?priority=10"
         ++ [
           "https://cache.numtide.com" # For LLM Agents
           "https://kevinher7-nixos.cachix.org" # CI generated builds

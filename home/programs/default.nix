@@ -27,7 +27,7 @@
     tmux.enable = lib.mkEnableOption "tmux terminal multiplexer";
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     agents = {
-      claude-code.enable = lib.mkEnableOption "Claude Code CLI (macbook only)";
+      claude-code.enable = lib.mkEnableOption "Claude Code CLI";
       codex.enable = lib.mkEnableOption "Codex CLI";
       opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
       work-toolkit.enable = lib.mkEnableOption "Claude-only work toolkit on the macbook";
