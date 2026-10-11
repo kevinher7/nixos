@@ -15,10 +15,6 @@
       OP_BIOMETRIC_UNLOCK_ENABLED = "true";
     };
 
-    profileExtra = ''
-      # intentionally empty - see programs.zsh.initContent
-    '';
-
     initContent = ''
       # Homebrew shellenv
       eval "$(/opt/homebrew/bin/brew shellenv)"

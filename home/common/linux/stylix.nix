@@ -17,7 +17,6 @@
       zen-browser.enable = false;
       nixvim.enable = false;
       opencode.enable = false;
-      hyprland.enable = false;
       sway.enable = false;
     };
   };

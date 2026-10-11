@@ -13,8 +13,6 @@
   myModules.theming.wallpaper = ../../assets/wallpapers/red-mountain.png;
 
   myVars = {
-    serverTailscaleIP = "100.87.121.69";
-
     gitUser = {
       name = "Kevin Hernandez";
       email = "kevinhernem@gmail.com";

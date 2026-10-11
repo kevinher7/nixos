@@ -75,7 +75,6 @@
     sops-nix,
     treefmt-nix,
     git-hooks-nix,
-    t3code,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -92,7 +91,6 @@
         };
         modules = [
           ./hosts/${profile}
-          ./modules/overlays
           ./modules/vars
           sops-nix.nixosModules.sops
 
@@ -127,9 +125,7 @@
         };
         modules = [
           ./hosts/${profile}
-          ./modules/overlays
           ./modules/vars
-          sops-nix.darwinModules.sops
           stylix.darwinModules.stylix
           home-manager.darwinModules.home-manager
           {
