@@ -4,6 +4,7 @@
   home.packages = [pkgs.postgresql];
 
   myPrograms = {
+    aerospace.enable = true;
     ghostty.enable = true;
     nixvim.enable = true;
     agents = {

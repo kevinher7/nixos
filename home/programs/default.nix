@@ -1,5 +1,6 @@
 {lib, ...}: {
   imports = [
+    ./aerospace.nix
     ./ghostty.nix
     ./alacritty.nix
     ./betterlockscreen.nix
@@ -16,6 +17,7 @@
   ];
 
   options.myPrograms = {
+    aerospace.enable = lib.mkEnableOption "AeroSpace window manager";
     ghostty.enable = lib.mkEnableOption "ghostty terminal emulator";
     alacritty.enable = lib.mkEnableOption "alacritty terminal emulator";
     betterlockscreen.enable = lib.mkEnableOption "betterlockscreen screen locker";
