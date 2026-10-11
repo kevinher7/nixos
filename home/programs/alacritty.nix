@@ -19,11 +19,11 @@ in {
           };
           dynamic_padding = true;
 
-          opacity = lib.mkForce 0.9;
+          opacity = 0.9;
         };
 
         font = {
-          size = lib.mkForce 10;
+          size = 10;
         };
 
         keyboard.bindings = [

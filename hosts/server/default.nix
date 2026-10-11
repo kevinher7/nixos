@@ -1,8 +1,6 @@
 {
   config,
-  hostname,
-  profile,
-  lib,
+  username,
   ...
 }: {
   imports = [
@@ -22,11 +20,6 @@
     acmeEmail = "kevinhernem@gmail.com";
     serverTailscaleIP = "100.87.121.69";
 
-    gitUser = {
-      name = "Kevin Hernandez";
-      email = "kevinhernem@gmail.com";
-    };
-
     lan = {
       gateway = "192.168.0.1";
       serverIP = "192.168.0.2";
@@ -37,10 +30,10 @@
     };
   };
 
-  time.timeZone = "Asia/Tokyo";
+  users.users.${username}.linger = true;
 
   networking = {
-    useDHCP = lib.mkForce false;
+    useDHCP = false;
 
     # Tell NetworkManager not to touch enp2s0; we manage it declaratively
     networkmanager.unmanaged = ["enp2s0"];
@@ -65,22 +58,18 @@
   };
 
   myModules = {
+    power.profile = "server";
+
     theming.wallpaper = ../../assets/wallpapers/girl-reading-book.png;
 
     networking = {
       enable = true;
-      inherit hostname;
       tailscale = {
         enable = true;
         openFirewall = true;
         ssh = true;
       };
       ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
-    };
-
-    power = {
-      enable = true;
-      inherit profile;
     };
 
     t3code.enable = true;

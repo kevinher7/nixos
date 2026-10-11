@@ -2,10 +2,8 @@
   config,
   lib,
   ...
-}: let
-  cfg = config.myModules.power;
-in {
-  config = lib.mkIf (cfg.enable && cfg.profile == "dell") {
+}: {
+  config = lib.mkIf (config.myModules.power.profile == "laptop") {
     services.logind = {
       settings.Login = {
         HandlePowerKey = "suspend";
@@ -22,11 +20,8 @@ in {
     services.auto-cpufreq = {
       enable = true;
       settings = {
-        # amd-pstate exposes EPP through the `powersave` governor; unlike
-        # intel_pstate, pinning `performance` here would ignore the EPP hint
-        # entirely and keep the cores boosting on battery.
         battery = {
-          governor = "powersave";
+          governor = lib.mkDefault "performance";
           turbo = "auto";
           energy_performance_preference = "power";
         };

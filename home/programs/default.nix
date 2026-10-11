@@ -4,10 +4,9 @@
     ./ghostty.nix
     ./alacritty.nix
     ./betterlockscreen.nix
-    ./kanshi.nix
     ./qutebrowser.nix
     ./rquickshare.nix
-    ./tmux.nix
+    ./rofi.nix
     ./nixvim
     ./agents
     ./openvpn
@@ -21,13 +20,12 @@
     ghostty.enable = lib.mkEnableOption "ghostty terminal emulator";
     alacritty.enable = lib.mkEnableOption "alacritty terminal emulator";
     betterlockscreen.enable = lib.mkEnableOption "betterlockscreen screen locker";
-    kanshi.enable = lib.mkEnableOption "kanshi dynamic display configuration";
     qutebrowser.enable = lib.mkEnableOption "qutebrowser browser";
     rquickshare.enable = lib.mkEnableOption "rquickshare file sharing";
-    tmux.enable = lib.mkEnableOption "tmux terminal multiplexer";
+    rofi.enable = lib.mkEnableOption "rofi application launcher";
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     agents = {
-      claude-code.enable = lib.mkEnableOption "Claude Code CLI (macbook only)";
+      claude-code.enable = lib.mkEnableOption "Claude Code CLI";
       codex.enable = lib.mkEnableOption "Codex CLI";
       opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
       work-toolkit.enable = lib.mkEnableOption "Claude-only work toolkit on the macbook";

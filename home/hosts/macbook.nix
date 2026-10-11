@@ -3,6 +3,8 @@
 
   home.packages = [pkgs.postgresql];
 
+  programs.tmux.enable = true;
+
   myPrograms = {
     aerospace.enable = true;
     ghostty.enable = true;
@@ -17,7 +19,6 @@
       cli.enable = true;
       desktop.enable = true;
     };
-    tmux.enable = true;
     zen-browser.enable = true;
 
     openvpn.enable = true;

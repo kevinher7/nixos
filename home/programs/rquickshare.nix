@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  hostname,
   ...
 }: let
   cfg = config.myPrograms.rquickshare;
@@ -15,10 +16,10 @@ in {
 
       # Does not use ~/.config
       file.".local/share/dev.mandre.rquickshare/.settings.json".text = builtins.toJSON {
-        device_name = "beans-btw";
+        device_name = hostname;
         port = 9300;
         server_port = 9300;
-        download_directory = "/home/kevin/downloads";
+        download_directory = "${config.home.homeDirectory}/downloads";
         light_mode = false;
         show_notifications = true;
         auto_start = false;

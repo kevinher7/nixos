@@ -1,16 +1,11 @@
 {lib, ...}: {
   imports = [
+    ./laptop.nix
     ./server.nix
-    ./chromebook.nix
-    ./dell.nix
   ];
 
-  options.myModules.power = {
-    enable = lib.mkEnableOption "Power Management";
-
-    profile = lib.mkOption {
-      type = lib.types.enum ["server" "chromebook" "dell"];
-      description = "Power management profile";
-    };
+  options.myModules.power.profile = lib.mkOption {
+    type = lib.types.enum ["laptop" "server"];
+    description = "Power management profile";
   };
 }

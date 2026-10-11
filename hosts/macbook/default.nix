@@ -12,16 +12,10 @@
 
   myModules.theming.wallpaper = ../../assets/wallpapers/red-mountain.png;
 
-  myVars = {
-    serverTailscaleIP = "100.87.121.69";
-
-    gitUser = {
-      name = "Kevin Hernandez";
-      email = "kevinhernem@gmail.com";
-    };
+  nixpkgs = {
+    hostPlatform = "aarch64-darwin";
+    config.allowUnfree = true;
   };
-
-  nixpkgs.config.allowUnfree = true;
 
   networking.hostName = hostname;
 

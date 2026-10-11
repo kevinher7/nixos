@@ -75,76 +75,54 @@
     sops-nix,
     treefmt-nix,
     git-hooks-nix,
-    t3code,
     ...
   } @ inputs: let
-    system = "x86_64-linux";
     forEachSystem = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"];
     treefmtFor = sys: (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${sys} ./treefmt.nix).config.build.wrapper;
 
-    # Helper Function to Create NixOS Configs
-    mkNixosConfig = hostname: profile: username:
+    homeManagerModule = specialArgs: {
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        backupFileExtension = "backup";
+        extraSpecialArgs = specialArgs;
+        sharedModules = [nixvim.homeModules.nixvim];
+        users.${specialArgs.username} = import ./home/hosts/${specialArgs.profile}.nix;
+      };
+    };
+
+    mkNixosConfig = hostname: profile: username: let
+      specialArgs = {
+        inherit inputs hostname profile username;
+        osFamily = "linux";
+      };
+    in
       nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs hostname profile username;
-          osFamily = "linux";
-        };
+        inherit specialArgs;
         modules = [
           ./hosts/${profile}
-          ./modules/overlays
           ./modules/vars
           sops-nix.nixosModules.sops
-
           stylix.nixosModules.stylix
-
           home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              backupFileExtension = "backup";
-              extraSpecialArgs = {
-                inherit inputs hostname profile username;
-                osFamily = "linux";
-              };
-              sharedModules = [nixvim.homeModules.nixvim];
-              users.${username} = import ./home/hosts/${profile}.nix;
-            };
-          }
+          (homeManagerModule specialArgs)
         ];
       };
 
-    # Helper Function to Create Darwin Configs
     mkDarwinConfig = hostname: profile: username: let
-      darwinSystem = "aarch64-darwin";
+      specialArgs = {
+        inherit inputs hostname profile username;
+        osFamily = "darwin";
+      };
     in
       nix-darwin.lib.darwinSystem {
-        system = darwinSystem;
-        specialArgs = {
-          inherit inputs hostname profile username;
-          osFamily = "darwin";
-        };
+        inherit specialArgs;
         modules = [
           ./hosts/${profile}
-          ./modules/overlays
           ./modules/vars
-          sops-nix.darwinModules.sops
           stylix.darwinModules.stylix
           home-manager.darwinModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              backupFileExtension = "backup";
-              extraSpecialArgs = {
-                inherit inputs hostname profile username;
-                osFamily = "darwin";
-              };
-              sharedModules = [nixvim.homeModules.nixvim];
-              users.${username} = import ./home/hosts/${profile}.nix;
-            };
-          }
+          (homeManagerModule specialArgs)
         ];
       };
   in {

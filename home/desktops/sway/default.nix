@@ -56,6 +56,8 @@ in {
     ./quickshell.nix
   ];
 
+  myPrograms.rofi.enable = true;
+
   # Tie Kanshi, swayidle, and other Wayland services to the Sway session.
   wayland.systemd.target = "sway-session.target";
 
@@ -203,7 +205,7 @@ in {
       before-sleep = lock;
     };
 
-    # Suspend/hibernate remains owned by logind in modules/power/dell.nix.
+    # Suspend/hibernate remains owned by logind in modules/power/laptop.nix.
     timeouts = [
       {
         timeout = 300;

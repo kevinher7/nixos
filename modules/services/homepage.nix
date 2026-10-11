@@ -19,6 +19,7 @@ in {
   config = lib.mkIf cfg.homepage.enable {
     services.homepage-dashboard = {
       enable = true;
+      listenPort = cfg.homepage.port;
       openFirewall = false;
       allowedHosts = let
         port = toString cfg.homepage.port;

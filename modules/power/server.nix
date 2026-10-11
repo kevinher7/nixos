@@ -2,10 +2,8 @@
   config,
   lib,
   ...
-}: let
-  cfg = config.myModules.power;
-in {
-  config = lib.mkIf (cfg.enable && cfg.profile == "server") {
+}: {
+  config = lib.mkIf (config.myModules.power.profile == "server") {
     services.logind.settings.Login = {
       HandleLidSwitch = "ignore";
       HandleLidSwitchExternalPower = "ignore";

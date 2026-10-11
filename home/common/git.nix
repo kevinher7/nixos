@@ -1,10 +1,10 @@
-{osConfig, ...}: {
+_: {
   programs.git = {
     enable = true;
     ignores = [".DS_Store"]; # global gitignore
     settings = {
-      user.name = osConfig.myVars.gitUser.name;
-      user.email = osConfig.myVars.gitUser.email;
+      user.name = "Kevin Hernandez";
+      user.email = "kevinhernem@gmail.com";
       init.defaultBranch = "main";
       core.editor = "nvim";
     };

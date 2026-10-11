@@ -10,11 +10,6 @@ in {
   options.myModules.networking = {
     enable = lib.mkEnableOption "Networking Configuration";
 
-    hostname = lib.mkOption {
-      type = lib.types.str;
-      description = "The hostname of the machine";
-    };
-
     ssh.authorizedClients = lib.mkOption {
       type = lib.types.listOf (lib.types.enum (builtins.attrNames sshKeys));
       description = "Hosts from ssh-keys.nix whose key may log in as the main user";
@@ -52,7 +47,6 @@ in {
       map (client: sshKeys.${client}) cfg.networking.ssh.authorizedClients;
 
     networking = {
-      hostName = cfg.networking.hostname;
       networkmanager.enable = true;
 
       firewall = {
