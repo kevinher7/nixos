@@ -5,6 +5,7 @@
 }: {
   programs.zsh = {
     enable = true;
+    dotDir = config.home.homeDirectory;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
