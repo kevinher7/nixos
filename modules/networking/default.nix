@@ -17,7 +17,7 @@ in {
 
     ssh.authorizedClients = lib.mkOption {
       type = lib.types.listOf (lib.types.enum (builtins.attrNames sshKeys));
-      default = [];
+      default = builtins.attrNames sshKeys;
       description = "Hosts from ssh-keys.nix whose key may log in as the main user";
     };
 
