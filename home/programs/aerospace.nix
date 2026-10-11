@@ -20,12 +20,7 @@
         on-window-detected = [{run = "split opposite";}];
 
         mode.main.binding = {
-          alt-enter = ''
-            exec-and-forget osascript -e '
-                tell application "Ghostty"
-                    activate
-                end tell'
-          '';
+          cmd-enter = "exec-and-forget osascript -e 'tell application \"Ghostty\" to new window'";
           alt-shift-semicolon = "mode service";
           alt-h = "focus --boundaries-action wrap-around-the-workspace left";
           alt-j = "focus --boundaries-action wrap-around-the-workspace down";
