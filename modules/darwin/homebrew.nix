@@ -2,13 +2,6 @@ _: {
   homebrew = {
     enable = true;
 
-    taps = [
-      {
-        name = "nikitabobko/tap";
-        trusted = true;
-      }
-    ];
-
     onActivation = {
       autoUpdate = true;
       upgrade = true;
@@ -27,7 +20,6 @@ _: {
     casks = [
       "1password"
       "1password-cli"
-      "aerospace"
       "cap"
       "dbeaver-community"
       "ghostty"
