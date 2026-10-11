@@ -203,7 +203,7 @@ in {
       before-sleep = lock;
     };
 
-    # Suspend/hibernate remains owned by logind in modules/power/dell.nix.
+    # Suspend/hibernate remains owned by logind in modules/power/laptop.nix.
     timeouts = [
       {
         timeout = 300;

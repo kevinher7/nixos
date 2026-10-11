@@ -1,9 +1,4 @@
-{
-  lib,
-  hostname,
-  profile,
-  ...
-}: {
+{lib, ...}: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/desktop/sway
@@ -12,14 +7,12 @@
     ../../modules/theming
     ../../modules/networking
     ../../modules/login
-    ../../modules/power
+    ../../modules/power/laptop.nix
     ../../modules/input
     ../../modules/audio
     ../../modules/bluetooth
     ../../modules/t3code
   ];
-
-  time.timeZone = "Asia/Tokyo";
 
   programs.steam.enable = true;
 
@@ -29,13 +22,6 @@
       "steam-unwrapped"
     ];
 
-  myVars = {
-    gitUser = {
-      name = "Kevin Hernandez";
-      email = "kevinhernem@gmail.com";
-    };
-  };
-
   myModules = {
     theming.wallpaper = ../../assets/wallpapers/orion-nebula.jpg;
 
@@ -43,17 +29,11 @@
 
     networking = {
       enable = true;
-      inherit hostname;
       tailscale = {
         enable = true;
         ssh = false;
         operatorUser = "kevin";
       };
-    };
-
-    power = {
-      enable = true;
-      inherit profile;
     };
 
     t3code = {
@@ -64,4 +44,9 @@
 
   # AMD Radeon integrated graphics.
   hardware.enableRedistributableFirmware = true;
+
+  # amd-pstate exposes EPP through the `powersave` governor; unlike
+  # intel_pstate, pinning `performance` here would ignore the EPP hint
+  # entirely and keep the cores boosting on battery.
+  services.auto-cpufreq.settings.battery.governor = "powersave";
 }

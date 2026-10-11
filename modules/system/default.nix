@@ -1,8 +1,13 @@
 {
   config,
+  hostname,
   lib,
   ...
 }: {
+  networking.hostName = hostname;
+
+  time.timeZone = "Asia/Tokyo";
+
   boot.loader = {
     systemd-boot = {
       enable = true;

@@ -8,11 +8,6 @@ in {
   options.myModules.networking = {
     enable = lib.mkEnableOption "Networking Configuration";
 
-    hostname = lib.mkOption {
-      type = lib.types.str;
-      description = "The hostname of the machine";
-    };
-
     tailscale = {
       enable = lib.mkEnableOption "Tailscale VPN";
 
@@ -42,7 +37,6 @@ in {
 
   config = lib.mkIf cfg.networking.enable {
     networking = {
-      hostName = cfg.networking.hostname;
       networkmanager.enable = true;
 
       firewall = {

@@ -1,9 +1,6 @@
 {
   config,
-  hostname,
-  profile,
   username,
-  lib,
   ...
 }: {
   imports = [
@@ -12,7 +9,7 @@
     ../../modules/core
     ../../modules/theming
     ../../modules/networking
-    ../../modules/power
+    ../../modules/power/server.nix
     ../../modules/secrets
     ../../modules/services
     ../../modules/t3code
@@ -22,11 +19,6 @@
     domain = "beanhaven.net";
     acmeEmail = "kevinhernem@gmail.com";
     serverTailscaleIP = "100.87.121.69";
-
-    gitUser = {
-      name = "Kevin Hernandez";
-      email = "kevinhernem@gmail.com";
-    };
 
     lan = {
       gateway = "192.168.0.1";
@@ -38,12 +30,10 @@
     };
   };
 
-  time.timeZone = "Asia/Tokyo";
-
   users.users.${username}.linger = true;
 
   networking = {
-    useDHCP = lib.mkForce false;
+    useDHCP = false;
 
     # Tell NetworkManager not to touch enp2s0; we manage it declaratively
     networkmanager.unmanaged = ["enp2s0"];
@@ -72,17 +62,11 @@
 
     networking = {
       enable = true;
-      inherit hostname;
       tailscale = {
         enable = true;
         openFirewall = true;
         ssh = true;
       };
-    };
-
-    power = {
-      enable = true;
-      inherit profile;
     };
 
     t3code.enable = true;
