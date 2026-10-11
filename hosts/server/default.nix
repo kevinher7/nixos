@@ -133,6 +133,7 @@
       };
 
       openFirewallDHCP = true;
+      openFirewallWeb = false;
     };
   };
 }

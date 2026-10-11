@@ -49,7 +49,7 @@ in {
         enable = true;
         allowedUDPPorts = [5353];
 
-        trustedInterfaces = ["tailscale0"];
+        interfaces.tailscale0.allowedTCPPorts = [22];
       };
     };
 
@@ -62,7 +62,15 @@ in {
           ++ lib.optional (cfg.networking.tailscale.operatorUser != null) "--operator=${cfg.networking.tailscale.operatorUser}";
       };
 
-      openssh.enable = true;
+      openssh = {
+        enable = true;
+        openFirewall = false;
+        settings = {
+          PasswordAuthentication = false;
+          KbdInteractiveAuthentication = false;
+          PermitRootLogin = "no";
+        };
+      };
 
       avahi = {
         enable = true;

@@ -63,7 +63,7 @@ in {
                   href = "https://vault.${domain}";
                   icon = "bitwarden";
                   description = "Password manager";
-                  siteMonitor = "http://localhost:${toString cfg.vaultwarden.port}";
+                  siteMonitor = "http://127.0.0.1:${toString cfg.vaultwarden.port}";
                 };
               }
             ]
@@ -83,7 +83,7 @@ in {
                   href = "https://${cfg.actual.domain}";
                   icon = "actual-budget";
                   description = "Personal budgeting";
-                  siteMonitor = "http://localhost:${toString cfg.actual.port}";
+                  siteMonitor = "http://127.0.0.1:${toString cfg.actual.port}";
                 };
               }
             ]

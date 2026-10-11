@@ -33,14 +33,10 @@ in {
   options.myHomelab.llm = {
     enable = lib.mkEnableOption "llama-swap LLM gateway (llama.cpp backends)";
 
-    # Bind to all interfaces, but the firewall only trusts tailscale0 (and
-    # openFirewall stays false), so the gateway is reachable from the tailnet
-    # but never from LAN or the internet. Binding 0.0.0.0 also avoids a
-    # startup race against tailscale0 getting its address.
     listenAddress = lib.mkOption {
       type = lib.types.str;
-      default = "0.0.0.0";
-      description = "Address llama-swap binds to. Firewall restricts access to the tailnet.";
+      default = "127.0.0.1";
+      description = "Address llama-swap binds to.";
     };
 
     port = lib.mkOption {
@@ -110,7 +106,6 @@ in {
     services.llama-swap = {
       enable = true;
       inherit (cfg) listenAddress port;
-      # No allowedTCPPorts needed: tailscale0 is already a trusted interface.
       openFirewall = false;
       settings = {
         # Model load + first health check can be slow on CPU; be generous.

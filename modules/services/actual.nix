@@ -17,7 +17,7 @@ in {
     port = lib.mkOption {
       type = lib.types.port;
       default = 5006;
-      description = "Port for Actual Budget (bound to 0.0.0.0, reachable from the tailnet)";
+      description = "Internal port for Actual Budget (proxied via nginx)";
     };
   };
 
@@ -25,7 +25,7 @@ in {
     services.actual = {
       enable = true;
       settings = {
-        hostname = "0.0.0.0";
+        hostname = "127.0.0.1";
         port = cfg.actual.port;
       };
     };

@@ -32,19 +32,9 @@ This guide assumes you already have NixOS installed.
 
 3. **Secrets & Encryption** 🔐
 
-   Sensitive values are encrypted with [`sops-nix`](https://github.com/Mic92/sops-nix). The NixOS module automatically derives the age key from `/etc/ssh/ssh_host_ed25519_key` during system rebuilds, so builds work transparently. However, to **manually edit** secrets with the `sops` CLI, you need an age identity file accessible to your user.
+   Sensitive values are encrypted with [`sops-nix`](https://github.com/Mic92/sops-nix). `.sops.yaml` encrypts every secret to two age recipients, the server and the macbook. The server decrypts at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file is needed on the server.
 
-   **One-time setup (run on your NixOS server):**
-
-   ```bash
-   mkdir -p ~/.config/sops/age
-
-   sudo nix-shell -p ssh-to-age --run \
-     "ssh-to-age -private-key -i /etc/ssh/ssh_host_ed25519_key" \
-     > ~/.config/sops/age/keys.txt
-
-   chmod 600 ~/.config/sops/age/keys.txt
-   ```
+   Edit secrets from the macbook. Its age identity lives in the default `sops` location (`~/Library/Application Support/sops/age/keys.txt`, or `$XDG_CONFIG_HOME/sops/age/keys.txt` when that variable is set). Do not export the server's host key to an age identity file in a user's home directory. Anything running as that user, coding agents included, could then decrypt every secret, the Harmonia signing key among them.
 
    **Editing secrets:**
 
@@ -135,7 +125,7 @@ All machines are connected via **[Tailscale](https://tailscale.com/)**, which fo
 
 - The server and laptop can talk to each other securely over the internet without opening public ports.
 - The server enables **Tailscale SSH** (`--ssh`), allowing remote administration without exposing the traditional OpenSSH port to the open internet.
-- The `tailscale0` interface is marked as a **trusted firewall interface**, so services and administrative ports are seamlessly reachable from other tailnet devices.
+- The firewall opens only SSH (22) on `tailscale0` on every host, plus HTTP and HTTPS (80, 443) on the server for nginx. Every homelab service is reached through its nginx domain; the backends listen on `127.0.0.1`.
 
 ---
 
