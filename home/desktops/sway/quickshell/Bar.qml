@@ -8,14 +8,20 @@ PanelWindow {
     required property var modelData
 
     screen: modelData
-    color: Theme.background
-    implicitHeight: 30
-    exclusiveZone: 30
+    color: "transparent"
+    implicitHeight: 40
+    exclusiveZone: 40
 
     anchors {
         top: true
         left: true
         right: true
+    }
+
+    Pill {
+        anchors.centerIn: parent
+        icon: ""
+        label: "9:11"
     }
 
     RowLayout {

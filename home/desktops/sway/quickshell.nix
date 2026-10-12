@@ -24,6 +24,7 @@ in {
       "QS_BASE0C=${colors.base0C}"
       "QS_BASE0D=${colors.base0D}"
       ''"QS_FONT_FAMILY=${config.stylix.fonts.sansSerif.name}"''
+      ''"QS_ICON_FONT_FAMILY=${config.stylix.fonts.monospace.name}"''
       "QS_FONT_SIZE=${toString config.stylix.fonts.sizes.desktop}"
     ];
   };

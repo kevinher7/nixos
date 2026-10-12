@@ -18,5 +18,6 @@ Singleton {
     readonly property color blue: environment("QS_BASE0D", "#7aa2f7")
 
     readonly property string fontFamily: environment("QS_FONT_FAMILY", "JetBrains Mono")
+    readonly property string iconFontFamily: environment("QS_ICON_FONT_FAMILY", "JetBrainsMono Nerd Font")
     readonly property int fontSize: parseInt(environment("QS_FONT_SIZE", "12"), 10)
 }
