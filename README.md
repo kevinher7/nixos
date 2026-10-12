@@ -76,6 +76,17 @@ It shows a checklist of the fast-moving inputs, updates `flake.lock` on a new
 branch, and creates the PR with the same body format as the weekly workflow.
 Pass input names as arguments to skip the prompt.
 
+To roll the latest `main` out to the whole fleet at once, run
+`nix run .#fleet-deploy`. It opens an SSH connection to each host over
+tailscale (the host it runs on is handled locally), pulls `main`, runs the
+rebuild on all of them in parallel and shows which hosts are still building and
+which are done. The first stage lists the fleet so hosts can be toggled on and
+off; `beans-btw` starts off. `uribo-btw` and the darwin hosts rebuild first,
+since darwin does not pull from `cache.beanhaven.net`, and the remaining linux
+hosts start once that cache answers again. The remote hosts share one sudo
+password; the host you run it from authenticates its own sudo directly, so
+Touch ID works there.
+
 ---
 
 ## 🧩 Modular Structure
