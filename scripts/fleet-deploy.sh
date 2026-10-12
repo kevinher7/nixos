@@ -197,6 +197,10 @@ finish() {
 
 FLEET_ALL="kevin@kebean uribo@uribo-btw beellm@kebee kevin@beans-btw"
 FLEET_DEFAULT="kevin@kebean uribo@uribo-btw beellm@kebee"
+CACHE_HOST=uribo-btw
+CACHE_URL=https://cache.beanhaven.net/nix-cache-info
+CACHE_WAIT_SECONDS=120
+CACHE_NOTE=""
 REPO=nixos-config
 LOCAL_HOST=$(hostname -s)
 ENV_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/fleet-deploy/env"
@@ -238,6 +242,52 @@ require_hosts() {
   exit 1
 }
 
+start_rebuild() {
+  local target name rebuild
+  for target in "$@"; do
+    name="${target#*@}"
+    rebuild=$(run_on "$target" "command -v darwin-rebuild >/dev/null && echo darwin-rebuild || echo nixos-rebuild")
+    (
+      status=0
+      printf '%s\n' "$SUDO_PASSWORD" | run_on "$target" \
+        "sudo -k -S -p '' $rebuild switch --flake ./$REPO#$name" \
+        > "$WORK/$name.log" 2>&1 || status=$?
+      echo "$status" > "$WORK/$name.exit"
+    ) &
+  done
+}
+
+wave_finished() {
+  local target
+  for target in "$@"; do
+    [[ -f "$WORK/${target#*@}.exit" ]] || return 1
+  done
+}
+
+track_wave() {
+  until wave_finished "$@"; do
+    render_board
+    sleep 3
+  done
+  render_board
+}
+
+wait_for_cache() {
+  local deadline=$(( $(date +%s) + CACHE_WAIT_SECONDS ))
+  CACHE_NOTE="waiting for $CACHE_URL"
+  while ! curl -fsS --max-time 5 "$CACHE_URL" >/dev/null 2>&1; do
+    if (( $(date +%s) >= deadline )); then
+      CACHE_NOTE="cache unreachable, remaining hosts build from source"
+      SKIPPED+=("$CACHE_URL was unreachable, hosts may have built from source")
+      warn "$CACHE_NOTE"
+      return
+    fi
+    render_board
+    sleep 3
+  done
+  CACHE_NOTE="cache up"
+}
+
 render_board() {
   local target name exit_file secs
   secs=$(( $(date +%s) - STARTED_AT ))
@@ -247,7 +297,9 @@ render_board() {
   for target in "${HOSTS[@]}"; do
     name="${target#*@}"
     exit_file="$WORK/$name.exit"
-    if [[ ! -f "$exit_file" ]]; then
+    if [[ ! -f "$WORK/$name.log" ]]; then
+      printf '  %s· %-12s queued%s\n' "$DIM" "$name" "$RESET"
+    elif [[ ! -f "$exit_file" ]]; then
       printf '  %s⟳ %-12s%s in progress  %s%s%s\n' "$YELLOW" "$name" "$RESET" \
         "$DIM" "$(tail -n1 "$WORK/$name.log" 2>/dev/null | cut -c1-70)" "$RESET"
     elif [[ "$(cat "$exit_file")" == 0 ]]; then
@@ -257,14 +309,8 @@ render_board() {
     fi
   done
   printf '\n'
+  [[ -n "$CACHE_NOTE" ]] && note "$CACHE_NOTE"
   note "logs: $WORK/<host>.log"
-}
-
-all_finished() {
-  local target
-  for target in "${HOSTS[@]}"; do
-    [[ -f "$WORK/${target#*@}.exit" ]] || return 1
-  done
 }
 
 run_wizard() {
@@ -343,24 +389,43 @@ confirm "Rebuild and switch ${#HOSTS[@]} host(s) now?" || exit 1
 
 stage "Rebuilding"
 warn "Keep this terminal open: closing it kills the SSH sessions mid-switch."
+say "$CACHE_HOST serves the binary cache the other hosts pull from, so it"
+say "rebuilds alone first. The rest start once the cache answers again."
 STARTED_AT=$(date +%s)
+
+cache_wave=()
+rest=()
+for target in "${HOSTS[@]}"; do
+  if [[ "${target#*@}" == "$CACHE_HOST" ]]; then
+    cache_wave+=("$target")
+  else
+    rest+=("$target")
+  fi
+done
+
+if (( ${#cache_wave[@]} )); then
+  start_rebuild "${cache_wave[@]}"
+  track_wave "${cache_wave[@]}"
+  if [[ "$(cat "$WORK/$CACHE_HOST.exit")" != 0 ]] && (( ${#rest[@]} )); then
+    printf '\n'; warn "$CACHE_HOST failed, so its cache may be stale or down."
+    if ! confirm "Rebuild the remaining ${#rest[@]} host(s) anyway?"; then
+      for target in "${rest[@]}"; do
+        SKIPPED+=("${target#*@}: not rebuilt, $CACHE_HOST failed first")
+      done
+      rest=()
+    fi
+  fi
+  (( ${#rest[@]} )) && wait_for_cache
+fi
+
+if (( ${#rest[@]} )); then
+  start_rebuild "${rest[@]}"
+  track_wave "${rest[@]}"
+fi
+
 for target in "${HOSTS[@]}"; do
   name="${target#*@}"
-  rebuild=$(run_on "$target" "command -v darwin-rebuild >/dev/null && echo darwin-rebuild || echo nixos-rebuild")
-  (
-    printf '%s\n' "$SUDO_PASSWORD" | run_on "$target" \
-      "sudo -k -S -p '' $rebuild switch --flake ./$REPO#$name" \
-      > "$WORK/$name.log" 2>&1
-    echo $? > "$WORK/$name.exit"
-  ) &
-done
-until all_finished; do
-  render_board
-  sleep 3
-done
-render_board
-for target in "${HOSTS[@]}"; do
-  name="${target#*@}"
+  [[ -f "$WORK/$name.exit" ]] || continue
   [[ "$(cat "$WORK/$name.exit")" == 0 ]] && continue
   printf '\n'; warn "$name failed, last lines of $WORK/$name.log:"
   tail -n 15 "$WORK/$name.log" | sed 's/^/      /'

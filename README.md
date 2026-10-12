@@ -81,7 +81,9 @@ To roll the latest `main` out to the whole fleet at once, run
 tailscale (the host it runs on is handled locally), pulls `main`, runs the
 rebuild on all of them in parallel and shows which hosts are still building and
 which are done. The first stage lists the fleet so hosts can be toggled on and
-off; `beans-btw` starts off.
+off; `beans-btw` starts off. `uribo-btw` rebuilds alone first, since it serves
+the binary cache the other hosts pull from, and the rest start once
+`cache.beanhaven.net` answers again.
 
 ---
 
