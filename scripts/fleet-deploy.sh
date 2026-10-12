@@ -201,6 +201,7 @@ CACHE_HOST=uribo-btw
 CACHE_URL=https://cache.beanhaven.net/nix-cache-info
 CACHE_WAIT_SECONDS=120
 CACHE_NOTE=""
+STARTED=()
 REPO=nixos-config
 LOCAL_HOST=$(hostname -s)
 ENV_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/fleet-deploy/env"
@@ -246,7 +247,8 @@ start_rebuild() {
   local target name rebuild
   for target in "$@"; do
     name="${target#*@}"
-    rebuild=$(run_on "$target" "command -v darwin-rebuild >/dev/null && echo darwin-rebuild || echo nixos-rebuild")
+    rebuild=nixos-rebuild
+    [[ "$(cat "$WORK/$name.os")" == Darwin ]] && rebuild=darwin-rebuild
     (
       status=0
       printf '%s\n' "$SUDO_PASSWORD" | run_on "$target" \
@@ -254,6 +256,7 @@ start_rebuild() {
         > "$WORK/$name.log" 2>&1 || status=$?
       echo "$status" > "$WORK/$name.exit"
     ) &
+    STARTED+=("$target")
   done
 }
 
@@ -341,6 +344,7 @@ kept=()
 for target in "${HOSTS[@]}"; do
   if os=$(run_on "$target" uname -s 2>/dev/null); then
     printf '  %s✓ connected%s %-20s %s\n' "$GREEN" "$RESET" "$target" "$os"
+    printf '%s' "$os" > "$WORK/${target#*@}.os"
     kept+=("$target")
   else
     skip_host "$target" "unreachable"
@@ -389,39 +393,45 @@ confirm "Rebuild and switch ${#HOSTS[@]} host(s) now?" || exit 1
 
 stage "Rebuilding"
 warn "Keep this terminal open: closing it kills the SSH sessions mid-switch."
-say "$CACHE_HOST serves the binary cache the other hosts pull from, so it"
-say "rebuilds alone first. The rest start once the cache answers again."
+say "$CACHE_HOST and the darwin hosts go first. Darwin does not pull from the"
+say "cache, so it is safe to rebuild those while the cache host restarts."
+say "The remaining linux hosts start once the cache answers again."
 STARTED_AT=$(date +%s)
 
-cache_wave=()
-rest=()
+cache_target=""
+independent=()
+cache_users=()
 for target in "${HOSTS[@]}"; do
-  if [[ "${target#*@}" == "$CACHE_HOST" ]]; then
-    cache_wave+=("$target")
+  name="${target#*@}"
+  if [[ "$name" == "$CACHE_HOST" ]]; then
+    cache_target="$target"
+    independent+=("$target")
+  elif [[ "$(cat "$WORK/$name.os")" == Darwin ]]; then
+    independent+=("$target")
   else
-    rest+=("$target")
+    cache_users+=("$target")
   fi
 done
 
-if (( ${#cache_wave[@]} )); then
-  start_rebuild "${cache_wave[@]}"
-  track_wave "${cache_wave[@]}"
-  if [[ "$(cat "$WORK/$CACHE_HOST.exit")" != 0 ]] && (( ${#rest[@]} )); then
+(( ${#independent[@]} )) && start_rebuild "${independent[@]}"
+
+if (( ${#cache_users[@]} )) && [[ -n "$cache_target" ]]; then
+  track_wave "$cache_target"
+  if [[ "$(cat "$WORK/$CACHE_HOST.exit")" != 0 ]]; then
     printf '\n'; warn "$CACHE_HOST failed, so its cache may be stale or down."
-    if ! confirm "Rebuild the remaining ${#rest[@]} host(s) anyway?"; then
-      for target in "${rest[@]}"; do
+    if ! confirm "Rebuild the remaining ${#cache_users[@]} linux host(s) anyway?"; then
+      for target in "${cache_users[@]}"; do
         SKIPPED+=("${target#*@}: not rebuilt, $CACHE_HOST failed first")
       done
-      rest=()
+      cache_users=()
     fi
   fi
-  (( ${#rest[@]} )) && wait_for_cache
+  (( ${#cache_users[@]} )) && wait_for_cache
 fi
 
-if (( ${#rest[@]} )); then
-  start_rebuild "${rest[@]}"
-  track_wave "${rest[@]}"
-fi
+(( ${#cache_users[@]} )) && start_rebuild "${cache_users[@]}"
+
+track_wave "${STARTED[@]}"
 
 for target in "${HOSTS[@]}"; do
   name="${target#*@}"
