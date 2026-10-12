@@ -83,7 +83,9 @@ rebuild on all of them in parallel and shows which hosts are still building and
 which are done. The first stage lists the fleet so hosts can be toggled on and
 off; `beans-btw` starts off. `uribo-btw` and the darwin hosts rebuild first,
 since darwin does not pull from `cache.beanhaven.net`, and the remaining linux
-hosts start once that cache answers again.
+hosts start once that cache answers again. The remote hosts share one sudo
+password; the host you run it from authenticates its own sudo directly, so
+Touch ID works there.
 
 ---
 

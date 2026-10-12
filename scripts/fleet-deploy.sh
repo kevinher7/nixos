@@ -202,6 +202,7 @@ CACHE_URL=https://cache.beanhaven.net/nix-cache-info
 CACHE_WAIT_SECONDS=120
 CACHE_NOTE=""
 STARTED=()
+SUDO_PASSWORD=""
 REPO=nixos-config
 LOCAL_HOST=$(hostname -s)
 ENV_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/fleet-deploy/env"
@@ -244,15 +245,21 @@ require_hosts() {
 }
 
 start_rebuild() {
-  local target name rebuild
+  local target name rebuild sudo_args
   for target in "$@"; do
     name="${target#*@}"
     rebuild=nixos-rebuild
     [[ "$(cat "$WORK/$name.os")" == Darwin ]] && rebuild=darwin-rebuild
+    if [[ "$name" == "$LOCAL_HOST" ]]; then
+      sudo -n true 2>/dev/null || sudo -v || true
+      sudo_args="-n"
+    else
+      sudo_args="-k -S -p ''"
+    fi
     (
       status=0
       printf '%s\n' "$SUDO_PASSWORD" | run_on "$target" \
-        "sudo -k -S -p '' $rebuild switch --flake ./$REPO#$name" \
+        "sudo $sudo_args $rebuild switch --flake ./$REPO#$name" \
         > "$WORK/$name.log" 2>&1 || status=$?
       echo "$status" > "$WORK/$name.exit"
     ) &
@@ -354,14 +361,34 @@ HOSTS=("${kept[@]}")
 require_hosts "no reachable hosts"
 pause
 
-stage "Sudo password"
-say "The rebuild needs sudo on each host. The password is only"
-say "piped to sudo over SSH; it is never written to disk."
-ask_secret SUDO_PASSWORD "Sudo password for the fleet:"
+stage "Sudo access"
+say "The rebuild needs sudo on every host."
+
+remotes=()
+for target in "${HOSTS[@]}"; do
+  [[ "${target#*@}" == "$LOCAL_HOST" ]] || remotes+=("$target")
+done
+
+if (( ${#remotes[@]} )); then
+  say "The ${#remotes[@]} remote host(s) share one password, piped to sudo over"
+  say "SSH and never written to disk. Hosts that reject it are dropped."
+  ask_secret SUDO_PASSWORD "Sudo password for the remote hosts:"
+fi
+printf '\n'
+
 kept=()
 for target in "${HOSTS[@]}"; do
-  if printf '%s\n' "$SUDO_PASSWORD" | run_on "$target" "sudo -k -S -p '' true" >/dev/null 2>&1; then
-    printf '  %s✓ sudo ok%s %s\n' "$GREEN" "$RESET" "${target#*@}"
+  name="${target#*@}"
+  if [[ "$name" == "$LOCAL_HOST" ]]; then
+    note "$name rebuilds here, so its own sudo asks you directly."
+    if sudo -v; then
+      printf '  %s✓ sudo ok%s %s\n' "$GREEN" "$RESET" "$name"
+      kept+=("$target")
+    else
+      skip_host "$target" "sudo refused here"
+    fi
+  elif printf '%s\n' "$SUDO_PASSWORD" | run_on "$target" "sudo -k -S -p '' true" >/dev/null 2>&1; then
+    printf '  %s✓ sudo ok%s %s\n' "$GREEN" "$RESET" "$name"
     kept+=("$target")
   else
     skip_host "$target" "sudo rejected the password"
