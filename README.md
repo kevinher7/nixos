@@ -80,7 +80,8 @@ To roll the latest `main` out to the whole fleet at once, run
 `nix run .#fleet-deploy`. It opens an SSH connection to each host over
 tailscale (the host it runs on is handled locally), pulls `main`, runs the
 rebuild on all of them in parallel and shows which hosts are still building and
-which are done.
+which are done. The first stage lists the fleet so hosts can be toggled on and
+off; `beans-btw` starts off.
 
 ---
 

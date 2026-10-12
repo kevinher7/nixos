@@ -195,6 +195,7 @@ finish() {
 # STAGES: fleet deploy, run with `nix run .#fleet-deploy`.
 # ──────────────────────────────────────────────────────────────────────────
 
+FLEET_ALL="kevin@kebean uribo@uribo-btw beellm@kebee kevin@beans-btw"
 FLEET_DEFAULT="kevin@kebean uribo@uribo-btw beellm@kebee"
 REPO=nixos-config
 LOCAL_HOST=$(hostname -s)
@@ -277,10 +278,16 @@ banner "Fleet deploy"
 
 stage "Pick hosts"
 say "Hosts are user@host, reached over tailscale. $LOCAL_HOST runs locally."
-[[ -n "$(_existing FLEET_HOSTS || true)" ]] || write_env FLEET_HOSTS "$FLEET_DEFAULT"
-ask FLEET_HOSTS "Hosts to deploy (space separated):"
-write_env FLEET_HOSTS "$FLEET_HOSTS"
-read -r -a HOSTS <<< "$FLEET_HOSTS"
+note "Arrows move, x or tab toggles, enter confirms."
+printf '\n'
+read -r -a choices <<< "$FLEET_ALL"
+read -r -a remembered <<< "$(_existing FLEET_HOSTS || printf '%s' "$FLEET_DEFAULT")"
+mapfile -t HOSTS < <(printf '%s\n' "${choices[@]}" |
+  gum choose --no-limit --height "$(( ${#choices[@]} + 1 ))" \
+    --header "Hosts to deploy" \
+    --selected "$(IFS=,; printf '%s' "${remembered[*]}")")
+require_hosts "no hosts selected"
+write_env FLEET_HOSTS "${HOSTS[*]}"
 
 stage "Connect"
 say "Opening one persistent SSH connection per host. Later stages reuse it."
