@@ -3,11 +3,11 @@
     "agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1791294199,
-        "narHash": "sha256-p/EWWa12JTMTGrLDrXetaIevl44SdlvvIscOdk1L7Qk=",
+        "lastModified": 1791858723,
+        "narHash": "sha256-IdTihqwjqcUwYqc6uE7jtxiDzJwftX9jwagAOcqmcHk=",
         "owner": "kevinher7",
         "repo": "agent-toolkit",
-        "rev": "765a611f2c142bd3691836b6c925659dd0f44d18",
+        "rev": "f356d4590caf2bc070d99d24ae70d5d93301c32e",
         "type": "github"
       },
       "original": {
