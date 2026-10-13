@@ -194,7 +194,8 @@ settings, hooks, status line, and RTK integration are declarative; do not run
 `rtk init` or integration installers that rewrite those files. Codex's
 `config.toml` and `hooks.json` are declarative too. The config file stays
 writable so Codex can record hook trust and newly trusted projects, and the
-declared values win on every `home-manager switch`. Codex has no MCP servers
+declared values win on every `home-manager switch`. Both harnesses run
+without approval prompts and with full filesystem access by default. Codex has no MCP servers
 or plugins declared; the desktop app may add its own to the writable file.
 
 The [agent-toolkit](https://github.com/kevinher7/agent-toolkit) repository supplies

@@ -24,6 +24,8 @@ in {
         model_reasoning_effort = "medium";
         plan_mode_reasoning_effort = "high";
         personality = "pragmatic";
+        approval_policy = "never";
+        sandbox_mode = "danger-full-access";
 
         features = {
           multi_agent = true;
