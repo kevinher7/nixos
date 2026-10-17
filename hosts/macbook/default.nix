@@ -10,7 +10,7 @@
     ../../modules/theming
   ];
 
-  myModules.theming.wallpaper = ../../assets/wallpapers/red-mountain.png;
+  myModules.theming.wallpaper = ../../assets/wallpapers/snowy-village.jpg;
 
   nixpkgs = {
     hostPlatform = "aarch64-darwin";
