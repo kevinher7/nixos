@@ -258,9 +258,13 @@ pairing link with:
 
 The helper accepts `uribo-btw`, `kebean`, or `beans-btw` and connects over SSH as
 the host's service user. You need Tailscale connectivity and SSH access to that
-host. In `t3code.beanhaven.net`, use Add environment with the printed link within
-five minutes. Pairing the same host replaces its saved credentials. The helper
-uses the existing `/var/lib/t3code` state and leaves old sessions in place.
+host. For laptops, open Settings > Connections > Add environment in
+`t3code.beanhaven.net` and paste the full printed link within five minutes.
+A laptop's token will not work at `https://t3code.beanhaven.net/pair`, which
+authenticates against `uribo-btw`. If that page asks for a token, run
+`./scripts/t3-renew.sh uribo-btw` and open its full printed link first.
+Pairing the same host replaces its saved credentials. The helper uses the
+existing `/var/lib/t3code` state and leaves old sessions in place.
 
 Providers authenticate per host, so `codex` and `claude` need a login on each
 machine as that machine's user.

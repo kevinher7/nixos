@@ -32,7 +32,13 @@ case "$1" in
 esac
 
 printf 'Generating a pairing link on %s.\n' "$1"
-printf 'In t3code.beanhaven.net, use Add environment with the link below.\n'
+if [[ "$1" == uribo-btw ]]; then
+  printf 'Open the full printed link to sign in to t3code.beanhaven.net.\n'
+else
+  printf 'In t3code.beanhaven.net, open Settings > Connections > Add environment.\n'
+  printf 'Paste the full printed link there. This token will not work at t3code.beanhaven.net/pair.\n'
+  printf 'If that site needs a token, first run: %s uribo-btw\n' "$0"
+fi
 printf 'The link expires after five minutes. Your new session lasts 30 days.\n\n'
 
 exec ssh -o ConnectTimeout=10 -- "${service_user}@$1" \
