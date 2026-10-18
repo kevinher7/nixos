@@ -59,6 +59,7 @@ in {
 
       serviceConfig = {
         Type = "oneshot";
+        TimeoutStartSec = "5min";
         User = "mail-bean";
         Group = "mail-bean";
         StateDirectory = "mail-bean";
