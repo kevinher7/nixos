@@ -249,6 +249,19 @@ Open the printed link in the browser profile you use for
 survives service restarts and reboots. Clearing site data or switching browser
 profile means pairing again. Use `t3 auth` to list or revoke old sessions.
 
+Sessions expire after 30 days. From the repository root, generate a fresh
+pairing link with:
+
+```bash
+./scripts/t3-renew.sh kebean
+```
+
+The helper accepts `uribo-btw`, `kebean`, or `beans-btw` and connects over SSH as
+the host's service user. You need Tailscale connectivity and SSH access to that
+host. In `t3code.beanhaven.net`, use Add environment with the printed link within
+five minutes. Pairing the same host replaces its saved credentials. The helper
+uses the existing `/var/lib/t3code` state and leaves old sessions in place.
+
 Providers authenticate per host, so `codex` and `claude` need a login on each
 machine as that machine's user.
 
