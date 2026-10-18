@@ -10,14 +10,7 @@
 in {
   config = lib.mkMerge [
     (lib.mkIf cfg.cli.enable {
-      home.packages = [
-        t3Packages.t3-cli
-        (pkgs.writeShellApplication {
-          name = "t3-renew";
-          runtimeInputs = [pkgs.openssh];
-          text = builtins.readFile ./t3-renew.sh;
-        })
-      ];
+      home.packages = [t3Packages.t3-cli];
     })
 
     (lib.mkIf cfg.desktop.enable {
