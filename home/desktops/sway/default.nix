@@ -164,6 +164,8 @@ in {
           "${mod}+Ctrl+l" = "resize grow width 40 px";
 
           # Multi-monitor control
+          "${mod}+Tab" = "focus output right";
+          "${mod}+Shift+Tab" = "move workspace to output right";
           "${mod}+comma" = "focus output left";
           "${mod}+period" = "focus output right";
           "${mod}+Shift+comma" = "move container to output left";
