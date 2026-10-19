@@ -4,6 +4,8 @@
   ...
 }: {
   config = lib.mkIf (config.myModules.power.profile == "laptop") {
+    services.upower.enable = true;
+
     services.logind = {
       settings.Login = {
         HandlePowerKey = "suspend";

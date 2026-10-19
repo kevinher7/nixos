@@ -1,0 +1,10 @@
+singleton Theme Theme.qml
+Audio Audio.qml
+Bar Bar.qml
+Battery Battery.qml
+Bluetooth Bluetooth.qml
+Clock Clock.qml
+Internet Internet.qml
+Microphone Microphone.qml
+Pill Pill.qml
+Workspaces Workspaces.qml

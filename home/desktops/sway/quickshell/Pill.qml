@@ -1,38 +1,36 @@
 import QtQuick
-import QtQuick.Layouts
 
 Rectangle {
     id: root
 
     property string icon: ""
     property string label: ""
-    property color iconColor: Theme.blue
-    property int maxLabelWidth: 400
+    property color iconColor: Theme.light.accent
 
-    implicitWidth: row.implicitWidth + 22
-    implicitHeight: 32
+    implicitWidth: row.implicitWidth + Theme.spacing * 2
+    implicitHeight: Theme.controlHeight
     radius: height / 2
-    color: Theme.background
+    color: Theme.dark.background
 
-    RowLayout {
+    Row {
         id: row
         anchors.centerIn: parent
-        spacing: 7
+        spacing: Theme.spacing
 
         Text {
             text: root.icon
             color: root.iconColor
             font.family: Theme.iconFontFamily
             font.pixelSize: Theme.fontSize
+            font.bold: true
         }
 
         Text {
             text: root.label
-            color: Theme.foreground
+            color: Theme.dark.foreground
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
-            elide: Text.ElideRight
-            Layout.maximumWidth: root.maxLabelWidth
+            font.bold: true
             visible: root.label !== ""
         }
     }

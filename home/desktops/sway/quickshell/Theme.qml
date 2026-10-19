@@ -4,20 +4,47 @@ import Quickshell
 import QtQuick
 
 Singleton {
-    function environment(name, fallback) {
-        const value = Quickshell.env(name)
-        return value === null || value === undefined || value === "" ? fallback : value
+    component Palette: QtObject {
+        required property color background
+        required property color muted
+        required property color foreground
+        required property color urgent
+        required property color active
+        required property color accent
     }
 
-    readonly property color background: environment("QS_BASE00", "#1b1b23")
-    readonly property color muted: environment("QS_BASE03", "#444b6a")
-    readonly property color foreground: environment("QS_BASE05", "#f4ded1")
-    readonly property color urgent: environment("QS_BASE08", "#7e93a6")
-    readonly property color yellow: environment("QS_BASE0A", "#e0af68")
-    readonly property color cyan: environment("QS_BASE0C", "#0db9d7")
-    readonly property color blue: environment("QS_BASE0D", "#7aa2f7")
+    readonly property Palette dark: Palette {
+        id: darkTheme
 
-    readonly property string fontFamily: environment("QS_FONT_FAMILY", "JetBrains Mono")
-    readonly property string iconFontFamily: environment("QS_ICON_FONT_FAMILY", "JetBrainsMono Nerd Font")
-    readonly property int fontSize: parseInt(environment("QS_FONT_SIZE", "12"), 10)
+        background: "#000000"
+        muted: Quickshell.env("QS_BASE03")
+        foreground: Quickshell.env("QS_BASE05")
+        urgent: Quickshell.env("QS_BASE08")
+        active: Quickshell.env("QS_BASE0C")
+        accent: Quickshell.env("QS_BASE0D")
+    }
+
+    readonly property Palette light: Palette {
+        background: darkTheme.foreground
+        muted: darkTheme.muted
+        foreground: darkTheme.background
+        urgent: darkTheme.urgent
+        active: darkTheme.active
+        accent: darkTheme.accent
+    }
+
+    readonly property color background: darkTheme.background
+    readonly property color muted: darkTheme.muted
+    readonly property color foreground: darkTheme.foreground
+    readonly property color urgent: darkTheme.urgent
+    readonly property color active: darkTheme.active
+    readonly property color accent: darkTheme.accent
+
+    readonly property string fontFamily: Quickshell.env("QS_FONT_FAMILY")
+    readonly property string iconFontFamily: Quickshell.env("QS_ICON_FONT_FAMILY")
+    readonly property int fontSize: parseInt(Quickshell.env("QS_FONT_SIZE"), 10)
+
+    readonly property real barHeight: fontSize * 10 / 3
+    readonly property real controlHeight: barHeight * 0.8
+    readonly property real spacing: barHeight * 0.2
 }

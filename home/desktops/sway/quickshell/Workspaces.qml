@@ -9,13 +9,13 @@ Item {
     required property string outputName
 
     implicitWidth: workspaceRow.implicitWidth
-    implicitHeight: 30
+    implicitHeight: Theme.controlHeight
 
     Row {
         id: workspaceRow
 
         height: parent.height
-        spacing: 8
+        spacing: Theme.spacing
 
         Repeater {
             model: 9
@@ -37,9 +37,9 @@ Item {
                 color: swayWorkspace?.urgent
                     ? Theme.urgent
                     : activeOnOutput
-                        ? Theme.cyan
+                        ? Theme.active
                         : swayWorkspace !== undefined
-                            ? Theme.blue
+                            ? Theme.accent
                             : Theme.muted
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize

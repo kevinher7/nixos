@@ -1,16 +1,17 @@
 import Quickshell
 import QtQuick
-import QtQuick.Layouts
 
+// qmllint disable uncreatable-type
 PanelWindow {
+    // qmllint enable uncreatable-type
     id: bar
 
     required property var modelData
 
     screen: modelData
     color: "transparent"
-    implicitHeight: 40
-    exclusiveZone: 40
+    implicitHeight: Theme.barHeight
+    exclusiveZone: height
 
     anchors {
         top: true
@@ -18,50 +19,32 @@ PanelWindow {
         right: true
     }
 
-    Pill {
+    Clock {
         anchors.centerIn: parent
-        icon: ""
-        label: "9:11"
     }
 
-    RowLayout {
+    Row {
         anchors {
-            fill: parent
-            leftMargin: 8
-            rightMargin: 8
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+            rightMargin: Theme.spacing
         }
 
-        spacing: 8
+        spacing: Theme.spacing
 
-        Workspaces {
-            Layout.fillHeight: true
-            outputName: bar.screen.name
+        Audio {}
+        Microphone {}
+        Bluetooth {}
+        Internet {}
+        Battery {}
+    }
+
+    Workspaces {
+        anchors {
+            left: parent.left
+            verticalCenter: parent.verticalCenter
+            leftMargin: Theme.spacing
         }
-
-        Item {
-            Layout.fillWidth: true
-        }
-
-        SystemStatus {
-            Layout.fillHeight: true
-        }
-
-        StatusSeparator {}
-
-        NetworkStatus {
-            Layout.fillHeight: true
-        }
-
-        StatusSeparator {}
-
-        BluetoothStatus {
-            Layout.fillHeight: true
-        }
-
-        StatusSeparator {}
-
-        ClockStatus {
-            Layout.fillHeight: true
-        }
+        outputName: bar.screen.name
     }
 }
