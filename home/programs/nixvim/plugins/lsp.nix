@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   osFamily,
   pkgs,
@@ -120,6 +121,17 @@
         };
 
         ts_ls.enable = true; # TypeScript & JavaScript
+
+        qmlls = {
+          enable = true;
+          config.cmd = [
+            "qmlls"
+            "--no-cmake-calls"
+            "-E"
+            "-I"
+            "${config.programs.nixvim.lsp.servers.qmlls.package}/lib/qt-6/qml"
+          ];
+        };
 
         neocmake.enable = true; # CMake
         tinymist.enable = true; # Typst

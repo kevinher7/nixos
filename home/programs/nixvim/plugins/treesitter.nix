@@ -10,6 +10,7 @@
           nix
           query
           yaml
+          qmljs
 
           python
           c

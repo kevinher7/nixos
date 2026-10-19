@@ -88,8 +88,8 @@ in {
 
       gaps = {
         inner = 4;
-        outer = 8;
-        smartGaps = "on";
+        outer = 4;
+        smartGaps = "off";
       };
 
       window = {
