@@ -222,6 +222,13 @@ keys = [
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
     # Multi-monitor control (xmonad-style mod+, / mod+.)
     # mod = focus monitor, mod+shift = send window, mod+control = send group
+    Key([mod], "Tab", lazy.next_screen(), desc="Focus next monitor"),
+    Key(
+        [mod, "shift"],
+        "Tab",
+        group_to_screen(direction=1),
+        desc="Send current group to next monitor",
+    ),
     Key([mod], "comma", lazy.prev_screen(), desc="Focus previous monitor"),
     Key([mod], "period", lazy.next_screen(), desc="Focus next monitor"),
     Key(
@@ -269,7 +276,7 @@ keys = [
     ),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
     # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod, "control"], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
     Key(
         [mod],
