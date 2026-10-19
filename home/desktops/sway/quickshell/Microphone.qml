@@ -20,5 +20,6 @@ Pill {
     }
 
     icon: root.muted ? "󰍭" : "󰍬"
+    label: root.available ? Math.round(root.source.audio.volume * 100) + "%" : "Unavailable"
     iconColor: root.recording ? Theme.dark.active : root.muted ? Theme.dark.muted : Theme.dark.foreground
 }

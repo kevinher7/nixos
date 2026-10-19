@@ -23,5 +23,11 @@ Pill {
         return "󰤟";
     }
 
+    label: {
+        if (root.ethernet)
+            return "Ethernet (" + root.ethernet.name + ")";
+        return root.wifiNetwork?.name || (root.wifiNetwork ? "Wi-Fi" : "Disconnected");
+    }
+
     iconColor: root.ethernet || root.wifiNetwork ? Theme.light.accent : Theme.dark.muted
 }

@@ -19,6 +19,8 @@ Pill {
         return ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"][root.level];
     }
 
+    label: root.available ? Math.round(root.battery.percentage * 100) + "%" : "Unavailable"
+
     iconColor: {
         if (!root.available)
             return Theme.dark.muted;

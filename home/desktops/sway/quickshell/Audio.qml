@@ -23,5 +23,6 @@ Pill {
         return "󰕾";
     }
 
+    label: root.available ? Math.round(root.volume * 100) + "%" : "Unavailable"
     iconColor: root.muted || root.volume === 0 ? Theme.dark.muted : Theme.light.accent
 }
