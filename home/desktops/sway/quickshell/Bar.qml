@@ -45,6 +45,5 @@ PanelWindow {
             verticalCenter: parent.verticalCenter
             leftMargin: Theme.spacing
         }
-        outputName: bar.screen.name
     }
 }
