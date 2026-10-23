@@ -6,6 +6,7 @@
     qutebrowser.enable = true;
     rquickshare.enable = true;
     nixvim.enable = true;
+    zathura.enable = true;
     agents = {
       codex.enable = true;
       opencode.enable = true;

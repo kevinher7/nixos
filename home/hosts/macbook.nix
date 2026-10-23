@@ -19,6 +19,7 @@
       cli.enable = true;
       desktop.enable = true;
     };
+    skim.enable = true;
     zen-browser.enable = true;
 
     openvpn.enable = true;
