@@ -6,6 +6,7 @@
 }: {
   imports = [
     ../../modules/core/packages.nix
+    ../../modules/core/pki.nix
     ../../modules/darwin
     ../../modules/theming
   ];
