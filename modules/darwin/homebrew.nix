@@ -27,6 +27,7 @@ _: {
       "google-chrome"
       "postman"
       "raycast"
+      "skim"
       "stats"
       "steam"
       "tailscale-app"

@@ -9,7 +9,6 @@
     aerospace.enable = true;
     ghostty.enable = true;
     nixvim.enable = true;
-    zathura.enable = true;
     agents = {
       claude-code.enable = true;
       codex.enable = true;
@@ -20,6 +19,7 @@
       cli.enable = true;
       desktop.enable = true;
     };
+    skim.enable = true;
     zen-browser.enable = true;
 
     openvpn.enable = true;

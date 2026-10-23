@@ -7,6 +7,7 @@
     ./qutebrowser.nix
     ./rquickshare.nix
     ./rofi.nix
+    ./skim.nix
     ./nixvim
     ./agents
     ./openvpn
@@ -24,6 +25,7 @@
     qutebrowser.enable = lib.mkEnableOption "qutebrowser browser";
     rquickshare.enable = lib.mkEnableOption "rquickshare file sharing";
     rofi.enable = lib.mkEnableOption "rofi application launcher";
+    skim.enable = lib.mkEnableOption "Skim pdf viewer defaults (macOS)";
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     agents = {
       claude-code.enable = lib.mkEnableOption "Claude Code CLI";
