@@ -4,7 +4,7 @@
       enable = true;
 
       keymaps = {
-        watch = "<leader>w";
+        watch = "<leader>tw";
       };
     };
   };
