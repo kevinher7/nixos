@@ -12,6 +12,7 @@
     ./openvpn
     ./t3code.nix
     ./vicinae.nix
+    ./zathura.nix
     ./zen-browser
   ];
 
@@ -37,5 +38,6 @@
     };
     zen-browser.enable = lib.mkEnableOption "zen browser (twilight)";
     vicinae.enable = lib.mkEnableOption "vicinae launcher";
+    zathura.enable = lib.mkEnableOption "zathura pdf viewer";
   };
 }
