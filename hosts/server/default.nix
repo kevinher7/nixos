@@ -84,7 +84,10 @@
   myHomelab = {
     nginxProxy.enable = true;
     homepage.enable = true;
-    supervision.enable = true;
+    supervision = {
+      enable = true;
+      units = ["t3code"];
+    };
 
     actual = {
       enable = true;
@@ -111,11 +114,6 @@
     vaultwarden = {
       enable = true;
       domain = "https://vault.${config.myVars.domain}";
-    };
-
-    t3code = {
-      enable = true;
-      domain = "t3code.${config.myVars.domain}";
     };
 
     pihole = {
