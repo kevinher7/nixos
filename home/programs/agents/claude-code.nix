@@ -29,6 +29,9 @@ in {
       };
 
       settings = {
+        env = lib.optionalAttrs pkgs.stdenv.isDarwin {
+          CLAUDE_CODE_CERT_STORE = "bundled";
+        };
         permissions = {
           allow = [
             "Bash(poetry run ruff check *)"
