@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  osFamily,
   ...
 }: let
   cfg = config.myPrograms.qutebrowser;
@@ -18,9 +19,14 @@
 
   # Use the setup python env as a wrapper
   bitwarden-wrapped = pkgs.writeShellScript "bitwarden" ''
-    ${pkgs.keyutils}/bin/keyctl link @u @s 2>/dev/null || true
+    ${lib.optionalString (osFamily == "linux") "${pkgs.keyutils}/bin/keyctl link @u @s 2>/dev/null || true"}
     exec ${pythonEnv}/bin/python ${qute-bitwarden} "$@"
   '';
+
+  configDir =
+    if osFamily == "darwin"
+    then ".qutebrowser"
+    else "${config.xdg.configHome}/qutebrowser";
 in {
   config = lib.mkIf cfg.enable {
     programs.qutebrowser = {
@@ -37,7 +43,10 @@ in {
 
       settings = {
         auto_save.session = true;
-        downloads.location.directory = "~/downloads";
+        downloads.location.directory =
+          if osFamily == "darwin"
+          then "~/Downloads"
+          else "~/downloads";
 
         #Styles
         fonts.default_size = lib.mkForce "10pt";
@@ -107,15 +116,16 @@ in {
     };
 
     # Place in userscripts in qutebrowser's userscripts directory
-    xdg.configFile."qutebrowser/userscripts/bitwarden" = {
+    home.file."${configDir}/userscripts/bitwarden" = {
       source = bitwarden-wrapped;
       executable = true; # Critical: userscripts must be executable
     };
 
-    home.packages = with pkgs; [
-      bitwarden-cli
-      keyutils
-      xclip
-    ];
+    home.packages = with pkgs;
+      [bitwarden-cli]
+      ++ lib.optionals (osFamily == "linux") [
+        keyutils
+        xclip
+      ];
   };
 }
