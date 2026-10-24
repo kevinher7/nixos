@@ -17,7 +17,6 @@
     packages = with pkgs; [
       btop
       tree
-      gh
       curl
       pfetch
     ];
