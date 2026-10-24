@@ -6,21 +6,23 @@
   ...
 }: let
   cfg = config.myPrograms.qutebrowser;
-  pythonEnv = pkgs.python3.withPackages (ps:
-    with ps; [
-      tldextract
-      pyperclip
-    ]);
-
-  qute-bitwarden = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/qutebrowser/qutebrowser/main/misc/userscripts/qute-bitwarden";
-    sha256 = "092ayjkhzfka4d2vl05y9c5zwnf0lkn8gxairl1kgcn0wwhz0y50";
-  };
-
-  # Use the setup python env as a wrapper
+  qute-bitwarden = pkgs.runCommand "qute-bitwarden" {} ''
+    substitute ${config.programs.qutebrowser.package}/share/qutebrowser/userscripts/qute-bitwarden "$out" \
+      --replace-fail "totp = selection['login']['totp']" "totp = selection['login'].get('totp')"
+    chmod +x "$out"
+  '';
   bitwarden-wrapped = pkgs.writeShellScript "bitwarden" ''
+    export PATH=${lib.makeBinPath (
+      [pkgs.bitwarden-cli]
+      ++ lib.optionals (osFamily == "linux") [
+        pkgs.keyutils
+        config.programs.rofi.finalPackage
+        pkgs.xclip
+        pkgs.wl-clipboard
+      ]
+    )}:"$PATH"
     ${lib.optionalString (osFamily == "linux") "${pkgs.keyutils}/bin/keyctl link @u @s 2>/dev/null || true"}
-    exec ${pythonEnv}/bin/python ${qute-bitwarden} "$@"
+    exec ${qute-bitwarden} "$@"
   '';
 
   configDir =
@@ -31,6 +33,9 @@ in {
   config = lib.mkIf cfg.enable {
     programs.qutebrowser = {
       enable = true;
+      package = pkgs.qutebrowser.override {
+        enableWideVine = osFamily == "linux";
+      };
 
       loadAutoconfig = false;
 
@@ -77,6 +82,7 @@ in {
           webrtc_ip_handling_policy = "default-public-interface-only";
           cookies.accept = "all";
           cookies.store = true;
+          site_specific_quirks.skip = ["ua-google"];
 
           # Copy without Permission
           javascript.clipboard = "access";
@@ -97,13 +103,18 @@ in {
           ")" = "tab-focus 9";
 
           # Userscripts
-          ",p" = "spawn --userscript bitwarden";
-          ",P" = "spawn --userscript bitwarden --totp";
+          ",p" = "spawn --userscript bitwarden --password-only";
+          ",P" = "spawn --userscript bitwarden --password-only --totp";
+          ",u" = "spawn --userscript bitwarden --username-only";
+          ",s" = "spawn --userscript bitwarden --password-only";
+          ",t" = "spawn --userscript bitwarden --totp-only";
         };
       };
 
       # For settings that cause dict parsing problems or require patterns (config.set)
       extraConfig = ''
+        config.set("content.headers.user_agent", "Mozilla/5.0 ({os_info}; rv:135.0) Gecko/20100101 Firefox/135.0", "https://accounts.google.com/*")
+
         c.tabs.padding = {
           "top": 3,
           "bottom": 3,
@@ -115,10 +126,9 @@ in {
       '';
     };
 
-    # Place in userscripts in qutebrowser's userscripts directory
     home.file."${configDir}/userscripts/bitwarden" = {
       source = bitwarden-wrapped;
-      executable = true; # Critical: userscripts must be executable
+      executable = true;
     };
 
     home.packages = with pkgs;
@@ -126,6 +136,7 @@ in {
       ++ lib.optionals (osFamily == "linux") [
         keyutils
         xclip
+        wl-clipboard
       ];
   };
 }
