@@ -145,6 +145,7 @@
     formatter = forEachSystem treefmtFor;
 
     checks = forEachSystem (sys: {
+      pi-extensions = nixpkgs.legacyPackages.${sys}.callPackage ./home/programs/agents/pi/extensions/package.nix {};
       pre-commit-check = git-hooks-nix.lib.${sys}.run {
         src = ./.;
         inherit
