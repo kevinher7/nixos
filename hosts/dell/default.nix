@@ -37,15 +37,11 @@
       tailscale = {
         enable = true;
         ssh = false;
-        operatorUser = "kevin";
       };
       ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
     };
 
-    t3code = {
-      enable = true;
-      tailscaleServe.enable = true;
-    };
+    t3code.enable = true;
   };
 
   # AMD Radeon integrated graphics.
