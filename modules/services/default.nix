@@ -6,6 +6,7 @@ _: {
     ./homepage.nix
     ./t3code.nix
     ./actual.nix
+    ./actual-http-api.nix
     ./mail-bean.nix
     ./llm.nix
     ./ci-runner.nix
