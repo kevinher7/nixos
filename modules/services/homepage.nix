@@ -88,6 +88,16 @@ in {
                 };
               }
             ]
+            ++ lib.optionals cfg.actualHttpApi.enable [
+              {
+                "actual-http-api" = {
+                  href = "https://${cfg.actualHttpApi.domain}/api-docs/";
+                  icon = "actual-budget";
+                  description = "HTTP API for spend-bean";
+                  siteMonitor = "http://127.0.0.1:${toString cfg.actualHttpApi.port}/api-docs/swagger.json";
+                };
+              }
+            ]
             ++ lib.optionals cfg.mailBean.enable [
               {
                 "mail-bean" = {
@@ -100,6 +110,28 @@ in {
                     display = "dynamic-list";
                     mappings = {
                       name = "created";
+                      label = "at";
+                      limit = 5;
+                      format = "relativeDate";
+                      style = "long";
+                      numeric = "auto";
+                    };
+                  };
+                };
+              }
+            ]
+            ++ lib.optionals cfg.supervision.enable [
+              {
+                "Failures" = {
+                  icon = "mdi-restart-alert";
+                  description = "Services systemd gave up restarting";
+                  widget = {
+                    type = "customapi";
+                    url = "http://127.0.0.1:${toString cfg.supervision.failureLogPort}/failures.json";
+                    refreshInterval = 60000;
+                    display = "dynamic-list";
+                    mappings = {
+                      name = "unit";
                       label = "at";
                       limit = 5;
                       format = "relativeDate";

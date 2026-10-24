@@ -12,6 +12,12 @@ in {
   };
 
   config = lib.mkIf cfg.nginxProxy.enable {
+    sops.secrets.cloudflare_dns_api_token = {
+      owner = "acme";
+      group = "acme";
+      mode = "0400";
+    };
+
     sops.templates."acme-cloudflare.env" = {
       owner = "acme";
       group = "acme";
@@ -34,6 +40,7 @@ in {
           ]
           ++ lib.optionals cfg.t3code.enable [cfg.t3code.domain]
           ++ lib.optionals cfg.actual.enable [cfg.actual.domain]
+          ++ lib.optionals cfg.actualHttpApi.enable [cfg.actualHttpApi.domain]
           ++ lib.optionals cfg.harmonia.enable [cfg.harmonia.domain];
         dnsProvider = "cloudflare";
         environmentFile = config.sops.templates."acme-cloudflare.env".path;

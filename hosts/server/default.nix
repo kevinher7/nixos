@@ -78,10 +78,17 @@
   myHomelab = {
     nginxProxy.enable = true;
     homepage.enable = true;
+    supervision.enable = true;
 
     actual = {
       enable = true;
       domain = "budget.${config.myVars.domain}";
+    };
+
+    actualHttpApi = {
+      enable = true;
+      domain = "actual-api.${config.myVars.domain}";
+      budgetSyncId = "d90c6528-ee2f-49e4-b5d1-5019b5136b1e";
     };
 
     mailBean.enable = true;

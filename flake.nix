@@ -63,6 +63,11 @@
       url = "github:kevinher7/mail-bean";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    actual-http-api = {
+      url = "github:jhonderson/actual-http-api/2b954e8bcc14b97c47bd55c761af337ad6b21535";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -120,6 +125,7 @@
         modules = [
           ./hosts/${profile}
           ./modules/vars
+          sops-nix.darwinModules.sops
           stylix.darwinModules.stylix
           home-manager.darwinModules.home-manager
           (homeManagerModule specialArgs)

@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "actual-http-api": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792374254,
+        "narHash": "sha256-JZ4wwjyqmKVZKsK6xLByRJmDhBfOmpgcVllWNsqiCVg=",
+        "owner": "jhonderson",
+        "repo": "actual-http-api",
+        "rev": "2b954e8bcc14b97c47bd55c761af337ad6b21535",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jhonderson",
+        "repo": "actual-http-api",
+        "rev": "2b954e8bcc14b97c47bd55c761af337ad6b21535",
+        "type": "github"
+      }
+    },
     "agent-toolkit": {
       "flake": false,
       "locked": {
@@ -448,6 +465,7 @@
     },
     "root": {
       "inputs": {
+        "actual-http-api": "actual-http-api",
         "agent-toolkit": "agent-toolkit",
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",

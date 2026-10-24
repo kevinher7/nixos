@@ -13,6 +13,7 @@
       claude-code.enable = true;
       codex.enable = true;
       opencode.enable = true;
+      pi.enable = true;
       work-toolkit.enable = true;
     };
     t3code = {

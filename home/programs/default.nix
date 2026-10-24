@@ -31,6 +31,7 @@
       claude-code.enable = lib.mkEnableOption "Claude Code CLI";
       codex.enable = lib.mkEnableOption "Codex CLI";
       opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
+      pi.enable = lib.mkEnableOption "Pi coding agent";
       work-toolkit.enable = lib.mkEnableOption "Claude-only work toolkit on the macbook";
     };
     openvpn.enable = lib.mkEnableOption "openvpn split-tunnel wrapper (ovpn/ovpn-down/ovpn-status)";

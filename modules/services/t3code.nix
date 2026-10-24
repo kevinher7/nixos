@@ -17,6 +17,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    myHomelab.supervision.units = ["t3code"];
+
     assertions = [
       {
         assertion = server.enable;
