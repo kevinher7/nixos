@@ -78,7 +78,10 @@
   myHomelab = {
     nginxProxy.enable = true;
     homepage.enable = true;
-    supervision.enable = true;
+    supervision = {
+      enable = true;
+      units = ["t3code"];
+    };
 
     actual = {
       enable = true;
