@@ -105,6 +105,7 @@ Reusable, domain-specific system modules. These are pure NixOS configurations gr
 - **`networking/`** — NetworkManager, firewall, and Tailscale options.
 - **`services/`** — Home lab services (Vaultwarden, Pi-hole, native Nginx reverse proxy, the CI runner container).
 - **`t3code/`** — The T3 Code headless server, imported by every NixOS host.
+- **`agent-user/`** — The unprivileged `agent` account on the server that runs the T3 Code server and the coding-agent CLIs, kept apart from the admin user. Its Home-Manager profile is `home/users/agent.nix`.
 - **`desktop/`**, **`audio/`**, **`input/`** — Hardware and user-interface layers for the laptop profile.
 - **`theming/`**, **`login/`**, **`power/`**, **`secrets/`** — Stylix, display managers, power profiles, and sops-nix integration.
 
@@ -185,8 +186,10 @@ This split-DNS route avoids affected local resolvers without overriding DNS for 
 ## Coding agents
 
 `home/programs/agents/` configures the coding harnesses through
-`myPrograms.agents`. Codex is enabled on every host; Claude Code and its Neovim
-integration are macbook-only. OpenCode runs on the macbook, Dell, and server.
+`myPrograms.agents`. Claude Code, Codex, OpenCode and pi are enabled on every
+host. On the server they run as the `agent` account (`modules/agent-user/`),
+not as the admin user. pi reads the OpenRouter key only where
+`myPrograms.agents.pi.useOpenrouter` is on (macbook and Dell).
 
 Shared global instructions live in `home/programs/agents/CONTEXT.md`. Claude's
 settings, hooks, status line, and RTK integration are declarative; do not run
@@ -213,8 +216,9 @@ Codex cask may also need an explicit uninstall to stop shadowing the Nix CLI.
 
 ## 🤖 T3 Code on Every NixOS Host
 
-Every NixOS host runs its own T3 Code server (`modules/t3code/`) as the normal
-user, listening on plain HTTP at `http://<host>:3773`. The firewall opens that
+Every NixOS host runs its own T3 Code server (`modules/t3code/`), as `kevin` on
+the laptops and as the unprivileged `agent` account on `uribo-btw`, listening on
+plain HTTP at `http://<host>:3773`. The firewall opens that
 port on `tailscale0` only, so the server is reachable from the tailnet and
 nowhere else. There is no browser endpoint anymore; the T3 Code desktop and
 mobile apps connect to each host directly, and `uribo-btw` never proxies agent
@@ -228,6 +232,7 @@ land in the same state directory the service uses:
 
 ```bash
 sudo -u kevin t3 pair --base-dir /var/lib/t3code --label kebean
+sudo -u agent t3 pair --base-dir /var/lib/t3code --label uribo-btw
 ```
 
 In the desktop app, open Settings > Connections > Add environment and paste the

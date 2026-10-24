@@ -8,9 +8,13 @@
     nixvim.enable = true;
     zathura.enable = true;
     agents = {
+      claude-code.enable = true;
       codex.enable = true;
       opencode.enable = true;
-      pi.enable = true;
+      pi = {
+        enable = true;
+        useOpenrouter = true;
+      };
     };
     t3code.cli.enable = true;
     vicinae.enable = true;
