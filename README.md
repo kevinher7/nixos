@@ -105,6 +105,7 @@ Reusable, domain-specific system modules. These are pure NixOS configurations gr
 - **`networking/`** — NetworkManager, firewall, and Tailscale options.
 - **`services/`** — Home lab services (Vaultwarden, Pi-hole, native Nginx reverse proxy, the CI runner container).
 - **`t3code/`** — The T3 Code headless server, imported by every NixOS host.
+- **`agent-user/`** — The unprivileged `agent` account on the server that runs the T3 Code server and the coding-agent CLIs, kept apart from the admin user. Its Home-Manager profile is `home/users/agent.nix`.
 - **`desktop/`**, **`audio/`**, **`input/`** — Hardware and user-interface layers for the laptop profile.
 - **`theming/`**, **`login/`**, **`power/`**, **`secrets/`** — Stylix, display managers, power profiles, and sops-nix integration.
 

@@ -13,6 +13,7 @@
     ../../modules/secrets
     ../../modules/services
     ../../modules/t3code
+    ../../modules/agent-user
   ];
 
   myVars = {
@@ -72,7 +73,12 @@
       ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
     };
 
-    t3code.enable = true;
+    agentUser.enable = true;
+
+    t3code = {
+      enable = true;
+      user = config.myModules.agentUser.name;
+    };
   };
 
   myHomelab = {
