@@ -30,6 +30,9 @@ jobs:
       - name: Run pre-commit checks
         run: nix build .#checks.x86_64-linux.pre-commit-check
 
+      - name: Check Pi extensions
+        run: nix build .#checks.x86_64-linux.pi-extensions
+
   # macbook (kebee) is aarch64-darwin and cannot be built on Linux, so it is
   # evaluated on hosted infrastructure as a safety net.
   darwin-eval:
