@@ -44,6 +44,8 @@ in {
   };
 
   config = lib.mkIf cfg.actualHttpApi.enable {
+    myHomelab.supervision.units = ["actual-http-api"];
+
     sops.secrets = {
       actual_http_api_key = {};
       actual_server_password = {};

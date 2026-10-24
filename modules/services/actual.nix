@@ -22,6 +22,8 @@ in {
   };
 
   config = lib.mkIf cfg.actual.enable {
+    myHomelab.supervision.units = ["actual"];
+
     services.actual = {
       enable = true;
       settings = {

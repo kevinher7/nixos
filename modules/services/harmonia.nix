@@ -22,6 +22,8 @@ in {
   };
 
   config = lib.mkIf cfg.harmonia.enable {
+    myHomelab.supervision.units = ["harmonia"];
+
     sops.secrets.harmonia_signing_key = {
       owner = "root";
       group = "root";

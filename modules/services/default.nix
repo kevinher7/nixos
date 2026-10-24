@@ -11,5 +11,6 @@ _: {
     ./llm.nix
     ./ci-runner.nix
     ./harmonia.nix
+    ./supervision.nix
   ];
 }

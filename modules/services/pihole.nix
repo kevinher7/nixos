@@ -148,6 +148,8 @@ in {
   };
 
   config = lib.mkIf cfg.pihole.enable {
+    myHomelab.supervision.units = ["pihole-ftl"];
+
     sops.secrets.pihole_password = {
       neededForUsers = false;
       owner = "pihole";

@@ -78,6 +78,7 @@
   myHomelab = {
     nginxProxy.enable = true;
     homepage.enable = true;
+    supervision.enable = true;
 
     actual = {
       enable = true;
