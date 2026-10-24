@@ -27,7 +27,7 @@ async function readOptional(path: string) {
   }
 }
 
-export async function findFormatter(file: string) {
+async function findFormatter(file: string) {
   const extension = extname(file).toLowerCase();
   const python = extension === ".py" || extension === ".pyi";
   const nix = extension === ".nix";

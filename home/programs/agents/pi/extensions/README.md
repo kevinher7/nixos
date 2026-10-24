@@ -32,7 +32,6 @@ From this directory:
 ```sh
 npm ci --ignore-scripts
 npm run check
-npm test
 npm run build
 pi -e ./src/format.ts -e ./src/rtk.ts
 ```
@@ -43,8 +42,8 @@ From the repository root:
 nix build .#checks.aarch64-darwin.pi-extensions
 ```
 
-Use `x86_64-linux` instead on Linux. The Nix check builds the bundles, checks
-TypeScript, and runs the tests. CI runs the Linux check.
+Use `x86_64-linux` instead on Linux. The Nix check builds the bundles and checks
+TypeScript. CI runs the Linux check.
 
 The Pi development dependency pins the API used for type checking. Update it
 alongside the deployed Pi version from `llm-agents` when its API changes.

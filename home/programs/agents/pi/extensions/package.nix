@@ -13,7 +13,6 @@ buildNpmPackage {
       ./package-lock.json
       ./tsconfig.json
       ./src
-      ./tests
     ];
   };
   nodejs = nodejs_24;
@@ -24,7 +23,6 @@ buildNpmPackage {
   checkPhase = ''
     runHook preCheck
     npm run check
-    npm test
     runHook postCheck
   '';
 

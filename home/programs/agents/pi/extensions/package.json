@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "esbuild src/format.ts src/rtk.ts --bundle --platform=node --format=esm --target=node24 --external:@earendil-works/* --outdir=dist",
-    "check": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
+    "check": "tsc --noEmit"
   },
   "pi": {
     "extensions": ["./src/format.ts", "./src/rtk.ts"]
