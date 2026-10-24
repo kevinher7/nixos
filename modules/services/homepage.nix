@@ -68,16 +68,6 @@ in {
                 };
               }
             ]
-            ++ lib.optionals cfg.t3code.enable [
-              {
-                "T3 Code" = {
-                  href = "https://${cfg.t3code.domain}";
-                  icon = "https://${cfg.t3code.domain}/favicon.ico";
-                  description = "Headless coding agent UI";
-                  siteMonitor = "http://${config.myModules.t3code.host}:${toString config.myModules.t3code.port}";
-                };
-              }
-            ]
             ++ lib.optionals cfg.actual.enable [
               {
                 "Actual Budget" = {

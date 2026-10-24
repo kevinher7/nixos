@@ -13,6 +13,7 @@
     ../../modules/secrets
     ../../modules/services
     ../../modules/t3code
+    ../../modules/agent-user
   ];
 
   myVars = {
@@ -72,13 +73,21 @@
       ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
     };
 
-    t3code.enable = true;
+    agentUser.enable = true;
+
+    t3code = {
+      enable = true;
+      user = config.myModules.agentUser.name;
+    };
   };
 
   myHomelab = {
     nginxProxy.enable = true;
     homepage.enable = true;
-    supervision.enable = true;
+    supervision = {
+      enable = true;
+      units = ["t3code"];
+    };
 
     actual = {
       enable = true;
@@ -105,11 +114,6 @@
     vaultwarden = {
       enable = true;
       domain = "https://vault.${config.myVars.domain}";
-    };
-
-    t3code = {
-      enable = true;
-      domain = "t3code.${config.myVars.domain}";
     };
 
     pihole = {
