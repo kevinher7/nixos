@@ -8,10 +8,14 @@
     ../../modules/core/packages.nix
     ../../modules/core/pki.nix
     ../../modules/darwin
+    ../../modules/secrets
     ../../modules/theming
   ];
 
-  myModules.theming.wallpaper = ../../assets/wallpapers/snowy-village.jpg;
+  myModules = {
+    theming.wallpaper = ../../assets/wallpapers/snowy-village.jpg;
+    secrets.openrouterApiKey.enable = true;
+  };
 
   nixpkgs = {
     hostPlatform = "aarch64-darwin";

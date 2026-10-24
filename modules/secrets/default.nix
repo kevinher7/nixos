@@ -1,3 +1,6 @@
 _: {
-  imports = [./sops.nix];
+  imports = [
+    ./sops.nix
+    ./api-keys.nix
+  ];
 }

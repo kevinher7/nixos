@@ -4,6 +4,7 @@
     ../../modules/desktop/sway
     ../../modules/system
     ../../modules/core
+    ../../modules/secrets
     ../../modules/theming
     ../../modules/networking
     ../../modules/login
@@ -26,6 +27,8 @@
     power.profile = "laptop";
 
     theming.wallpaper = ../../assets/wallpapers/orion-nebula.jpg;
+
+    secrets.openrouterApiKey.enable = true;
 
     input.waylandFrontend = true;
 
