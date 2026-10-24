@@ -10,6 +10,7 @@
     agents = {
       codex.enable = true;
       opencode.enable = true;
+      pi.enable = true;
     };
     t3code.cli.enable = true;
     vicinae.enable = true;
