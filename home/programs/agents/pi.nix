@@ -13,6 +13,14 @@ in {
       enable = true;
       package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi;
       context = ./CONTEXT.md;
+
+      settings = {
+        defaultProvider = "openai";
+        defaultModel = "gpt-6.1-sol";
+        defaultThinkingLevel = "medium";
+        collapseChangelog = true;
+      };
+
       models.providers.openrouter.apiKey = "!cat ${osConfig.sops.secrets.openrouter_api_key.path}";
     };
 
