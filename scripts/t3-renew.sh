@@ -16,7 +16,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 declare -A service_users=(
-  [uribo-btw]=uribo
+  [uribo-btw]=agent
   [kebean]=kevin
   [beans-btw]=kevin
 )

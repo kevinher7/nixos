@@ -2,7 +2,12 @@
   imports = [../common ../programs ../desktops/qtile];
 
   myPrograms = {
-    agents.codex.enable = true;
+    agents = {
+      claude-code.enable = true;
+      codex.enable = true;
+      opencode.enable = true;
+      pi.enable = true;
+    };
     alacritty.enable = true;
     betterlockscreen.enable = true;
     qutebrowser.enable = true;

@@ -5,7 +5,10 @@ _: {
     ghostty.enable = true;
     nixvim.enable = true;
     agents = {
+      claude-code.enable = true;
       codex.enable = true;
+      opencode.enable = true;
+      pi.enable = true;
     };
     t3code.cli.enable = true;
   };

@@ -13,7 +13,10 @@
       claude-code.enable = true;
       codex.enable = true;
       opencode.enable = true;
-      pi.enable = true;
+      pi = {
+        enable = true;
+        useOpenrouter = true;
+      };
       work-toolkit.enable = true;
     };
     t3code = {
