@@ -29,10 +29,10 @@ fi
 
 service_user="${service_users[$1]}"
 
-printf 'Generating a pairing link for %s at http://%s:3773.\n' "$1" "$1"
+printf 'Generating a pairing link for %s on its tailnet address.\n' "$1"
 printf 'Desktop app: Settings > Connections > Add environment, paste the printed link.\n'
 printf 'Mobile app: Settings > Environments, paste the printed link.\n'
 printf 'The link expires after five minutes. Your new session lasts 30 days.\n\n'
 
 exec ssh -o ConnectTimeout=10 -- "${service_user}@$1" \
-  "/etc/profiles/per-user/${service_user}/bin/t3 pair --base-dir /var/lib/t3code --label $1"
+  "/etc/profiles/per-user/${service_user}/bin/t3 auth pairing create --base-dir /var/lib/t3code --label $1 --base-url http://\$(tailscale ip -4):3773"
