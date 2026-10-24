@@ -120,6 +120,28 @@ in {
                 };
               }
             ]
+            ++ lib.optionals cfg.supervision.enable [
+              {
+                "Failures" = {
+                  icon = "mdi-restart-alert";
+                  description = "Services systemd gave up restarting";
+                  widget = {
+                    type = "customapi";
+                    url = "http://127.0.0.1:${toString cfg.supervision.failureLogPort}/failures.json";
+                    refreshInterval = 60000;
+                    display = "dynamic-list";
+                    mappings = {
+                      name = "unit";
+                      label = "at";
+                      limit = 5;
+                      format = "relativeDate";
+                      style = "long";
+                      numeric = "auto";
+                    };
+                  };
+                };
+              }
+            ]
             ++ [
               {
                 "Tailscale" = {

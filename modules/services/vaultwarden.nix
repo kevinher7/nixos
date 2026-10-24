@@ -22,6 +22,8 @@ in {
   };
 
   config = lib.mkIf cfg.vaultwarden.enable {
+    myHomelab.supervision.units = ["vaultwarden"];
+
     services.vaultwarden = {
       enable = true;
       config = {

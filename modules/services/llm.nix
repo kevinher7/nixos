@@ -103,6 +103,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    myHomelab.supervision.units = ["llama-swap"];
+
     services.llama-swap = {
       enable = true;
       inherit (cfg) listenAddress port;
