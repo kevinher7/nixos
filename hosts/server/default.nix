@@ -107,11 +107,6 @@
       domain = "https://vault.${config.myVars.domain}";
     };
 
-    t3code = {
-      enable = true;
-      domain = "t3code.${config.myVars.domain}";
-    };
-
     pihole = {
       enable = true;
       localDomainIP = config.myVars.serverTailscaleIP;
