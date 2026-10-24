@@ -4,10 +4,13 @@ keys:
   - &dell_age age15d48ksaeqw47efpckscntnd2w63dl72s2m7hm04d6qvmmhcpev3q0zlpd7
 
 creation_rules:
-  - path_regex: secrets/api-keys\.yaml$
+  - path_regex: secrets/api-keys/kebee\.yaml$
     key_groups:
       - age:
           - *macbook_age
+  - path_regex: secrets/api-keys/kebean\.yaml$
+    key_groups:
+      - age:
           - *dell_age
   - path_regex: secrets/[^/]+\.yaml$
     key_groups:

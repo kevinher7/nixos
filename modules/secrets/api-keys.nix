@@ -1,5 +1,6 @@
 {
   config,
+  hostname,
   lib,
   username,
   ...
@@ -11,7 +12,7 @@ in {
 
   config = lib.mkIf cfg.openrouterApiKey.enable {
     sops.secrets.openrouter_api_key = {
-      sopsFile = ../../secrets/api-keys.yaml;
+      sopsFile = ../../secrets/api-keys/${hostname}.yaml;
       owner = username;
       mode = "0400";
     };
