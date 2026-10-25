@@ -89,7 +89,7 @@ This guide assumes you already have NixOS installed.
 
    **Rotating secrets with the wizard:**
 
-   Run `nix run .#rotate-secrets` on kebean. The table at the top of `scripts/rotate-secrets.sh` lists every secret, its file and how to get a new value, and the wizard warns when a host declares a secret the table lacks. Pick secrets, then for each one it generates a value, or shows the dashboard to create one in and reads it without echo. Values go from memory straight into `sops set`. It commits the changed files on a `chore/rotate-secrets-<date>` branch and opens a PR. The Harmonia key follows the two phases above, one per run, and the wizard prints the Nix edits to push to that PR.
+   Run `nix run .#rotate-secrets` on kebean. The table at the top of `scripts/rotate-secrets/script.sh` lists every secret, its file and how to get a new value, and the wizard warns when a host declares a secret the table lacks. Pick secrets, then for each one it generates a value, or shows the dashboard to create one in and reads it without echo. Values go from memory straight into `sops set`. It commits the changed files on a `chore/rotate-secrets-<date>` branch and opens a PR. The Harmonia key follows the two phases above, one per run, and the wizard prints the Nix edits to push to that PR.
 
    After merging and deploying with fleet-deploy, run `nix run .#rotate-secrets -- --resume` for the verification commands and the checklist of old credentials to revoke. Progress lives in `~/.local/state/rotate-secrets/`, without values.
 
@@ -140,7 +140,7 @@ Touch ID works there.
 
 ## 🧩 Modular Structure
 
-The configuration is split into three main layers to keep things organized and reusable:
+The system and Home Manager configuration lives in `hosts/`, `modules/`, and `home/`. Repository maintenance commands live in `scripts/`.
 
 ### `hosts/`
 
@@ -165,6 +165,12 @@ Home-Manager user-space configurations.
 - **`home/hosts/`** — Per-machine Home-Manager entry points.
 - **`home/common/`** — Shared settings like Bash aliases, stylix overrides, and shell configs.
 - **`home/programs/`** — Individual program configs such as NixVim, Ghostty, and OpenCode.
+
+### `scripts/`
+
+Each maintenance command has a directory containing `script.sh`, its Nix package in `default.nix`, and any supporting files. Register new commands in `scripts/default.nix` to expose them through `nix run .#<command>`. Keep runtime dependencies and ShellCheck exclusions in the command's package definition.
+
+The flake exposes `fleet-deploy`, `rotate-secrets`, `update-inputs`, and `t3-renew` on Linux and macOS. Run commands that edit this repository from its checkout. `reload-quickshell.sh` remains a direct development helper for the local QML checkout.
 
 ---
 
@@ -294,7 +300,7 @@ Sessions expire after 30 days. From the repository root, generate a fresh
 pairing link with:
 
 ```bash
-./scripts/t3-renew.sh kebean
+nix run .#t3-renew -- kebean
 ```
 
 The helper accepts `uribo-btw`, `kebean`, or `beans-btw`. It connects over SSH as
