@@ -8,6 +8,7 @@
     ./rquickshare.nix
     ./rofi.nix
     ./skim.nix
+    ./sops.nix
     ./nixvim
     ./agents
     ./openvpn
@@ -26,6 +27,10 @@
     rquickshare.enable = lib.mkEnableOption "rquickshare file sharing";
     rofi.enable = lib.mkEnableOption "rofi application launcher";
     skim.enable = lib.mkEnableOption "Skim pdf viewer defaults (macOS)";
+    sops = {
+      enable = lib.mkEnableOption "sops and age for editing the repo's secrets";
+      adminKey.enable = lib.mkEnableOption "decrypting with the passphrase-protected admin key in ~/.config/sops/age/admin.age";
+    };
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     agents = {
       claude-code.enable = lib.mkEnableOption "Claude Code CLI";
