@@ -24,7 +24,14 @@
 
   networking.hostName = hostname;
 
-  programs.zsh.enable = true;
+  programs = {
+    zsh.enable = true;
+
+    ssh.extraConfig = ''
+      Host beans-btw kebean uribo-btw
+        IdentityAgent ~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh
+    '';
+  };
 
   # Loaded by /etc/zshenv for every shell (login or not, interactive or not),
   # so tools spawning a PTY without `-l` (e.g. t3code) still get a sane locale.

@@ -16,6 +16,10 @@
         useOpenrouter = true;
       };
     };
+    sops = {
+      enable = true;
+      adminKey.enable = true;
+    };
     t3code.cli.enable = true;
     vicinae.enable = true;
     zen-browser.enable = true;
