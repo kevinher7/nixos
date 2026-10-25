@@ -24,7 +24,7 @@ _: {
         enable = true;
         ssh = false;
       };
-      ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
+      ssh.authorizedClients = ["kebee" "kebean"];
     };
 
     t3code.enable = true;
