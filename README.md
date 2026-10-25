@@ -86,6 +86,12 @@ This guide assumes you already have NixOS installed.
 
    Phase 2 promotes the next key. Copy the value of `harmonia_signing_key_next` into `harmonia_signing_key` with `sops secrets/hosts/uribo-btw.yaml` and delete `harmonia_signing_key_next`. In Nix, move the `next` public key to `current` and set `next = null`. Merge and deploy every host again.
 
+   **Rotating secrets with the wizard:**
+
+   Run `nix run .#rotate-secrets` on kebean. The table at the top of `scripts/rotate-secrets.sh` lists every secret, its file and how to get a new value, and the wizard warns when a host declares a secret the table lacks. Pick secrets, then for each one it generates a value, or shows the dashboard to create one in and reads it without echo. Values go from memory straight into `sops set`. It commits the changed files on a `chore/rotate-secrets-<date>` branch and opens a PR. The Harmonia key follows the two phases above, one per run, and the wizard prints the Nix edits to push to that PR.
+
+   After merging and deploying with fleet-deploy, run `nix run .#rotate-secrets -- --resume` for the verification commands and the checklist of old credentials to revoke. Progress lives in `~/.local/state/rotate-secrets/`, without values.
+
 4. **Build & Switch**
 
    Run the rebuild for the specific host you are setting up:
