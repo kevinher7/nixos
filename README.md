@@ -261,7 +261,8 @@ sudo -u agent t3 pair --base-dir /var/lib/t3code --label uribo-btw
 ```
 
 In the desktop app, open Settings > Connections > Add environment and paste the
-full printed link. On the phone, it is Settings > Environments. The link expires
+full printed link. On the phone, it is Settings > Environments, where you can
+scan the QR code the helper prints under the link. The link expires
 after five minutes. Pairing survives service restarts and reboots. Use `t3 auth`
 to list or revoke old sessions.
 
@@ -272,9 +273,10 @@ pairing link with:
 ./scripts/t3-renew.sh kebean
 ```
 
-The helper accepts `uribo-btw`, `kebean`, or `beans-btw` and connects over SSH as
-the host's service user. You need Tailscale connectivity and SSH access to that
-host. Pairing the same host again replaces its saved credentials in the apps.
+The helper accepts `uribo-btw`, `kebean`, or `beans-btw`. It connects over SSH as
+the host's admin user and runs `t3` as the T3 service user with `sudo -u`, so it
+asks for that host's sudo password when T3 runs as `agent`. The `agent` accounts
+don't accept SSH logins from your machines. Pairing the same host again replaces its saved credentials in the apps.
 The helper uses the existing `/var/lib/t3code` state and leaves old sessions in
 place.
 
