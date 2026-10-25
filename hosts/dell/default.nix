@@ -46,7 +46,10 @@
       ssh.authorizedClients = ["kebee" "kebean"];
     };
 
-    agentUser.enable = true;
+    agentUser = {
+      enable = true;
+      authorizedClients = ["uribo-btw"];
+    };
 
     t3code = {
       enable = true;
