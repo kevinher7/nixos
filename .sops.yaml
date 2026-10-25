@@ -12,6 +12,12 @@ creation_rules:
     key_groups:
       - age:
           - *dell_age
+  - path_regex: secrets/t3code\.yaml$
+    key_groups:
+      - age:
+          - *server_age
+          - *dell_age
+          - *macbook_age
   - path_regex: secrets/[^/]+\.yaml$
     key_groups:
       - age:

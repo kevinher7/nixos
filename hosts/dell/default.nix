@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/desktop/sway
@@ -13,6 +17,7 @@
     ../../modules/audio
     ../../modules/bluetooth
     ../../modules/t3code
+    ../../modules/agent-user
   ];
 
   programs.steam.enable = true;
@@ -38,10 +43,18 @@
         enable = true;
         ssh = false;
       };
-      ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
+      ssh.authorizedClients = ["kebee" "kebean"];
     };
 
-    t3code.enable = true;
+    agentUser = {
+      enable = true;
+      authorizedClients = ["uribo-btw"];
+    };
+
+    t3code = {
+      enable = true;
+      user = config.myModules.agentUser.name;
+    };
   };
 
   # AMD Radeon integrated graphics.

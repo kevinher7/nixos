@@ -32,7 +32,7 @@ This guide assumes you already have NixOS installed.
 
 3. **Secrets & Encryption** 🔐
 
-   Sensitive values are encrypted with [`sops-nix`](https://github.com/Mic92/sops-nix). `.sops.yaml` encrypts every secret to two age recipients, the server and the macbook. The server decrypts at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file is needed on the server.
+   Sensitive values are encrypted with [`sops-nix`](https://github.com/Mic92/sops-nix). `.sops.yaml` decides which hosts can decrypt each file. `secrets/secrets.yaml` goes to the server and the macbook, `secrets/t3code.yaml` also goes to every host running the T3 Code server, and `secrets/api-keys/<hostname>.yaml` goes to a single host. The server decrypts at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file is needed on the server.
 
    Edit secrets from the macbook. Its age identity lives in the default `sops` location (`~/Library/Application Support/sops/age/keys.txt`, or `$XDG_CONFIG_HOME/sops/age/keys.txt` when that variable is set). Do not export the server's host key to an age identity file in a user's home directory. Anything running as that user, coding agents included, could then decrypt every secret, the Harmonia signing key among them.
 

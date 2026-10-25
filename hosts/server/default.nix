@@ -68,9 +68,9 @@
       tailscale = {
         enable = true;
         openFirewall = true;
-        ssh = true;
+        ssh = false;
       };
-      ssh.authorizedClients = ["kebee" "kebean" "uribo-btw"];
+      ssh.authorizedClients = ["kebee" "kebean"];
     };
 
     agentUser.enable = true;
