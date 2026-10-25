@@ -261,7 +261,8 @@ sudo -u agent t3 pair --base-dir /var/lib/t3code --label uribo-btw
 ```
 
 In the desktop app, open Settings > Connections > Add environment and paste the
-full printed link. On the phone, it is Settings > Environments. The link expires
+full printed link. On the phone, it is Settings > Environments, where you can
+scan the QR code the helper prints under the link. The link expires
 after five minutes. Pairing survives service restarts and reboots. Use `t3 auth`
 to list or revoke old sessions.
 
