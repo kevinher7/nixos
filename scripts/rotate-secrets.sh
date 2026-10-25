@@ -254,6 +254,21 @@ label() {
   printf '%s  %s%s' "$id" "${FILE[$id]}" "$extra"
 }
 
+ADMIN_KEY=""
+
+load_admin_key() {
+  say "Decrypting the admin key once for this run."
+  ADMIN_KEY=$(bash -c "$SOPS_AGE_KEY_CMD") || die "could not decrypt the admin key"
+  [[ -n "$ADMIN_KEY" ]] || die "SOPS_AGE_KEY_CMD printed no key"
+}
+
+# sops runs SOPS_AGE_KEY_CMD without a shell, so it reads the key from an
+# inherited pipe on fd 3 rather than from the environment or arguments.
+sops() {
+  [[ -n "$ADMIN_KEY" ]] || die "the admin key is not loaded"
+  SOPS_AGE_KEY_CMD='cat /dev/fd/3' command sops "$@" 3<<<"$ADMIN_KEY"
+}
+
 sops_set() {
   jq -Rs . | sops set --value-stdin "$1" "[\"$2\"]"
 }
@@ -542,10 +557,13 @@ rotate_flow() {
   state_set started "$started"
 
   stage "Rotate"
-  say "Each value goes straight from memory into sops. sops may ask for the admin key's passphrase each time."
+  load_admin_key
+  say "Each value goes straight from memory into sops."
+  note "Don't run coding agents as $(id -un) until every secret is written: they could read the key from this process."
   for id in "${picks[@]}"; do
     rotate "$id"
   done
+  ADMIN_KEY=""
 
   if ((${#ROTATED[@]} == 0)); then
     rm -f "$RUN_FILE" "$ROTATED_FILE"
