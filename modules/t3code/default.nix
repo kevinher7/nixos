@@ -49,6 +49,16 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    sops = {
+      secrets.t3_github_token.sopsFile = ../../secrets/common/t3code.yaml;
+      templates."t3code-github.env" = {
+        mode = "0400";
+        content = ''
+          GH_TOKEN=${config.sops.placeholder.t3_github_token}
+        '';
+      };
+    };
+
     networking.firewall.interfaces.tailscale0.allowedTCPPorts = [cfg.port];
 
     systemd.services.t3code = {
@@ -76,6 +86,7 @@ in {
           "--port ${toString cfg.port}"
           "--base-dir ${cfg.baseDir}"
         ];
+        EnvironmentFile = config.sops.templates."t3code-github.env".path;
         Restart = "on-failure";
         RestartSec = 5;
       };
@@ -83,6 +94,7 @@ in {
 
     systemd.tmpfiles.rules = [
       "d ${cfg.baseDir} 0700 ${cfg.user} users - -"
+      "Z ${cfg.baseDir} - ${cfg.user} users - -"
       "d ${cfg.workingDirectory} 0755 ${cfg.user} users - -"
     ];
   };

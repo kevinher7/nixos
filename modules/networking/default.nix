@@ -62,7 +62,7 @@ in {
         enable = true;
         inherit (cfg.networking.tailscale) openFirewall;
         extraSetFlags =
-          lib.optional cfg.networking.tailscale.ssh "--ssh"
+          ["--ssh=${lib.boolToString cfg.networking.tailscale.ssh}"]
           ++ lib.optional (cfg.networking.tailscale.operatorUser != null) "--operator=${cfg.networking.tailscale.operatorUser}";
       };
 

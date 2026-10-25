@@ -1,19 +1,28 @@
 keys:
+  - &admin age1kkfwu635jzccmtdwqhgv44dkzyquf2pvklqzjlxs5j9gmtjxnslsxj40ua
   - &server_age age10zthhu9ul6amwgsdqux0n5plrmeq9vcuxk068atxvr3plt78zy2s27nfqj
   - &macbook_age age15wjns6q6free797lrstttqhyzzeukd9899qu86uwyllst5m6g4nqra0glk
   - &dell_age age15d48ksaeqw47efpckscntnd2w63dl72s2m7hm04d6qvmmhcpev3q0zlpd7
 
 creation_rules:
-  - path_regex: secrets/api-keys/kebee\.yaml$
+  - path_regex: secrets/hosts/uribo-btw\.yaml$
     key_groups:
       - age:
-          - *macbook_age
-  - path_regex: secrets/api-keys/kebean\.yaml$
-    key_groups:
-      - age:
-          - *dell_age
-  - path_regex: secrets/[^/]+\.yaml$
-    key_groups:
-      - age:
+          - *admin
           - *server_age
+  - path_regex: secrets/hosts/kebean\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *dell_age
+  - path_regex: secrets/hosts/kebee\.yaml$
+    key_groups:
+      - age:
+          - *admin
           - *macbook_age
+  - path_regex: secrets/common/t3code\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *server_age
+          - *dell_age

@@ -27,6 +27,7 @@ _: {
       "google-chrome"
       "postman"
       "raycast"
+      "secretive"
       "skim"
       "stats"
       "steam"

@@ -1,6 +1,6 @@
-_: {
+{hostname, ...}: {
   sops = {
-    defaultSopsFile = ../../secrets/secrets.yaml;
+    defaultSopsFile = ../../secrets/hosts/${hostname}.yaml;
     defaultSopsFormat = "yaml";
 
     age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];

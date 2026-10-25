@@ -24,6 +24,7 @@
       desktop.enable = true;
     };
     skim.enable = true;
+    sops.enable = true;
     zen-browser.enable = true;
 
     openvpn.enable = true;
