@@ -6,6 +6,11 @@
 }: {
   networking.hostName = hostname;
 
+  myVars.harmoniaPublicKeys = {
+    current = "cache.beanhaven.net-1:QM0p2ysuKFpvBiCNy0Jv79uOXjxEPzvGC2nBbDP4Shk=";
+    next = null;
+  };
+
   time.timeZone = "Asia/Tokyo";
 
   boot.loader = {
@@ -25,11 +30,13 @@
           "https://cache.numtide.com" # For LLM Agents
           "https://kevinher7-nixos.cachix.org" # CI generated builds
         ];
-      extra-trusted-public-keys = [
-        "cache.beanhaven.net-1:QM0p2ysuKFpvBiCNy0Jv79uOXjxEPzvGC2nBbDP4Shk="
-        "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-        "kevinher7-nixos.cachix.org-1:+Jcip/7h4fDQ2aHDQltrpnM8JgOxO754mjxRm26Rv0c="
-      ];
+      extra-trusted-public-keys =
+        [config.myVars.harmoniaPublicKeys.current]
+        ++ lib.optional (config.myVars.harmoniaPublicKeys.next != null) config.myVars.harmoniaPublicKeys.next
+        ++ [
+          "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+          "kevinher7-nixos.cachix.org-1:+Jcip/7h4fDQ2aHDQltrpnM8JgOxO754mjxRm26Rv0c="
+        ];
       connect-timeout = 5;
     };
 

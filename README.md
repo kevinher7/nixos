@@ -69,6 +69,23 @@ This guide assumes you already have NixOS installed.
 
    `updatekeys` alone keeps the old data key, so the removed key can still decrypt a copy from git history. `rotate` replaces the data key. Old ciphertext stays in git either way, so also rotate the real secrets the removed key could read.
 
+   **Rotating the Harmonia signing key:**
+
+   Harmonia signs with `harmonia_signing_key`, and every NixOS host trusts `myVars.harmoniaPublicKeys.current`, set in `modules/system/default.nix`. A rotation takes two deploys, so no host ever gets a path signed only by a key it doesn't trust yet.
+
+   Phase 1 adds the next key next to the current one. On kebean, with `<n>` one higher than the number in the current key name:
+
+   ```bash
+   key=$(nix key generate-secret --key-name cache.beanhaven.net-<n>)
+   printf '%s' "$key" | jq -Rs . | sops set --value-stdin secrets/hosts/uribo-btw.yaml '["harmonia_signing_key_next"]'
+   printf '%s' "$key" | nix key convert-secret-to-public
+   unset key
+   ```
+
+   Set `myVars.harmoniaPublicKeys.next` to the printed public key. That also turns on `myHomelab.harmonia.nextKey.enable`, so the server signs with both keys. Merge, then deploy every NixOS host with `nix run .#fleet-deploy`.
+
+   Phase 2 promotes the next key. Copy the value of `harmonia_signing_key_next` into `harmonia_signing_key` with `sops secrets/hosts/uribo-btw.yaml` and delete `harmonia_signing_key_next`. In Nix, move the `next` public key to `current` and set `next = null`. Merge and deploy every host again.
+
 4. **Build & Switch**
 
    Run the rebuild for the specific host you are setting up:

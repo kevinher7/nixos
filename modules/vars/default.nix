@@ -32,6 +32,28 @@
       example = "100.64.0.1";
     };
 
+    harmoniaPublicKeys = {
+      current = lib.mkOption {
+        type = lib.types.str;
+        description = ''
+          Public key of the key Harmonia on the homelab server signs with.
+          Every NixOS host trusts it for the binary cache.
+        '';
+        example = "cache.example.com-1:AAAA...=";
+      };
+
+      next = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = ''
+          Public key of the next Harmonia signing key while a rotation is in
+          progress. When set, every NixOS host trusts it too and the server
+          also signs with the harmonia_signing_key_next secret.
+        '';
+        example = "cache.example.com-2:AAAA...=";
+      };
+    };
+
     lan = {
       gateway = lib.mkOption {
         type = lib.types.str;
