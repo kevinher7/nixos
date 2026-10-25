@@ -39,11 +39,24 @@ in {
     };
     users.groups.mail-bean = {};
 
-    # Holds the full mail-bean env file: Gmail credentials, Actual password and sync id,
-    # start date and the account/category/transfer maps. Server URL and data dir are set below.
-    sops.secrets.mail_bean_env = {
-      owner = "mail-bean";
-      mode = "0400";
+    sops = {
+      secrets = {
+        mail_bean_settings_env = {};
+        gmail_client_secret = {};
+        gmail_refresh_token = {};
+        actual_server_password = {};
+      };
+
+      templates."mail-bean.env" = {
+        owner = "mail-bean";
+        mode = "0400";
+        content = ''
+          ${config.sops.placeholder.mail_bean_settings_env}
+          MAIL_BEAN_GOOGLE_CLIENT_SECRET=${config.sops.placeholder.gmail_client_secret}
+          MAIL_BEAN_GOOGLE_REFRESH_TOKEN=${config.sops.placeholder.gmail_refresh_token}
+          MAIL_BEAN_ACTUAL_PASSWORD=${config.sops.placeholder.actual_server_password}
+        '';
+      };
     };
 
     systemd.services.mail-bean = {
@@ -63,7 +76,7 @@ in {
         User = "mail-bean";
         Group = "mail-bean";
         StateDirectory = "mail-bean";
-        EnvironmentFile = config.sops.secrets.mail_bean_env.path;
+        EnvironmentFile = config.sops.templates."mail-bean.env".path;
         ExecStart = lib.getExe cfg.package;
       };
     };
