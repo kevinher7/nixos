@@ -439,7 +439,7 @@ rotate_harmonia_phase1() {
   unset secret
   record_rotation "$id" 1
   say "Public key: $public"
-  NIX_EDITS+=("In $HARMONIA_KEYS_NIX set myVars.harmoniaPublicKeys.next = \"$public\"; (this also enables myHomelab.harmonia.nextKey)")
+  NIX_EDITS+=("In $HARMONIA_KEYS_NIX set myVars.harmoniaPublicKeys.next = \"$public\";")
   HAS_HARMONIA_PHASE1=1
 }
 

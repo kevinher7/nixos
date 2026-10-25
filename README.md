@@ -83,7 +83,7 @@ This guide assumes you already have NixOS installed.
    unset key
    ```
 
-   Set `myVars.harmoniaPublicKeys.next` to the printed public key. That also turns on `myHomelab.harmonia.nextKey.enable`, so the server signs with both keys. Merge, then deploy every NixOS host with `nix run .#fleet-deploy`.
+   Set `myVars.harmoniaPublicKeys.next` to the printed public key. While `next` is set, the server signs with both keys and every NixOS host trusts both. Merge, then deploy every NixOS host with `nix run .#fleet-deploy`.
 
    Phase 2 promotes the next key. Copy the value of `harmonia_signing_key_next` into `harmonia_signing_key` with `sops secrets/hosts/uribo-btw.yaml` and delete `harmonia_signing_key_next`. In Nix, move the `next` public key to `current` and set `next = null`. Merge and deploy every host again.
 

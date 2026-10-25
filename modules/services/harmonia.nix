@@ -4,6 +4,7 @@
   ...
 }: let
   cfg = config.myHomelab;
+  rotating = config.myVars.harmoniaPublicKeys.next != null;
   signingKeySecret = {
     owner = "root";
     group = "root";
@@ -24,13 +25,6 @@ in {
       default = 5000;
       description = "Internal port for Harmonia";
     };
-
-    nextKey.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.myVars.harmoniaPublicKeys.next != null;
-      defaultText = lib.literalExpression "config.myVars.harmoniaPublicKeys.next != null";
-      description = "Whether Harmonia also signs with the harmonia_signing_key_next secret, during a key rotation.";
-    };
   };
 
   config = lib.mkIf cfg.harmonia.enable {
@@ -38,14 +32,14 @@ in {
 
     sops.secrets = {
       harmonia_signing_key = signingKeySecret;
-      harmonia_signing_key_next = lib.mkIf cfg.harmonia.nextKey.enable signingKeySecret;
+      harmonia_signing_key_next = lib.mkIf rotating signingKeySecret;
     };
 
     services.harmonia.cache = {
       enable = true;
       signKeyPaths =
         [config.sops.secrets.harmonia_signing_key.path]
-        ++ lib.optional cfg.harmonia.nextKey.enable config.sops.secrets.harmonia_signing_key_next.path;
+        ++ lib.optional rotating config.sops.secrets.harmonia_signing_key_next.path;
       settings.bind = "127.0.0.1:${toString cfg.harmonia.port}";
     };
 
