@@ -94,6 +94,7 @@ in {
 
     systemd.tmpfiles.rules = [
       "d ${cfg.baseDir} 0700 ${cfg.user} users - -"
+      "Z ${cfg.baseDir} - ${cfg.user} users - -"
       "d ${cfg.workingDirectory} 0755 ${cfg.user} users - -"
     ];
   };
