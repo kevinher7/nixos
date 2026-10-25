@@ -36,14 +36,15 @@ This guide assumes you already have NixOS installed.
 
    ```text
    secrets/
-   ├── hosts/
-   │   ├── kebean.yaml
-   │   ├── kebee.yaml
-   │   └── uribo-btw.yaml
-   └── t3code.yaml
+   ├── common/
+   │   └── t3code.yaml
+   └── hosts/
+       ├── kebean.yaml
+       ├── kebee.yaml
+       └── uribo-btw.yaml
    ```
 
-   Each host decrypts `secrets/hosts/<hostname>.yaml`, which `modules/secrets` sets as the default sops file, plus the shared purpose files it needs. `secrets/t3code.yaml` goes to every host running the T3 Code server, and modules that read it set `sopsFile` explicitly. Hosts decrypt at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file sits in any home directory.
+   Each host decrypts `secrets/hosts/<hostname>.yaml`, which `modules/secrets` sets as the default sops file, plus the files in `secrets/common/` it needs. Those are named by purpose: `secrets/common/t3code.yaml` goes to every host running the T3 Code server, and modules that read it set `sopsFile` explicitly. Hosts decrypt at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file sits in any home directory.
 
    A dedicated admin age key is a recipient of every file, and it is the only key meant for editing. It is protected by a passphrase, lives on kebean, and is backed up in Vaultwarden with the passphrase stored separately. YubiKeys can join later as extra admin recipients. No other user-readable key may decrypt secrets. Anything running as that user, coding agents included, could read every secret it can decrypt, the Harmonia signing key among them. Until the admin key is added, the macbook's host key is still a recipient of `uribo-btw.yaml` and `t3code.yaml`.
 
