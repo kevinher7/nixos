@@ -8,7 +8,9 @@ set -euo pipefail
 # Secret table. Edit this when a module declares or drops a sops secret.
 # Kinds: generated (random value made here), external (paste from a
 # dashboard), manual (paste, plus a step in the service's own UI right before
-# the deploy), harmonia (two-phase signing key rotation).
+# the deploy), edit (change lines inside an env-file secret in the sops
+# editor), harmonia (two-phase signing key rotation). ALSO_EDIT opens another
+# file in the sops editor after a secret is stored, for copies of its value.
 # ──────────────────────────────────────────────────────────────────────────
 
 SECRET_IDS=(
@@ -18,16 +20,13 @@ SECRET_IDS=(
   harmonia_signing_key
   actual_server_password
   actual_http_api_key
-  gmail_client_secret
-  gmail_refresh_token
+  mail_bean_env
   t3_github_token
   openrouter_api_key@kebean
   openrouter_api_key@kebee
 )
 
-NOT_ROTATED=(mail_bean_settings_env)
-
-declare -A FILE KIND WHAT URL HOWTO UI_STEP VERIFY REVOKE
+declare -A FILE KIND WHAT URL HOWTO UI_STEP ALSO_EDIT ALSO_HOWTO VERIFY REVOKE
 
 FILE[github_runner_token]=secrets/hosts/uribo-btw.yaml
 KIND[github_runner_token]=external
@@ -65,6 +64,8 @@ KIND[actual_server_password]=manual
 WHAT[actual_server_password]="Actual server password, used by actual-http-api and mail-bean"
 URL[actual_server_password]=https://budget.beanhaven.net
 HOWTO[actual_server_password]="Generate a new password in Vaultwarden and save it there. Don't change it in Actual yet."
+ALSO_EDIT[actual_server_password]=secrets/services/mail-bean.yaml
+ALSO_HOWTO[actual_server_password]="mail-bean keeps its own copy: replace MAIL_BEAN_ACTUAL_PASSWORD with the same new password."
 UI_STEP[actual_server_password]="Right before fleet-deploy, change the server password in Actual (https://budget.beanhaven.net, Settings) to the new one from Vaultwarden. actual-http-api and mail-bean can't log in until the deploy finishes."
 VERIFY[actual_server_password]="Log in at https://budget.beanhaven.net with the new password
 On uribo-btw: sudo systemctl start mail-bean && journalctl -u mail-bean -n 20
@@ -76,23 +77,16 @@ WHAT[actual_http_api_key]="API key clients send to actual-http-api as x-api-key"
 VERIFY[actual_http_api_key]="On uribo-btw, prints 200: sudo sed 's/^/x-api-key: /' /run/secrets/actual_http_api_key | curl -sS -o /dev/null -w '%{http_code}\n' -H @- https://actual-api.beanhaven.net/v1/budgets/d90c6528-ee2f-49e4-b5d1-5019b5136b1e/accounts
 Give the new key to every client of actual-api. Read it on uribo-btw with: sudo cat /run/secrets/actual_http_api_key"
 
-FILE[gmail_client_secret]=secrets/hosts/uribo-btw.yaml
-KIND[gmail_client_secret]=external
-WHAT[gmail_client_secret]="OAuth client secret mail-bean uses for the Gmail API"
-URL[gmail_client_secret]=https://console.cloud.google.com/auth/clients
-HOWTO[gmail_client_secret]="Open mail-bean's OAuth client and use Add secret. Leave the old secret enabled until the deploy is verified."
-VERIFY[gmail_client_secret]="On uribo-btw: sudo systemctl start mail-bean && journalctl -u mail-bean -n 20"
-REVOKE[gmail_client_secret]="Disable, then delete, the old secret on mail-bean's OAuth client at https://console.cloud.google.com/auth/clients"
+FILE[mail_bean_env]=secrets/services/mail-bean.yaml
+KIND[mail_bean_env]=edit
+WHAT[mail_bean_env]="mail-bean's env file: Google OAuth client secret and refresh token, Actual password, settings"
+URL[mail_bean_env]=https://console.cloud.google.com/auth/clients
+HOWTO[mail_bean_env]="Add a new secret on mail-bean's OAuth client and leave the old one enabled. Get a new refresh token at https://developers.google.com/oauthplayground ('Use your own OAuth credentials' with the new secret, scope https://www.googleapis.com/auth/gmail.modify). In the editor, replace MAIL_BEAN_GOOGLE_CLIENT_SECRET and MAIL_BEAN_GOOGLE_REFRESH_TOKEN and leave the other lines alone."
+VERIFY[mail_bean_env]="On uribo-btw: sudo systemctl start mail-bean && journalctl -u mail-bean -n 20"
+REVOKE[mail_bean_env]="Disable, then delete, the old secret on mail-bean's OAuth client at https://console.cloud.google.com/auth/clients
+Revoke the old refresh token by POSTing it to https://oauth2.googleapis.com/revoke (decrypt it from the commit before the rotation). Don't remove the app under your Google account's third-party connections, that revokes the new token too."
 
-FILE[gmail_refresh_token]=secrets/hosts/uribo-btw.yaml
-KIND[gmail_refresh_token]=external
-WHAT[gmail_refresh_token]="Gmail OAuth refresh token mail-bean reads mail with"
-URL[gmail_refresh_token]=https://developers.google.com/oauthplayground
-HOWTO[gmail_refresh_token]="In the playground settings, tick 'Use your own OAuth credentials' with mail-bean's client ID and current secret, authorize https://www.googleapis.com/auth/gmail.modify, exchange the code and copy the refresh token."
-VERIFY[gmail_refresh_token]="On uribo-btw: sudo systemctl start mail-bean && journalctl -u mail-bean -n 20"
-REVOKE[gmail_refresh_token]="Revoke the old refresh token by POSTing it to https://oauth2.googleapis.com/revoke (decrypt it from the commit before the rotation). Don't remove the app under your Google account's third-party connections, that revokes the new token too."
-
-FILE[t3_github_token]=secrets/common/t3code.yaml
+FILE[t3_github_token]=secrets/services/t3code.yaml
 KIND[t3_github_token]=external
 WHAT[t3_github_token]="GitHub token (GH_TOKEN) the T3 Code servers use"
 URL[t3_github_token]=https://github.com/settings/personal-access-tokens
@@ -294,7 +288,6 @@ drift_check() {
     name="${line% *}"
     base="${line#* }"
     [[ "$name" == "$HARMONIA_NEXT_SECRET" ]] && continue
-    printf '%s\n' "${NOT_ROTATED[@]}" | grep -qx "$name" && continue
     found=0
     for id in "${SECRET_IDS[@]}"; do
       if [[ "$(name_of "$id")" == "$name" && "$(basename "${FILE[$id]}")" == "$base" ]]; then
@@ -329,10 +322,14 @@ NIX_EDITS=()
 DEPLOY_STEPS=()
 HAS_HARMONIA_PHASE1=0
 
+add_changed_file() {
+  printf '%s\n' "${CHANGED_FILES[@]}" | grep -qx "$1" || CHANGED_FILES+=("$1")
+}
+
 record_rotation() {
   local id="$1" phase="$2"
   ROTATED+=("$id")
-  printf '%s\n' "${CHANGED_FILES[@]}" | grep -qx "${FILE[$id]}" || CHANGED_FILES+=("${FILE[$id]}")
+  add_changed_file "${FILE[$id]}"
   printf '%s %s %s\n' "$id" "$phase" "$(date -Iseconds)" >> "$ROTATED_FILE"
   ok "stored $(name_of "$id") in ${FILE[$id]}"
 }
@@ -371,6 +368,41 @@ rotate_external() {
   step "Open ${URL[$id]}"
   step "${HOWTO[$id]}"
   store_pasted "$id"
+}
+
+edit_in_sops() {
+  local file="$1"
+  if ! sops edit "$file"; then
+    warn "sops edit failed for $file"
+    return 1
+  fi
+  git -C "$REPO" diff --quiet -- "$file" && {
+    warn "$file is unchanged"
+    return 1
+  }
+  add_changed_file "$file"
+}
+
+rotate_edit() {
+  local id="$1"
+  step "Open ${URL[$id]}"
+  step "${HOWTO[$id]}"
+  ask "Open ${FILE[$id]} in the sops editor now?" || {
+    warn "skipping $id"
+    return 0
+  }
+  edit_in_sops "${FILE[$id]}" && record_rotation "$id" -
+}
+
+also_edit() {
+  local id="$1"
+  [[ -n "${ALSO_EDIT[$id]:-}" && " ${ROTATED[*]} " == *" $id "* ]] || return 0
+  step "${ALSO_HOWTO[$id]}"
+  ask "Open ${ALSO_EDIT[$id]} in the sops editor now?" || {
+    warn "${ALSO_EDIT[$id]} still has the old value, update it before the deploy"
+    return 0
+  }
+  edit_in_sops "${ALSO_EDIT[$id]}" || warn "${ALSO_EDIT[$id]} still has the old value, update it before the deploy"
 }
 
 rotate_manual() {
@@ -449,6 +481,7 @@ rotate() {
     generated) rotate_generated "$id" ;;
     external) rotate_external "$id" ;;
     manual) rotate_manual "$id" ;;
+    edit) rotate_edit "$id" ;;
     harmonia)
       if [[ "$(harmonia_phase)" == 1 ]]; then
         rotate_harmonia_phase1 "$id"
@@ -457,6 +490,7 @@ rotate() {
       fi
       ;;
   esac
+  also_edit "$id"
 }
 
 # ──────────────────────────────────────────────────────────────────────────
