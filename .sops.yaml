@@ -20,7 +20,12 @@ creation_rules:
       - age:
           - *admin
           - *macbook_age
-  - path_regex: secrets/common/t3code\.yaml$
+  - path_regex: secrets/services/mail-bean\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *server_age
+  - path_regex: secrets/services/t3code\.yaml$
     key_groups:
       - age:
           - *admin
