@@ -32,17 +32,41 @@ This guide assumes you already have NixOS installed.
 
 3. **Secrets & Encryption** 🔐
 
-   Sensitive values are encrypted with [`sops-nix`](https://github.com/Mic92/sops-nix). `.sops.yaml` decides which hosts can decrypt each file. `secrets/secrets.yaml` goes to the server and the macbook, `secrets/t3code.yaml` also goes to every host running the T3 Code server, and `secrets/api-keys/<hostname>.yaml` goes to a single host. The server decrypts at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file is needed on the server.
+   Sensitive values are encrypted with [`sops-nix`](https://github.com/Mic92/sops-nix). `.sops.yaml` decides which age keys can decrypt each file:
 
-   Edit secrets from the macbook. Its age identity lives in the default `sops` location (`~/Library/Application Support/sops/age/keys.txt`, or `$XDG_CONFIG_HOME/sops/age/keys.txt` when that variable is set). Do not export the server's host key to an age identity file in a user's home directory. Anything running as that user, coding agents included, could then decrypt every secret, the Harmonia signing key among them.
+   ```text
+   secrets/
+   ├── hosts/
+   │   ├── kebean.yaml
+   │   ├── kebee.yaml
+   │   └── uribo-btw.yaml
+   └── t3code.yaml
+   ```
+
+   Each host decrypts `secrets/hosts/<hostname>.yaml`, which `modules/secrets` sets as the default sops file, plus the shared purpose files it needs. `secrets/t3code.yaml` goes to every host running the T3 Code server, and modules that read it set `sopsFile` explicitly. Hosts decrypt at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file sits in any home directory.
+
+   A dedicated admin age key is a recipient of every file, and it is the only key meant for editing. It is protected by a passphrase, lives on kebean, and is backed up in Vaultwarden with the passphrase stored separately. YubiKeys can join later as extra admin recipients. No other user-readable key may decrypt secrets. Anything running as that user, coding agents included, could read every secret it can decrypt, the Harmonia signing key among them. Until the admin key is added, the macbook's host key is still a recipient of `uribo-btw.yaml` and `t3code.yaml`.
 
    **Editing secrets:**
 
+   Edit on kebean, either at the machine or over SSH from the macbook (`ssh kevin@kebean`, which asks for Touch ID through Secretive). `sops` then asks for the admin key's passphrase.
+
    ```bash
-   nix-shell -p sops --run "sops secrets/secrets.yaml"
+   nix shell nixpkgs#sops --command sops secrets/hosts/uribo-btw.yaml
    ```
 
-   Add or modify keys, save, and `sops` will re-encrypt automatically.
+   Add or modify keys, save, and `sops` re-encrypts the file.
+
+   **Removing a recipient:**
+
+   Change `.sops.yaml`, then run both commands on every affected file:
+
+   ```bash
+   sops updatekeys secrets/hosts/uribo-btw.yaml
+   sops rotate -i secrets/hosts/uribo-btw.yaml
+   ```
+
+   `updatekeys` alone keeps the old data key, so the removed key can still decrypt a copy from git history. `rotate` replaces the data key. Old ciphertext stays in git either way, so also rotate the real secrets the removed key could read.
 
 4. **Build & Switch**
 
@@ -160,7 +184,7 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
 1. Create a Cloudflare API token scoped to the `beanhaven.net` zone with `Zone / Zone / Read` and `Zone / DNS / Edit` permissions.
 2. Add it to the encrypted secrets:
    ```bash
-   nix shell nixpkgs#sops --command sops secrets/secrets.yaml
+   nix shell nixpkgs#sops --command sops secrets/hosts/uribo-btw.yaml
    ```
 3. Add the key:
    ```yaml
