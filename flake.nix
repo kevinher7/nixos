@@ -178,6 +178,14 @@
           text = builtins.readFile ./scripts/fleet-deploy.sh;
         });
       };
+      rotate-secrets = {
+        type = "app";
+        program = nixpkgs.lib.getExe (pkgs.writeShellApplication {
+          name = "rotate-secrets";
+          runtimeInputs = with pkgs; [age coreutils gh git gnugrep gnused gum jq nix openssl sops];
+          text = builtins.readFile ./scripts/rotate-secrets.sh;
+        });
+      };
     });
 
     devShells = forEachSystem (sys: {
