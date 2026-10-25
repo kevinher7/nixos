@@ -272,9 +272,10 @@ pairing link with:
 ./scripts/t3-renew.sh kebean
 ```
 
-The helper accepts `uribo-btw`, `kebean`, or `beans-btw` and connects over SSH as
-the host's service user. You need Tailscale connectivity and SSH access to that
-host. Pairing the same host again replaces its saved credentials in the apps.
+The helper accepts `uribo-btw`, `kebean`, or `beans-btw`. It connects over SSH as
+the host's admin user and runs `t3` as the T3 service user with `sudo -u`, so it
+asks for that host's sudo password when T3 runs as `agent`. The `agent` accounts
+don't accept SSH logins from your machines. Pairing the same host again replaces its saved credentials in the apps.
 The helper uses the existing `/var/lib/t3code` state and leaves old sessions in
 place.
 
