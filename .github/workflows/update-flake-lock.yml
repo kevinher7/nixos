@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate pull request body
         run: |
-          node .github/scripts/generate-flake-update-body.mjs \
+          node scripts/update-inputs/generate-pr-body.mjs \
             "$RUNNER_TEMP/flake.lock.before" \
             flake.lock \
             "$RUNNER_TEMP/pr-body.md" \

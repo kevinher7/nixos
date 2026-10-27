@@ -58,4 +58,4 @@ if [[ -z "$pairing_url" ]]; then
 fi
 
 printf '\n'
-nix run nixpkgs#qrencode -- -t ansiutf8 -m 2 "$pairing_url"
+qrencode -t ansiutf8 -m 2 "$pairing_url"
