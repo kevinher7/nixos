@@ -91,6 +91,8 @@ This guide assumes you already have NixOS installed.
 
    Run `nix run .#rotate-secrets` on kebean. The table at the top of `scripts/rotate-secrets/script.sh` lists every secret, its file and how to get a new value, and the wizard warns when a host declares a secret the table lacks. Pick secrets, then for each one it generates a value, or shows the dashboard to create one in and reads it without echo. Values go from memory straight into `sops set`. It commits the changed files on a `chore/rotate-secrets-<date>` branch and opens a PR. The Harmonia key follows the two phases above, one per run, and the wizard prints the Nix edits to push to that PR.
 
+   The wizard asks for the admin passphrase once. It keeps the decrypted admin key in a shell variable while it writes secrets, hands it to each `sops` call through a pipe instead of the environment or arguments, and clears it once the last secret is written. Until then, other processes running as kevin could read the wizard's memory, so don't run coding agents as kevin on kebean during a rotation. T3 Code's agents run as `agent` and can't.
+
    After merging and deploying with fleet-deploy, run `nix run .#rotate-secrets -- --resume` for the verification commands and the checklist of old credentials to revoke. Progress lives in `~/.local/state/rotate-secrets/`, without values.
 
 4. **Build & Switch**
