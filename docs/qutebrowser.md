@@ -1,11 +1,24 @@
-# Qutebrowser on NixOS
+# Qutebrowser
 
-Both laptop hosts enable Widevine through the nixpkgs qutebrowser package.
+Both Linux laptops enable Widevine through the nixpkgs qutebrowser package.
 Only `widevine-cdm` is newly permitted as unfree software. Restart qutebrowser
 after rebuilding so the new package and Qt flags take effect.
 
+## macOS
+
+kebee runs the upstream release DMG instead of the nixpkgs build. The nixpkgs
+app hands off to `python3.14`, so AeroSpace never registers its window. The
+upstream app is a native binary with bundle id `org.qutebrowser.qutebrowser`,
+which AeroSpace manages like any other app. The Homebrew cask is disabled for
+failing Gatekeeper, so Nix fetches the same DMG. Bump `version` and `hash` in
+`home/programs/qutebrowser.nix` to update it.
+
+Home Manager writes the config to `~/.qutebrowser`. Widevine and the Bitwarden
+bindings are Linux only.
+
 ## Bitwarden
 
+The Bitwarden bindings exist on the Linux laptops only.
 Configure the CLI before its first login:
 
 ```sh
