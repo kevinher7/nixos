@@ -42,16 +42,18 @@ Use `bw sync` to refresh the vault after unlocking it.
 Login performs an initial sync. The userscript reads the local vault and does
 not pull changes from other clients before filling.
 
-Focus the username field and use `,u`. Focus the password field and use `,p`.
-For multi-page logins, advance to the password page before using `,p`.
-The script types into the focused field without checking its type.
+Focus the username field and use `,s` to fill both the username and password.
+The script types the username, presses Tab, then types the password. This
+assumes Tab moves focus to the password field.
+For multi-page logins, use `,u` on the username page and `,p` on the password
+page. The script types into the focused field without checking its type.
 
 | Binding | Action |
 | --- | --- |
 | `,p` | Fill only the password |
 | `,P` | Fill only the password and copy TOTP to the clipboard |
 | `,u` | Fill only the username |
-| `,s` | Fill only the password |
+| `,s` | Fill the username and password |
 | `,t` | Fill only the TOTP code |
 
 The script prompts through rofi and caches its unlocked session in the Linux
@@ -66,13 +68,19 @@ The packaged userscript is patched to accept entries without a `totp` field.
 
 ## Google sign-in
 
-Keep qutebrowser's built-in Google user-agent handling enabled. Google sign-in
-worked in a temporary default profile, while the configured profile with a
-Firefox 135 override failed. The configuration no longer skips `ua-google`
-or overrides the Google Accounts user agent. Sign-in with the remaining
-custom settings still needs verification.
+On Linux, Google Accounts uses this user agent:
 
-After rebuilding, restart qutebrowser to clear the removed runtime overrides.
+```text
+Mozilla/5.0 ({os_info}; rv:135.0) Gecko/20100101 Firefox/135
+```
+
+This exact string worked where the built-in Firefox 149 workaround failed.
+Keep the ending as `Firefox/135`, without `.0`. Linux skips `ua-google` so
+the built-in workaround does not replace this setting. The override applies
+only to `https://accounts.google.com/*`.
+
+macOS keeps the built-in handling, which worked in a fresh profile.
+After rebuilding, restart qutebrowser to apply the settings.
 Related upstream reports are in
 [issue #5182](https://github.com/qutebrowser/qutebrowser/issues/5182).
 

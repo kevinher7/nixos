@@ -53,16 +53,22 @@ in {
 
         loadAutoconfig = false;
 
-        perDomainSettings = {
-          "https://www.youtube.com/*".content = {
-            autoplay = false;
-            blocking.enabled = false;
+        perDomainSettings =
+          {
+            "https://www.youtube.com/*".content = {
+              autoplay = false;
+              blocking.enabled = false;
+            };
+          }
+          // lib.optionalAttrs (osFamily == "linux") {
+            "https://accounts.google.com/*".content.headers.user_agent = "Mozilla/5.0 ({os_info}; rv:135.0) Gecko/20100101 Firefox/135";
           };
-        };
 
         quickmarks = {
           da = "https://animestore.docomo.ne.jp/";
-          yt = "https://www.youtube.com/";
+          yt = "https://youtube.com/";
+          cg = "https://chatgpt.com/";
+          gh = "https://github.com/kevinher7";
           bh = "https://beanhaven.net";
           vb = "https://vault.beanhaven.net";
           bb = "https://budget.beanhaven.net";
@@ -107,8 +113,10 @@ in {
 
           statusbar.show = "in-mode";
 
-          window.hide_decoration = true;
-          window.transparent = true;
+          window = {
+            hide_decoration = true;
+            transparent = true;
+          };
 
           content = {
             # Privacy
@@ -156,11 +164,13 @@ in {
     }
 
     (lib.mkIf (osFamily == "linux") {
+      programs.qutebrowser.settings.content.site_specific_quirks.skip = ["ua-google"];
+
       programs.qutebrowser.keyBindings.normal = {
         ",p" = "spawn --userscript bitwarden --password-only";
         ",P" = "spawn --userscript bitwarden --password-only --totp";
         ",u" = "spawn --userscript bitwarden --username-only";
-        ",s" = "spawn --userscript bitwarden --password-only";
+        ",s" = "spawn --userscript bitwarden";
         ",t" = "spawn --userscript bitwarden --totp-only";
       };
 

@@ -65,9 +65,11 @@ Open YouTube with `:quickmark-load yt`, or press `b`, type `yt`, then Enter.
 Home Manager manages quickmarks, so add new ones in Nix rather than using
 `:quickmark-save`.
 
-On Linux, focus the username input and press `,u`, then focus the password
-input and press `,p`. The Bitwarden userscript types into the focused field.
-It does not check the field type. Setup and the other bindings are in the
+On Linux, focus the username input and press `,s` to fill the username and
+password. This assumes Tab moves focus to the password input. For multi-page
+logins, use `,u` on the username page and `,p` on the password page. The
+Bitwarden userscript types into the focused field without checking its type.
+Setup and the other bindings are in the
 [Bitwarden notes](qutebrowser.md#bitwarden).
 
 ## Learn without losing track of changes
