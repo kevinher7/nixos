@@ -1,5 +1,13 @@
 # Qutebrowser
 
+Configuration lives in [`home/programs/qutebrowser/default.nix`](../home/programs/qutebrowser/default.nix).
+Edit Nix, not the generated `config.py`.
+
+- [Nix configuration guide and option references](qutebrowser-configuration.md)
+- [Everyday keys and commands](qutebrowser-usage.md)
+
+The notes below cover the existing platform choices and compatibility checks.
+
 Both Linux laptops enable Widevine through the nixpkgs qutebrowser package.
 Only `widevine-cdm` is newly permitted as unfree software. Restart qutebrowser
 after rebuilding so the new package and Qt flags take effect.
@@ -11,7 +19,7 @@ app hands off to `python3.14`, so AeroSpace never registers its window. The
 upstream app is a native binary with bundle id `org.qutebrowser.qutebrowser`,
 which AeroSpace manages like any other app. The Homebrew cask is disabled for
 failing Gatekeeper, so Nix fetches the same DMG. Bump `version` and `hash` in
-`home/programs/qutebrowser.nix` to update it.
+`home/programs/qutebrowser/default.nix` to update it.
 
 Home Manager writes the config to `~/.qutebrowser`. Widevine and the Bitwarden
 bindings are Linux only.
@@ -58,17 +66,15 @@ The packaged userscript is patched to accept entries without a `totp` field.
 
 ## Google sign-in
 
-Google Accounts uses a Firefox 135 user agent scoped to
-`https://accounts.google.com/*`. This replaces qutebrowser's built-in
-`ua-google` quirk. Other sites keep their normal user agent.
+Keep qutebrowser's built-in Google user-agent handling enabled. Google sign-in
+worked in a temporary default profile, while the configured profile with a
+Firefox 135 override failed. The configuration no longer skips `ua-google`
+or overrides the Google Accounts user agent. Sign-in with the remaining
+custom settings still needs verification.
 
-This is a workaround reported in
-[upstream issue #5182](https://github.com/qutebrowser/qutebrowser/issues/5182).
-Successful sign-in still needs verification with the affected account.
-Try a direct login at <https://accounts.google.com/> before an OAuth login
-from another site. To compare with the default identity for the current
-session, run `:config-unset --temp -u https://accounts.google.com/* content.headers.user_agent`.
-`:config-source` restores the configured identity.
+After rebuilding, restart qutebrowser to clear the removed runtime overrides.
+Related upstream reports are in
+[issue #5182](https://github.com/qutebrowser/qutebrowser/issues/5182).
 
 ## Playback checks
 

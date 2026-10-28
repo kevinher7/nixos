@@ -40,6 +40,8 @@
     meta.platforms = ["aarch64-darwin"];
   });
 in {
+  imports = [./theme.nix];
+
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
       programs.qutebrowser = {
@@ -51,6 +53,21 @@ in {
 
         loadAutoconfig = false;
 
+        perDomainSettings = {
+          "https://www.youtube.com/*".content = {
+            autoplay = false;
+            blocking.enabled = false;
+          };
+        };
+
+        quickmarks = {
+          da = "https://animestore.docomo.ne.jp/";
+          yt = "https://www.youtube.com/";
+          bh = "https://beanhaven.net";
+          vb = "https://vault.beanhaven.net";
+          bb = "https://budget.beanhaven.net";
+        };
+
         searchEngines = {
           DEFAULT = "https://duckduckgo.com/?q={}";
           g = "https://www.google.com/search?hl=en&q={}";
@@ -60,6 +77,7 @@ in {
 
         settings = {
           auto_save.session = true;
+          session.lazy_restore = true;
           downloads.location.directory =
             if osFamily == "darwin"
             then "~/Downloads"
@@ -67,6 +85,8 @@ in {
 
           #Styles
           fonts.default_size = lib.mkForce "10pt";
+          fonts.tabs.selected = lib.mkForce "12pt default_family";
+          fonts.tabs.unselected = lib.mkForce "12pt default_family";
 
           # Dark Mode
           colors = {
@@ -80,10 +100,14 @@ in {
           };
 
           tabs = {
+            position = "left";
             indicator.width = 0;
-            width = "7%";
+            width = "15%";
           };
 
+          statusbar.show = "in-mode";
+
+          window.hide_decoration = true;
           window.transparent = true;
 
           content = {
@@ -94,7 +118,6 @@ in {
             webrtc_ip_handling_policy = "default-public-interface-only";
             cookies.accept = "all";
             cookies.store = true;
-            site_specific_quirks.skip = ["ua-google"];
 
             # Copy without Permission
             javascript.clipboard = "access";
@@ -103,6 +126,8 @@ in {
 
         keyBindings = {
           normal = {
+            ",r" = "config-source";
+            ",w" = "config-cycle --temp tabs.show always never";
             "<Ctrl-Tab>" = "tab-focus last";
             "!" = "tab-focus 1";
             "\\\"" = "tab-focus 2";
@@ -118,8 +143,6 @@ in {
 
         # For settings that cause dict parsing problems or require patterns (config.set)
         extraConfig = ''
-          config.set("content.headers.user_agent", "Mozilla/5.0 ({os_info}; rv:135.0) Gecko/20100101 Firefox/135.0", "https://accounts.google.com/*")
-
           c.tabs.padding = {
             "top": 3,
             "bottom": 3,
