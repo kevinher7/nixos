@@ -40,7 +40,7 @@
     meta.platforms = ["aarch64-darwin"];
   });
 in {
-  imports = [./theme.nix];
+  imports = [./theme.nix ./mpv.nix];
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
