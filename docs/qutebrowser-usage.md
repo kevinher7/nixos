@@ -72,23 +72,6 @@ Bitwarden userscript types into the focused field without checking its type.
 Setup and the other bindings are in the
 [Bitwarden notes](qutebrowser.md#bitwarden).
 
-## Play videos in mpv
-
-Press `,m` to open the current page in mpv, or `,M` to choose a video link
-with hints. Both shortcuts work on Linux and macOS. The Nix mpv package
-includes `yt-dlp` for YouTube and other supported sites.
-
-Pause playback in the browser before opening mpv to avoid playing the video
-twice. The shortcuts leave the browser tab open and start a separate mpv
-window. They do not transfer the playback position or browser login session.
-
-While a video plays in a visible mpv window, mpv inhibits idle locking on Sway.
-Pausing or closing mpv allows the normal idle timeout again. Fullscreen is
-not required. This does not change idle locking for videos inside qutebrowser.
-
-DRM-protected services such as dAnime still need browser playback. These
-shortcuts do not transfer Widevine playback to mpv.
-
 ## Learn without losing track of changes
 
 Start with opening pages, hints, tabs, and search. Leave unfamiliar bindings
