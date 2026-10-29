@@ -8,9 +8,10 @@
   cfg = config.myPrograms.agents;
   claudeDir = "${config.home.homeDirectory}/.claude";
   agentPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+  rtk = pkgs.callPackage ./rtk-oss.nix {};
 in {
   config = lib.mkIf cfg.claude-code.enable {
-    home.packages = [pkgs.jq pkgs.rtk];
+    home.packages = [pkgs.jq rtk];
 
     home.file = {
       ".claude/RTK.md".source = ./RTK.md;
@@ -97,7 +98,7 @@ in {
               hooks = [
                 {
                   type = "command";
-                  command = "${lib.getExe pkgs.rtk} hook claude";
+                  command = "${lib.getExe rtk} hook claude";
                 }
               ];
             }
