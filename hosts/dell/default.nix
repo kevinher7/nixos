@@ -26,6 +26,7 @@
     builtins.elem (lib.getName pkg) [
       "steam"
       "steam-unwrapped"
+      "widevine-cdm"
     ];
 
   myModules = {
