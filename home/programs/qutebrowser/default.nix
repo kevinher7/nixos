@@ -84,6 +84,7 @@ in {
         settings = {
           auto_save.session = true;
           session.lazy_restore = true;
+          completion.open_categories = ["searchengines" "quickmarks"];
           downloads.location.directory =
             if osFamily == "darwin"
             then "~/Downloads"
@@ -107,7 +108,8 @@ in {
 
           tabs = {
             position = "left";
-            indicator.width = 0;
+            indicator.width = 5;
+            title.format = "{audio}{index}: {perc}{current_title}";
             width = "15%";
           };
 
@@ -151,6 +153,13 @@ in {
 
         # For settings that cause dict parsing problems or require patterns (config.set)
         extraConfig = ''
+          c.tabs.indicator.padding = {
+            "top": 5,
+            "bottom": 5,
+            "left": 0,
+            "right": 12
+          }
+
           c.tabs.padding = {
             "top": 3,
             "bottom": 3,
