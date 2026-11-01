@@ -2,6 +2,7 @@
   lib,
   config,
   osFamily,
+  pkgs,
   ...
 }: let
   cfg = config.myPrograms.ghostty;
@@ -9,7 +10,7 @@ in {
   config = lib.mkIf cfg.enable {
     programs.ghostty = {
       enable = true;
-      package = lib.mkIf (osFamily == "darwin") null;
+      package = lib.mkIf (osFamily == "darwin") pkgs.ghostty-bin;
       settings =
         {
           # font-family = "JetBrainsMono";
