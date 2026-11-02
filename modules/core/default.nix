@@ -4,6 +4,4 @@ _: {
     ./packages.nix
     ./pki.nix
   ];
-
-  environment.enableAllTerminfo = true;
 }
