@@ -6,6 +6,7 @@
   cfg = config.myHomelab;
   vars = config.myVars;
   inherit (vars) domain;
+  vaultDomain = "vault.${domain}";
   privateClients = ["127.0.0.1" "::1"] ++ cfg.webAccess.privateClients;
   accessRules = clients:
     lib.concatMapStrings (address: "allow ${address};\n") clients + "deny all;\n";
@@ -47,7 +48,6 @@ in {
       '';
     };
 
-    # Let's Encrypt certificates via DNS-01 (no open ports required)
     security.acme = {
       acceptTerms = true;
       defaults.email = vars.acmeEmail;
@@ -55,7 +55,7 @@ in {
         inherit domain;
         extraDomainNames =
           [
-            "vault.${domain}"
+            vaultDomain
             "pihole.${domain}"
           ]
           ++ lib.optionals cfg.actual.enable [cfg.actual.domain]
@@ -66,7 +66,6 @@ in {
       };
     };
 
-    # Nginx reverse proxy
     services.nginx = {
       enable = true;
       recommendedGzipSettings = true;
@@ -76,10 +75,7 @@ in {
 
       virtualHosts = lib.mkMerge [
         {
-          # Root domain is handled by the homepage dashboard module
-
-          # Vaultwarden password manager
-          "vault.${domain}" = {
+          ${vaultDomain} = {
             forceSSL = true;
             useACMEHost = domain;
             locations."/" = {
@@ -92,7 +88,6 @@ in {
             };
           };
 
-          # Pi-hole web interface
           "pihole.${domain}" = {
             forceSSL = true;
             useACMEHost = domain;
@@ -119,10 +114,8 @@ in {
 
     networking.firewall.interfaces.tailscale0.allowedTCPPorts = [80 443];
 
-    # Ensure nginx can read ACME certificates
     users.users.nginx.extraGroups = ["acme"];
 
-    # Ensure ACME certificate is available before nginx starts
     systemd.services.nginx.after = ["acme-${domain}.service"];
     systemd.services.nginx.wants = ["acme-${domain}.service"];
   };
