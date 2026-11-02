@@ -43,6 +43,8 @@ in {
   };
 
   config = lib.mkIf cfg.networking.enable {
+    environment.enableAllTerminfo = true;
+
     users.users.${username}.openssh.authorizedKeys.keys =
       map (client: sshKeys.${client}) cfg.networking.ssh.authorizedClients;
 
