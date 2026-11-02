@@ -227,6 +227,10 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
 
 The `security.acme` module uses this token only to create and remove the TXT records needed for DNS-01 challenges.
 
+For private-by-default websites and explicit guest access, see
+[private and shared websites](docs/WEB-ACCESS.md). Configure and enable these
+restrictions before sharing the server with someone else.
+
 ### Tailscale Split DNS
 
 Some mobile carriers and DNS resolvers block public DNS answers containing Tailscale addresses as protection against DNS rebinding. To keep the homelab names working on mobile data, configure a restricted nameserver in the [Tailscale DNS admin page](https://login.tailscale.com/admin/dns):

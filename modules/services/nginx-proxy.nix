@@ -6,9 +6,31 @@
   cfg = config.myHomelab;
   vars = config.myVars;
   inherit (vars) domain;
+  vaultDomain = "vault.${domain}";
+  piholeDomain = "pihole.${domain}";
+  privateClients = ["127.0.0.1" "::1"] ++ cfg.webAccess.privateClients;
+  accessRules = clients:
+    lib.concatMapStrings (address: "allow ${address};\n") clients + "deny all;\n";
 in {
-  options.myHomelab.nginxProxy = {
-    enable = lib.mkEnableOption "Nginx reverse proxy with automatic HTTPS";
+  options.myHomelab = {
+    nginxProxy.enable = lib.mkEnableOption "Nginx reverse proxy with automatic HTTPS";
+
+    webAccess = {
+      enable = lib.mkEnableOption "private-by-default nginx websites with explicit guest access";
+
+      privateClients = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Device IPv4 and IPv6 addresses allowed on every website. Loopback is always allowed.";
+      };
+
+      sharedHosts = lib.mkOption {
+        type = lib.types.attrsOf (lib.types.listOf lib.types.str);
+        default = {};
+        example = {"vault.example.com" = ["100.64.0.20"];};
+        description = "Guest device addresses allowed on each nginx website. Other websites stay private.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.nginxProxy.enable {
@@ -27,7 +49,6 @@ in {
       '';
     };
 
-    # Let's Encrypt certificates via DNS-01 (no open ports required)
     security.acme = {
       acceptTerms = true;
       defaults.email = vars.acmeEmail;
@@ -35,8 +56,8 @@ in {
         inherit domain;
         extraDomainNames =
           [
-            "vault.${domain}"
-            "pihole.${domain}"
+            vaultDomain
+            piholeDomain
           ]
           ++ lib.optionals cfg.actual.enable [cfg.actual.domain]
           ++ lib.optionals cfg.actualHttpApi.enable [cfg.actualHttpApi.domain]
@@ -46,42 +67,56 @@ in {
       };
     };
 
-    # Nginx reverse proxy
     services.nginx = {
       enable = true;
       recommendedGzipSettings = true;
       recommendedProxySettings = true;
 
-      virtualHosts = {
-        # Root domain is handled by the homepage dashboard module
+      commonHttpConfig = lib.mkIf cfg.webAccess.enable (accessRules privateClients);
 
-        # Vaultwarden password manager
-        "vault.${domain}" = {
-          forceSSL = true;
-          useACMEHost = domain;
-          locations."/" = {
-            proxyPass = "http://127.0.0.1:${toString cfg.vaultwarden.port}";
-            proxyWebsockets = true;
+      virtualHosts = lib.mkMerge [
+        {
+          ${vaultDomain} = {
+            forceSSL = true;
+            useACMEHost = domain;
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:${toString cfg.vaultwarden.port}";
+              proxyWebsockets = true;
+            };
+            locations."^~ /admin" = lib.mkIf (cfg.vaultwarden.enable && cfg.webAccess.enable) {
+              proxyPass = "http://127.0.0.1:${toString cfg.vaultwarden.port}";
+              extraConfig = accessRules privateClients;
+            };
           };
-        };
 
-        # Pi-hole web interface
-        "pihole.${domain}" = {
-          forceSSL = true;
-          useACMEHost = domain;
-          locations."/" = {
-            proxyPass = "http://127.0.0.1:${cfg.pihole.webPort}/";
+          ${piholeDomain} = {
+            forceSSL = true;
+            useACMEHost = domain;
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:${cfg.pihole.webPort}/";
+            };
           };
-        };
-      };
+        }
+        (lib.mkIf cfg.webAccess.enable (
+          lib.mapAttrs (_: clients: {
+            extraConfig = accessRules (privateClients ++ clients);
+          })
+          cfg.webAccess.sharedHosts
+          // {
+            "_" = {
+              default = true;
+              rejectSSL = true;
+              locations."/".return = "444";
+            };
+          }
+        ))
+      ];
     };
 
     networking.firewall.interfaces.tailscale0.allowedTCPPorts = [80 443];
 
-    # Ensure nginx can read ACME certificates
     users.users.nginx.extraGroups = ["acme"];
 
-    # Ensure ACME certificate is available before nginx starts
     systemd.services.nginx.after = ["acme-${domain}.service"];
     systemd.services.nginx.wants = ["acme-${domain}.service"];
   };
