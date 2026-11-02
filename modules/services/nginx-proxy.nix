@@ -7,6 +7,7 @@
   vars = config.myVars;
   inherit (vars) domain;
   vaultDomain = "vault.${domain}";
+  piholeDomain = "pihole.${domain}";
   privateClients = ["127.0.0.1" "::1"] ++ cfg.webAccess.privateClients;
   accessRules = clients:
     lib.concatMapStrings (address: "allow ${address};\n") clients + "deny all;\n";
@@ -56,7 +57,7 @@ in {
         extraDomainNames =
           [
             vaultDomain
-            "pihole.${domain}"
+            piholeDomain
           ]
           ++ lib.optionals cfg.actual.enable [cfg.actual.domain]
           ++ lib.optionals cfg.actualHttpApi.enable [cfg.actualHttpApi.domain]
@@ -88,7 +89,7 @@ in {
             };
           };
 
-          "pihole.${domain}" = {
+          ${piholeDomain} = {
             forceSSL = true;
             useACMEHost = domain;
             locations."/" = {
