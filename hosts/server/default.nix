@@ -94,7 +94,10 @@ in {
         "100.64.230.2"
         "fd7a:115c:a1e0::6601:e62e"
       ];
-      sharedHosts.${vaultDomain} = [];
+      sharedHosts.${vaultDomain} = [
+        "100.85.118.26"
+        "fd7a:115c:a1e0::5339:761b"
+      ];
     };
     homepage.enable = true;
     supervision = {
