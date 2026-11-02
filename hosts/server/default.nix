@@ -2,7 +2,9 @@
   config,
   username,
   ...
-}: {
+}: let
+  vaultDomain = "vault.${config.myVars.domain}";
+in {
   imports = [
     ./hardware-configuration.nix
     ../../modules/system
@@ -89,7 +91,7 @@
         "100.64.230.2"
         "fd7a:115c:a1e0::6601:e62e"
       ];
-      sharedHosts."vault.${config.myVars.domain}" = [];
+      sharedHosts.${vaultDomain} = [];
     };
     homepage.enable = true;
     supervision = {
@@ -121,7 +123,7 @@
 
     vaultwarden = {
       enable = true;
-      domain = "https://vault.${config.myVars.domain}";
+      domain = "https://${vaultDomain}";
     };
 
     pihole = {
