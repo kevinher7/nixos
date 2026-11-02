@@ -2,7 +2,6 @@ _: {
   imports = [
     ./pihole.nix
     ./nginx-proxy.nix
-    ./web-access.nix
     ./vaultwarden.nix
     ./homepage.nix
     ./actual.nix

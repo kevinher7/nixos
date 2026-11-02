@@ -34,14 +34,5 @@ in {
         SIGNUPS_ALLOWED = false; # Set to true initially to create admin account, then disable
       };
     };
-
-    services.nginx.virtualHosts."vault.${config.myVars.domain}" = lib.mkIf config.myHomelab.webAccess.enable {
-      locations."^~ /admin" = {
-        proxyPass = "http://127.0.0.1:${toString cfg.vaultwarden.port}";
-        extraConfig =
-          lib.concatMapStrings (address: "allow ${address};\n") (["127.0.0.1" "::1"] ++ config.myHomelab.webAccess.privateClients)
-          + "deny all;\n";
-      };
-    };
   };
 }
