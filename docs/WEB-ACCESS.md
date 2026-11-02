@@ -1,16 +1,11 @@
 # Private and shared websites
 
-`myHomelab.webAccess` restricts nginx websites by the connecting device's IP
-address. Private clients can reach every website. Guests can reach only hosts
-that explicitly list them. Neither category means internet access.
+`myHomelab.webAccess` restricts nginx websites by device IP address. Private
+clients can reach every website. Each shared host adds its own guest addresses.
+New websites stay private. Vaultwarden's `/admin` prefix always stays private.
 
-Enforcement is disabled by default. Do not share the server until you have
-configured private clients, enabled enforcement, deployed it, and tested it.
-
-## Configure devices
-
-Add this to `myHomelab` in `hosts/server/default.nix`, replacing the example
-addresses with the devices' actual Tailscale addresses:
+Enforcement is disabled until you configure and enable it. Add this to
+`myHomelab` in `hosts/server/default.nix`, using your actual Tailscale addresses:
 
 ```nix
 webAccess = {
@@ -19,63 +14,30 @@ webAccess = {
     "100.64.0.10"
     "fd7a:115c:a1e0::10"
   ];
-  guests.friend = [
+  sharedHosts."vault.${config.myVars.domain}" = [
     "100.64.0.20"
     "fd7a:115c:a1e0::20"
   ];
-  sharedHosts."vault.${config.myVars.domain}" = ["friend"];
 };
 ```
 
-Include every personal computer, phone, and automation client that needs HTTPS
-access. The binary cache is private too, so include the laptops and any external
-CI clients that use it. Loopback is always allowed for services on the server.
-New or re-enrolled devices may need new entries. Removing an address revokes its
-nginx access after deployment.
+Include your computers, phone, and automation clients in `privateClients`.
+The binary cache is private too. Loopback is always allowed. Use individual
+addresses, including IPv6 where used, not the whole Tailscale range. An empty
+private list allows only loopback on private sites.
 
-Use individual device addresses, not the whole Tailscale range. Include IPv4 and
-IPv6 when clients use both. Do not add work-tailnet addresses by mistake.
+Keep backends bound to loopback and connections direct from Tailscale to nginx.
+Additional proxies or real-IP settings need a policy review. Nginx replaces
+inherited address rules when a server or location defines its own `allow` or
+`deny`. Avoid `satisfy any` or direct-response locations on protected routes.
 
-## Website restrictions
+Before sharing `uribo-btw`, restrict the friend's Tailscale permissions to TCP
+443 on `100.87.121.69`. Narrow any broader wildcard grants or ACLs. These nginx
+rules do not restrict SSH or other ports. Neither private nor shared websites
+need internet exposure.
 
-The module adds private access rules to nginx's HTTP context. Existing and new
-websites inherit them. Shared hosts override those rules with the private
-clients plus their listed guests. Unknown hostnames go to a rejecting default
-host. Vaultwarden's `/admin` prefix stays private even when the vault is shared.
-
-Keep backend services bound to loopback. Do not add `allow`, `deny`, or
-`satisfy any` directives to other server or location blocks without checking
-their effect on these restrictions. Nginx replaces inherited address rules when
-a child block defines its own. A location that returns a response directly can
-also bypass the access phase.
-
-Nginx checks the connecting address, not a Tailscale user or a client-supplied
-forwarded header. Keep direct Tailscale-to-nginx connections. Adding another
-proxy or changing nginx's real-IP settings requires reviewing this policy.
-
-## Tailscale permissions
-
-Share `uribo-btw` with the friend's own Tailscale account instead of adding them
-as a tailnet member. In the Tailscale admin console's access policy, allow the
-friend's login email to reach only TCP port 443 on `100.87.121.69`.
-
-Remove or narrow any wildcard rules that also grant shared users broader
-access. Grants and legacy ACLs add permissions together. Nginx restrictions do
-not block SSH or other ports; the Tailscale policy must do that.
-
-## Verify before sharing
-
-From a private device, check the vault, dashboard, Pi-hole, budget, and binary
-cache. They should work as before.
-
-From the guest device, check:
-
-- `https://vault.beanhaven.net/` reaches Vaultwarden.
-- `/admin` and `/admin/` on the vault return 403.
-- The dashboard, Pi-hole, budget, API, and cache return 403.
-- Unknown hostnames do not fall back to a service.
-- SSH and other server ports are unreachable through Tailscale.
-
-Repeat HTTP checks over IPv4 and IPv6 when both are configured. Confirm that a
-device with no nginx permission cannot reach any service. Use a separate
-Vaultwarden account for the guest and keep open registration disabled.
+After deploying, verify your devices can still reach every service. From the
+guest device, only the vault should work. Other websites and the vault's
+`/admin` and `/admin/` should return 403. Unknown hostnames should be rejected.
+Check both IP families where used. Then invite the friend to a separate
+Vaultwarden account, keeping open registration disabled.
