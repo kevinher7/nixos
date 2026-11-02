@@ -83,6 +83,14 @@
 
   myHomelab = {
     nginxProxy.enable = true;
+    webAccess = {
+      enable = true;
+      privateClients = [
+        "100.64.230.2"
+        "fd7a:115c:a1e0::6601:e62e"
+      ];
+      sharedHosts."vault.${config.myVars.domain}" = [];
+    };
     homepage.enable = true;
     supervision = {
       enable = true;
