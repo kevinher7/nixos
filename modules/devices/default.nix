@@ -11,13 +11,11 @@
           description = "Tailscale IPv4 and IPv6 addresses of this device.";
         };
       });
-      default = {};
       description = "Named devices, including machines not managed by this flake.";
     };
 
     groups = lib.mkOption {
       type = lib.types.attrsOf (lib.types.listOf (lib.types.enum (builtins.attrNames config.myDevices.devices)));
-      default = {};
       description = "Named groups of registered devices. Membership alone grants no access.";
     };
   };
