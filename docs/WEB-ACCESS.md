@@ -5,14 +5,18 @@ clients can reach every website. Each shared host adds its own guest groups.
 New websites stay private. Vaultwarden's `/admin` prefix always stays private.
 
 Device inventory and group membership live in `devices.nix`, shared by NixOS
-and Darwin configurations. Register each device once with its Tailscale IPv4
-and IPv6 addresses, then add its name to the appropriate group:
+and Darwin configurations as the `deviceInventory` argument through
+`specialArgs` (and Home Manager through `extraSpecialArgs`). It is plain Nix
+data rather than a module with configurable options.
+
+Register each device once with its Tailscale IPv4 and IPv6 addresses, then add
+its name to the appropriate group:
 
 ```nix
-myDevices = {
+{
   devices.newPhone.addresses = ["100.64.0.10" "fd7a:115c:a1e0::10"];
   groups.private = ["newPhone"];
-};
+}
 ```
 
 The `private` group contains personal computers, the server, and the Pixel 9a.
@@ -30,8 +34,9 @@ webAccess = {
 };
 ```
 
-Unknown device or group references fail Nix evaluation. Add automation clients
-to the registry and an authorized group if needed; the binary cache is private
+Unknown groups fail option validation; unknown devices fail when their group
+is resolved into addresses. Add automation clients to the registry and an
+authorized group if needed; the binary cache is private
 too. Loopback is always allowed. Use individual addresses, including IPv6 where
 used, not the whole Tailscale range. An empty private group list allows only
 loopback on private sites. Update the inventory if a device is re-enrolled with
