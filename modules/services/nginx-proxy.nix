@@ -8,7 +8,13 @@
   inherit (vars) domain;
   vaultDomain = "vault.${domain}";
   piholeDomain = "pihole.${domain}";
-  privateClients = ["127.0.0.1" "::1"] ++ cfg.webAccess.privateClients;
+  groupType = lib.types.enum (builtins.attrNames config.myDevices.groups);
+  groupAddresses = groups:
+    lib.unique (lib.concatMap (group:
+      lib.concatMap (device: config.myDevices.devices.${device}.addresses)
+      config.myDevices.groups.${group})
+    groups);
+  privateClients = ["127.0.0.1" "::1"] ++ groupAddresses cfg.webAccess.privateGroups;
   accessRules = clients:
     lib.concatMapStrings (address: "allow ${address};\n") clients + "deny all;\n";
 in {
@@ -18,17 +24,22 @@ in {
     webAccess = {
       enable = lib.mkEnableOption "private-by-default nginx websites with explicit guest access";
 
-      privateClients = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
+      privateGroups = lib.mkOption {
+        type = lib.types.listOf groupType;
         default = [];
-        description = "Device IPv4 and IPv6 addresses allowed on every website. Loopback is always allowed.";
+        description = "Device groups allowed on every website. Loopback is always allowed.";
       };
 
       sharedHosts = lib.mkOption {
-        type = lib.types.attrsOf (lib.types.listOf lib.types.str);
+        type = lib.types.attrsOf (lib.types.submodule {
+          options.groups = lib.mkOption {
+            type = lib.types.listOf groupType;
+            default = [];
+            description = "Device groups allowed on this website in addition to private groups.";
+          };
+        });
         default = {};
-        example = {"vault.example.com" = ["100.64.0.20"];};
-        description = "Guest device addresses allowed on each nginx website. Other websites stay private.";
+        description = "Websites with explicit guest access. Other websites stay private.";
       };
     };
   };
@@ -98,8 +109,8 @@ in {
           };
         }
         (lib.mkIf cfg.webAccess.enable (
-          lib.mapAttrs (_: clients: {
-            extraConfig = accessRules (privateClients ++ clients);
+          lib.mapAttrs (_: access: {
+            extraConfig = accessRules (lib.unique (privateClients ++ groupAddresses access.groups));
           })
           cfg.webAccess.sharedHosts
           // {

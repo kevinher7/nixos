@@ -107,6 +107,7 @@
         modules = [
           ./hosts/${profile}
           ./modules/vars
+          ./devices.nix
           sops-nix.nixosModules.sops
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
@@ -125,6 +126,7 @@
         modules = [
           ./hosts/${profile}
           ./modules/vars
+          ./devices.nix
           sops-nix.darwinModules.sops
           stylix.darwinModules.stylix
           home-manager.darwinModules.home-manager

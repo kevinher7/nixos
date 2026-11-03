@@ -1,30 +1,41 @@
 # Private and shared websites
 
 `myHomelab.webAccess` restricts nginx websites by device IP address. Private
-clients can reach every website. Each shared host adds its own guest addresses.
+clients can reach every website. Each shared host adds its own guest groups.
 New websites stay private. Vaultwarden's `/admin` prefix always stays private.
 
-Enforcement is disabled until you configure and enable it. Add this to
-`myHomelab` in `hosts/server/default.nix`, using your actual Tailscale addresses:
+Device inventory and group membership live in `devices.nix`, shared by NixOS
+and Darwin configurations. Register each device once with its Tailscale IPv4
+and IPv6 addresses, then add its name to the appropriate group:
+
+```nix
+myDevices = {
+  devices.newPhone.addresses = ["100.64.0.10" "fd7a:115c:a1e0::10"];
+  groups.private = ["newPhone"];
+};
+```
+
+The `private` group contains personal computers, the server, and the Pixel 9a.
+The `vaultGuests` group contains `njqm10`. A device can belong to multiple
+groups. Registry names are local configuration labels, not Tailscale tags or
+authenticated usernames. Registering a device alone grants no access.
+
+Website policy stays in `hosts/server/default.nix`:
 
 ```nix
 webAccess = {
   enable = true;
-  privateClients = [
-    "100.64.0.10"
-    "fd7a:115c:a1e0::10"
-  ];
-  sharedHosts."vault.${config.myVars.domain}" = [
-    "100.64.0.20"
-    "fd7a:115c:a1e0::20"
-  ];
+  privateGroups = ["private"];
+  sharedHosts."vault.${config.myVars.domain}".groups = ["vaultGuests"];
 };
 ```
 
-Include your computers, phone, and automation clients in `privateClients`.
-The binary cache is private too. Loopback is always allowed. Use individual
-addresses, including IPv6 where used, not the whole Tailscale range. An empty
-private list allows only loopback on private sites.
+Unknown device or group references fail Nix evaluation. Add automation clients
+to the registry and an authorized group if needed; the binary cache is private
+too. Loopback is always allowed. Use individual addresses, including IPv6 where
+used, not the whole Tailscale range. An empty private group list allows only
+loopback on private sites. Update the inventory if a device is re-enrolled with
+new addresses.
 
 Keep backends bound to loopback and connections direct from Tailscale to nginx.
 Additional proxies or real-IP settings need a policy review. Nginx replaces
