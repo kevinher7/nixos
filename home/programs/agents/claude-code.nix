@@ -30,7 +30,7 @@ in {
       };
 
       settings = {
-        env = lib.optionalAttrs pkgs.stdenv.isDarwin {
+        env = lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
           CLAUDE_CODE_CERT_STORE = "bundled";
         };
         permissions = {
