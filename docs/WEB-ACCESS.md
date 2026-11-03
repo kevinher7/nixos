@@ -5,24 +5,21 @@ clients can reach every website. Each shared host adds its own guest groups.
 New websites stay private. Vaultwarden's `/admin` prefix always stays private.
 
 Device inventory lives in `modules/devices/inventory.nix`, shared by NixOS
-and Darwin configurations. The module accepts device entries with explicit
-addresses and group membership; neither field has a default.
-
-The group choices are fixed in `modules/devices/groups.nix`: `private` and
-`vaultGuests`. Users cannot define additional groups through configuration.
-Register a device with its Tailscale IPv4 and IPv6 addresses and its groups:
+and Darwin configurations. Devices are nested under the fixed `private` and
+`vaultGuests` groups defined in `modules/devices/default.nix`. Each device maps
+directly to a nonempty list of Tailscale IPv4 and IPv6 addresses:
 
 ```nix
-myDevices.devices.newPhone = {
-  addresses = ["100.64.0.10" "fd7a:115c:a1e0::10"];
-  groups = ["private"];
-};
+myDevices.devices.private.newPhone = [
+  "100.64.0.10"
+  "fd7a:115c:a1e0::10"
+];
 ```
 
 Personal computers, the server, and the Pixel 9a belong to `private`.
-`njqm10` belongs to `vaultGuests`. Each device must belong to at least one group and can belong to multiple
-groups. Registry names are local
-configuration labels, not Tailscale tags or authenticated usernames.
+`njqm10` belongs to `vaultGuests`. To place a device in multiple groups, list
+its addresses under each group. Registry names are local configuration labels,
+not Tailscale tags or authenticated usernames.
 
 Website policy stays in `hosts/server/default.nix`:
 

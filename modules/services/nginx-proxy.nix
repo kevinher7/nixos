@@ -8,11 +8,11 @@
   inherit (vars) domain;
   vaultDomain = "vault.${domain}";
   piholeDomain = "pihole.${domain}";
-  groupType = lib.types.enum (import ../devices/groups.nix);
+  groupType = lib.types.enum (builtins.attrNames config.myDevices.devices);
   groupAddresses = groups:
-    lib.unique (lib.concatMap (device: device.addresses)
-      (lib.filter (device: lib.any (group: builtins.elem group device.groups) groups)
-        (builtins.attrValues config.myDevices.devices)));
+    lib.unique (lib.concatMap (group:
+      lib.concatLists (builtins.attrValues config.myDevices.devices.${group}))
+    groups);
   privateClients = ["127.0.0.1" "::1"] ++ groupAddresses cfg.webAccess.privateGroups;
   accessRules = clients:
     lib.concatMapStrings (address: "allow ${address};\n") clients + "deny all;\n";

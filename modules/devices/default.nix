@@ -1,18 +1,15 @@
-{lib, ...}: {
-  options.myDevices.devices = lib.mkOption {
-    type = lib.types.attrsOf (lib.types.submodule {
-      options = {
-        addresses = lib.mkOption {
-          type = lib.types.nonEmptyListOf lib.types.nonEmptyStr;
-          description = "Tailscale IPv4 and IPv6 addresses of this device.";
-        };
+{lib, ...}: let
+  devicesType = lib.types.attrsOf (lib.types.nonEmptyListOf lib.types.nonEmptyStr);
+in {
+  options.myDevices.devices = {
+    private = lib.mkOption {
+      type = devicesType;
+      description = "Personal devices allowed on private websites.";
+    };
 
-        groups = lib.mkOption {
-          type = lib.types.nonEmptyListOf (lib.types.enum (import ./groups.nix));
-          description = "Access groups this device belongs to.";
-        };
-      };
-    });
-    description = "Named devices and their membership in the fixed access groups.";
+    vaultGuests = lib.mkOption {
+      type = devicesType;
+      description = "Guest devices eligible for Vault access.";
+    };
   };
 }
