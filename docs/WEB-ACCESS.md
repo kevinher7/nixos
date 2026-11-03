@@ -4,25 +4,25 @@
 clients can reach every website. Each shared host adds its own guest groups.
 New websites stay private. Vaultwarden's `/admin` prefix always stays private.
 
-Device inventory and group membership live in `devices.nix`, shared by NixOS
-and Darwin configurations as the `deviceInventory` argument through
-`specialArgs` (and Home Manager through `extraSpecialArgs`). It is plain Nix
-data rather than a module with configurable options.
+Device inventory lives in `modules/devices/inventory.nix`, shared by NixOS
+and Darwin configurations. The module accepts device entries with explicit
+addresses and group membership; neither field has a default.
 
-Register each device once with its Tailscale IPv4 and IPv6 addresses, then add
-its name to the appropriate group:
+The group choices are fixed in `modules/devices/groups.nix`: `private` and
+`vaultGuests`. Users cannot define additional groups through configuration.
+Register a device with its Tailscale IPv4 and IPv6 addresses and its groups:
 
 ```nix
-{
-  devices.newPhone.addresses = ["100.64.0.10" "fd7a:115c:a1e0::10"];
-  groups.private = ["newPhone"];
-}
+myDevices.devices.newPhone = {
+  addresses = ["100.64.0.10" "fd7a:115c:a1e0::10"];
+  groups = ["private"];
+};
 ```
 
-The `private` group contains personal computers, the server, and the Pixel 9a.
-The `vaultGuests` group contains `njqm10`. A device can belong to multiple
-groups. Registry names are local configuration labels, not Tailscale tags or
-authenticated usernames. Registering a device alone grants no access.
+Personal computers, the server, and the Pixel 9a belong to `private`.
+`njqm10` belongs to `vaultGuests`. Each device must belong to at least one group and can belong to multiple
+groups. Registry names are local
+configuration labels, not Tailscale tags or authenticated usernames.
 
 Website policy stays in `hosts/server/default.nix`:
 
@@ -34,8 +34,8 @@ webAccess = {
 };
 ```
 
-Unknown groups fail option validation; unknown devices fail when their group
-is resolved into addresses. Add automation clients to the registry and an
+Unknown groups fail option validation in both device entries and website
+policies. Add automation clients to the registry and an
 authorized group if needed; the binary cache is private
 too. Loopback is always allowed. Use individual addresses, including IPv6 where
 used, not the whole Tailscale range. An empty private group list allows only

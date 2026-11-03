@@ -82,7 +82,6 @@
     git-hooks-nix,
     ...
   } @ inputs: let
-    deviceInventory = import ./devices.nix;
     forEachSystem = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"];
     treefmtFor = sys: (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${sys} ./treefmt.nix).config.build.wrapper;
 
@@ -99,7 +98,7 @@
 
     mkNixosConfig = hostname: profile: username: let
       specialArgs = {
-        inherit inputs hostname profile username deviceInventory;
+        inherit inputs hostname profile username;
         osFamily = "linux";
       };
     in
@@ -108,6 +107,8 @@
         modules = [
           ./hosts/${profile}
           ./modules/vars
+          ./modules/devices
+          ./modules/devices/inventory.nix
           sops-nix.nixosModules.sops
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
@@ -117,7 +118,7 @@
 
     mkDarwinConfig = hostname: profile: username: let
       specialArgs = {
-        inherit inputs hostname profile username deviceInventory;
+        inherit inputs hostname profile username;
         osFamily = "darwin";
       };
     in
@@ -126,6 +127,8 @@
         modules = [
           ./hosts/${profile}
           ./modules/vars
+          ./modules/devices
+          ./modules/devices/inventory.nix
           sops-nix.darwinModules.sops
           stylix.darwinModules.stylix
           home-manager.darwinModules.home-manager
