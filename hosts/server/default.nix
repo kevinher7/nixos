@@ -2,7 +2,12 @@
   config,
   username,
   ...
-}: {
+}: let
+  vaultDomain = "vault.${config.myVars.domain}";
+  budgetDomain = "budget.${config.myVars.domain}";
+  actualApiDomain = "actual-api.${config.myVars.domain}";
+  cacheDomain = "cache.${config.myVars.domain}";
+in {
   imports = [
     ./hardware-configuration.nix
     ../../modules/system
@@ -83,6 +88,11 @@
 
   myHomelab = {
     nginxProxy.enable = true;
+    webAccess = {
+      enable = true;
+      privateGroups = ["private"];
+      sharedHosts.${vaultDomain}.groups = ["vaultGuests"];
+    };
     homepage.enable = true;
     supervision = {
       enable = true;
@@ -91,12 +101,12 @@
 
     actual = {
       enable = true;
-      domain = "budget.${config.myVars.domain}";
+      domain = budgetDomain;
     };
 
     actualHttpApi = {
       enable = true;
-      domain = "actual-api.${config.myVars.domain}";
+      domain = actualApiDomain;
       budgetSyncId = "d90c6528-ee2f-49e4-b5d1-5019b5136b1e";
     };
 
@@ -108,12 +118,12 @@
 
     harmonia = {
       enable = true;
-      domain = "cache.${config.myVars.domain}";
+      domain = cacheDomain;
     };
 
     vaultwarden = {
       enable = true;
-      domain = "https://vault.${config.myVars.domain}";
+      domain = "https://${vaultDomain}";
     };
 
     pihole = {
