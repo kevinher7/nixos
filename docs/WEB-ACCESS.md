@@ -54,3 +54,41 @@ guest device, only the vault should work. Other websites and the vault's
 `/admin` and `/admin/` should return 403. Unknown hostnames should be rejected.
 Check both IP families where used. Then invite the friend to a separate
 Vaultwarden account, keeping open registration disabled.
+
+## Vaultwarden admin access
+
+The admin panel requires `vaultwarden_admin_token` in
+`secrets/hosts/uribo-btw.yaml`. Store an Argon2id PHC hash there, not the
+admin password. Generate it interactively on kebean:
+
+```sh
+nix shell nixpkgs#vaultwarden --command vaultwarden hash
+```
+
+Save the password in your password manager. From this repository on kebean,
+open the encrypted host secrets with your passphrase-protected admin key:
+
+```sh
+sops secrets/hosts/uribo-btw.yaml
+```
+
+Add `vaultwarden_admin_token` with the complete generated `$argon2id$…`
+string as a single quoted YAML value. Do not include the `ADMIN_TOKEN=`
+prefix. Commit the encrypted file to the configuration PR before merging
+or deploying; activation requires this key to exist.
+
+Sops-nix renders a root-only environment file at runtime, outside the Nix
+store. Vaultwarden receives the hash through its built-in `environmentFile`
+option and restarts when the secret changes. Never place the password or
+hash directly in the Nix configuration.
+
+After deploying, open <https://vault.beanhaven.net/admin> from a private
+device and sign in with the original password. In **Users**, invite your
+friend's email address. Without SMTP, send them
+<https://vault.beanhaven.net/#/signup> and have them register with that exact
+email address and their own master password. Public registration stays disabled.
+
+Settings saved through the admin panel take precedence over environment
+variables. Avoid saving an admin token override there, so sops remains the
+source of the hash. For rotation, `nix run .#rotate-secrets` includes
+`vaultwarden_admin_token` and asks for a newly generated hash.
