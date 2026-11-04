@@ -50,7 +50,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     sops = {
-      secrets.t3_github_token.sopsFile = ../../secrets/common/t3code.yaml;
+      secrets.t3_github_token.sopsFile = ../../secrets/services/t3code.yaml;
       templates."t3code-github.env" = {
         mode = "0400";
         content = ''

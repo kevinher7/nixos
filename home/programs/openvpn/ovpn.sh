@@ -44,14 +44,20 @@ mkdir -p "$OVPN_RUNDIR"
 # Resolve the split-tunnel hosts to IPs and build --route flags + /etc/hosts pins.
 route_opts=()
 pin_lines=()
+v6_pin_lines=()
 # Word-splitting on whitespace/newlines is intentional here.
 # shellcheck disable=SC2086
 for host in $OVPN_SPLIT_HOSTS; do
-  # shellcheck disable=SC2046
-  for ip in $(dig +short "$host" | grep -E '^[0-9.]+$' || true); do
+  ips="$(dig +short "$host" | grep -E '^[0-9.]+$' || true)"
+  for ip in $ips; do
     route_opts+=(--route "$ip" 255.255.255.255)
     pin_lines+=("$ip $host")
   done
+  # The tunnel is IPv4-only. On NAT64 networks the AAAA answers egress outside
+  # it and get rejected, so pin IPv6 to loopback and let Happy Eyeballs fall back.
+  if [ -n "$ips" ]; then
+    v6_pin_lines+=("::1 $host")
+  fi
 done
 
 if [ -n "$OVPN_SPLIT_HOSTS" ] && [ ${#route_opts[@]} -eq 0 ]; then
@@ -94,7 +100,7 @@ if [ "$rc" -eq 0 ]; then
   # CloudFront rotates edge IPs on a ~60s TTL; pin so re-resolution can't drift
   # off the routes we just installed. Any edge IP serves any distribution.
   if [ ${#pin_lines[@]} -gt 0 ]; then
-    printf '%s\n%s\n%s\n' "$OVPN_PIN_BEGIN" "$(printf '%s\n' "${pin_lines[@]}")" "$OVPN_PIN_END" \
+    printf '%s\n%s\n%s\n' "$OVPN_PIN_BEGIN" "$(printf '%s\n' "${pin_lines[@]}" "${v6_pin_lines[@]}")" "$OVPN_PIN_END" \
       | sudo tee -a /etc/hosts >/dev/null
     sudo dscacheutil -flushcache
     sudo killall -HUP mDNSResponder 2>/dev/null || true

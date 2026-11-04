@@ -7,7 +7,7 @@ const [beforePath, afterPath, outputPath, nixOutputPath] =
 
 if (!beforePath || !afterPath || !outputPath) {
   console.error(
-    "usage: generate-flake-update-body.mjs <before-lock> <after-lock> <output-md> [nix-output]",
+    "usage: generate-pr-body.mjs <before-lock> <after-lock> <output-md> [nix-output]",
   );
   process.exit(1);
 }

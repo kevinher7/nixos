@@ -42,6 +42,7 @@ in {
     # Holds the full mail-bean env file: Gmail credentials, Actual password and sync id,
     # start date and the account/category/transfer maps. Server URL and data dir are set below.
     sops.secrets.mail_bean_env = {
+      sopsFile = ../../secrets/services/mail-bean.yaml;
       owner = "mail-bean";
       mode = "0400";
     };

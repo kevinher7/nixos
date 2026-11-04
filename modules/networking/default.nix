@@ -43,6 +43,8 @@ in {
   };
 
   config = lib.mkIf cfg.networking.enable {
+    environment.enableAllTerminfo = true;
+
     users.users.${username}.openssh.authorizedKeys.keys =
       map (client: sshKeys.${client}) cfg.networking.ssh.authorizedClients;
 
@@ -79,9 +81,10 @@ in {
       avahi = {
         enable = true;
         nssmdns4 = true;
-        publish = {
-          enable = true;
-          userServices = true;
+        settings.publish = {
+          disable-publishing = false;
+          disable-user-service-publishing = false;
+          publish-addresses = true;
         };
       };
     };

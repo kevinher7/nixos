@@ -4,6 +4,12 @@
   ...
 }: let
   cfg = config.myHomelab;
+  rotating = config.myVars.harmoniaPublicKeys.next != null;
+  signingKeySecret = {
+    owner = "root";
+    group = "root";
+    mode = "0400";
+  };
 in {
   options.myHomelab.harmonia = {
     enable = lib.mkEnableOption "Harmonia binary cache serving this host's Nix store";
@@ -24,15 +30,16 @@ in {
   config = lib.mkIf cfg.harmonia.enable {
     myHomelab.supervision.units = ["harmonia"];
 
-    sops.secrets.harmonia_signing_key = {
-      owner = "root";
-      group = "root";
-      mode = "0400";
+    sops.secrets = {
+      harmonia_signing_key = signingKeySecret;
+      harmonia_signing_key_next = lib.mkIf rotating signingKeySecret;
     };
 
     services.harmonia.cache = {
       enable = true;
-      signKeyPaths = [config.sops.secrets.harmonia_signing_key.path];
+      signKeyPaths =
+        [config.sops.secrets.harmonia_signing_key.path]
+        ++ lib.optional rotating config.sops.secrets.harmonia_signing_key_next.path;
       settings.bind = "127.0.0.1:${toString cfg.harmonia.port}";
     };
 

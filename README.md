@@ -36,17 +36,18 @@ This guide assumes you already have NixOS installed.
 
    ```text
    secrets/
-   ├── common/
-   │   └── t3code.yaml
-   └── hosts/
-       ├── kebean.yaml
-       ├── kebee.yaml
-       └── uribo-btw.yaml
+   ├── hosts/
+   │   ├── kebean.yaml
+   │   ├── kebee.yaml
+   │   └── uribo-btw.yaml
+   └── services/
+       ├── mail-bean.yaml
+       └── t3code.yaml
    ```
 
-   Each host decrypts `secrets/hosts/<hostname>.yaml`, which `modules/secrets` sets as the default sops file, plus the files in `secrets/common/` it needs. Those are named by purpose: `secrets/common/t3code.yaml` goes to every host running the T3 Code server, and modules that read it set `sopsFile` explicitly. Hosts decrypt at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file sits in any home directory.
+   Each host decrypts `secrets/hosts/<hostname>.yaml`, which `modules/secrets` sets as the default sops file, plus the files in `secrets/services/` for the services it runs. Each service file goes to the hosts running that service: `secrets/services/t3code.yaml` to every host running the T3 Code server, `secrets/services/mail-bean.yaml` to the server. The modules that read them set `sopsFile` explicitly. Hosts decrypt at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file sits in any home directory.
 
-   A dedicated admin age key is a recipient of every file, and it is the only key meant for editing. It is protected by a passphrase, lives on kebean, and is backed up in Vaultwarden with the passphrase stored separately. YubiKeys can join later as extra admin recipients. No other user-readable key may decrypt secrets. Anything running as that user, coding agents included, could read every secret it can decrypt, the Harmonia signing key among them. Until the admin key is added, the macbook's host key is still a recipient of `uribo-btw.yaml` and `t3code.yaml`.
+   A dedicated admin age key is a recipient of every file, and it is the only key meant for editing. It is protected by a passphrase, lives on kebean, and is backed up in Vaultwarden with the passphrase stored separately. YubiKeys can join later as extra admin recipients. No other user-readable key may decrypt secrets. Anything running as that user, coding agents included, could read every secret it can decrypt, the Harmonia signing key among them.
 
    **Editing secrets:**
 
@@ -68,6 +69,31 @@ This guide assumes you already have NixOS installed.
    ```
 
    `updatekeys` alone keeps the old data key, so the removed key can still decrypt a copy from git history. `rotate` replaces the data key. Old ciphertext stays in git either way, so also rotate the real secrets the removed key could read.
+
+   **Rotating the Harmonia signing key:**
+
+   Harmonia signs with `harmonia_signing_key`, and every NixOS host trusts `myVars.harmoniaPublicKeys.current`, set in `modules/system/default.nix`. A rotation takes two deploys, so no host ever gets a path signed only by a key it doesn't trust yet.
+
+   Phase 1 adds the next key next to the current one. On kebean, with `<n>` one higher than the number in the current key name:
+
+   ```bash
+   key=$(nix key generate-secret --key-name cache.beanhaven.net-<n>)
+   printf '%s' "$key" | jq -Rs . | sops set --value-stdin secrets/hosts/uribo-btw.yaml '["harmonia_signing_key_next"]'
+   printf '%s' "$key" | nix key convert-secret-to-public
+   unset key
+   ```
+
+   Set `myVars.harmoniaPublicKeys.next` to the printed public key. While `next` is set, the server signs with both keys and every NixOS host trusts both. Merge, then deploy every NixOS host with `nix run .#fleet-deploy`.
+
+   Phase 2 promotes the next key. Copy the value of `harmonia_signing_key_next` into `harmonia_signing_key` with `sops secrets/hosts/uribo-btw.yaml` and delete `harmonia_signing_key_next`. In Nix, move the `next` public key to `current` and set `next = null`. Merge and deploy every host again.
+
+   **Rotating secrets with the wizard:**
+
+   Run `nix run .#rotate-secrets` on kebean. The table at the top of `scripts/rotate-secrets/script.sh` lists every secret, its file and how to get a new value, and the wizard warns when a host declares a secret the table lacks. Pick secrets, then for each one it generates a value, or shows the dashboard to create one in and reads it without echo. Values go from memory straight into `sops set`. It commits the changed files on a `chore/rotate-secrets-<date>` branch and opens a PR. The Harmonia key follows the two phases above, one per run, and the wizard prints the Nix edits to push to that PR.
+
+   The wizard asks for the admin passphrase once. It keeps the decrypted admin key in a shell variable while it writes secrets, hands it to each `sops` call through a pipe instead of the environment or arguments, and clears it once the last secret is written. Until then, other processes running as kevin could read the wizard's memory, so don't run coding agents as kevin on kebean during a rotation. T3 Code's agents run as `agent` and can't.
+
+   After merging and deploying with fleet-deploy, run `nix run .#rotate-secrets -- --resume` for the verification commands and the checklist of old credentials to revoke. Progress lives in `~/.local/state/rotate-secrets/`, without values.
 
 4. **Build & Switch**
 
@@ -116,7 +142,7 @@ Touch ID works there.
 
 ## 🧩 Modular Structure
 
-The configuration is split into three main layers to keep things organized and reusable:
+The system and Home Manager configuration lives in `hosts/`, `modules/`, and `home/`. Repository maintenance commands live in `scripts/`.
 
 ### `hosts/`
 
@@ -141,6 +167,12 @@ Home-Manager user-space configurations.
 - **`home/hosts/`** — Per-machine Home-Manager entry points.
 - **`home/common/`** — Shared settings like Bash aliases, stylix overrides, and shell configs.
 - **`home/programs/`** — Individual program configs such as NixVim, Ghostty, and OpenCode.
+
+### `scripts/`
+
+Each maintenance command has a directory containing `script.sh`, its Nix package in `default.nix`, and any supporting files. Register new commands in `scripts/default.nix` to expose them through `nix run .#<command>`. Keep runtime dependencies and ShellCheck exclusions in the command's package definition.
+
+The flake exposes `fleet-deploy`, `rotate-secrets`, `update-inputs`, and `t3-renew` on Linux and macOS. Run commands that edit this repository from its checkout. `reload-quickshell.sh` remains a direct development helper for the local QML checkout.
 
 ---
 
@@ -194,6 +226,10 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
 4. Save and exit — `sops` re-encrypts automatically.
 
 The `security.acme` module uses this token only to create and remove the TXT records needed for DNS-01 challenges.
+
+For private-by-default websites and explicit guest access, see
+[private and shared websites](docs/WEB-ACCESS.md). Configure and enable these
+restrictions before sharing the server with someone else.
 
 ### Tailscale Split DNS
 
@@ -261,7 +297,8 @@ sudo -u agent t3 pair --base-dir /var/lib/t3code --label uribo-btw
 ```
 
 In the desktop app, open Settings > Connections > Add environment and paste the
-full printed link. On the phone, it is Settings > Environments. The link expires
+full printed link. On the phone, it is Settings > Environments, where you can
+scan the QR code the helper prints under the link. The link expires
 after five minutes. Pairing survives service restarts and reboots. Use `t3 auth`
 to list or revoke old sessions.
 
@@ -269,12 +306,13 @@ Sessions expire after 30 days. From the repository root, generate a fresh
 pairing link with:
 
 ```bash
-./scripts/t3-renew.sh kebean
+nix run .#t3-renew -- kebean
 ```
 
-The helper accepts `uribo-btw`, `kebean`, or `beans-btw` and connects over SSH as
-the host's service user. You need Tailscale connectivity and SSH access to that
-host. Pairing the same host again replaces its saved credentials in the apps.
+The helper accepts `uribo-btw`, `kebean`, or `beans-btw`. It connects over SSH as
+the host's admin user and runs `t3` as the T3 service user with `sudo -u`, so it
+asks for that host's sudo password when T3 runs as `agent`. The `agent` accounts
+don't accept SSH logins from your machines. Pairing the same host again replaces its saved credentials in the apps.
 The helper uses the existing `/var/lib/t3code` state and leaves old sessions in
 place.
 

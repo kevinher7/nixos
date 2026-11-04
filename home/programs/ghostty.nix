@@ -2,6 +2,7 @@
   lib,
   config,
   osFamily,
+  pkgs,
   ...
 }: let
   cfg = config.myPrograms.ghostty;
@@ -9,7 +10,7 @@ in {
   config = lib.mkIf cfg.enable {
     programs.ghostty = {
       enable = true;
-      package = lib.mkIf (osFamily == "darwin") null;
+      package = lib.mkIf (osFamily == "darwin") pkgs.ghostty-bin;
       settings =
         {
           # font-family = "JetBrainsMono";
@@ -24,6 +25,7 @@ in {
           confirm-close-surface = false;
         }
         // lib.optionalAttrs (osFamily == "darwin") {
+          auto-update = "off";
           window-decoration = false;
           # Make the Option key send Alt/Meta so terminal apps (e.g. Neovim's
           # <M-arrow> window-resize maps) receive it, instead of macOS treating

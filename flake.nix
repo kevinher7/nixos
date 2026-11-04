@@ -107,6 +107,8 @@
         modules = [
           ./hosts/${profile}
           ./modules/vars
+          ./modules/devices
+          ./modules/devices/inventory.nix
           sops-nix.nixosModules.sops
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
@@ -125,6 +127,8 @@
         modules = [
           ./hosts/${profile}
           ./modules/vars
+          ./modules/devices
+          ./modules/devices/inventory.nix
           sops-nix.darwinModules.sops
           stylix.darwinModules.stylix
           home-manager.darwinModules.home-manager
@@ -158,27 +162,9 @@
       };
     });
 
-    apps = forEachSystem (sys: let
-      pkgs = nixpkgs.legacyPackages.${sys};
-    in {
-      update-inputs = {
-        type = "app";
-        program = nixpkgs.lib.getExe (pkgs.writeShellApplication {
-          name = "update-inputs";
-          runtimeInputs = with pkgs; [git gh gum nodejs];
-          text = builtins.readFile ./scripts/update-inputs.sh;
-        });
-      };
-      fleet-deploy = {
-        type = "app";
-        program = nixpkgs.lib.getExe (pkgs.writeShellApplication {
-          name = "fleet-deploy";
-          runtimeInputs = with pkgs; [curl git gum openssh];
-          excludeShellChecks = ["SC1087" "SC2029" "SC2329"];
-          text = builtins.readFile ./scripts/fleet-deploy.sh;
-        });
-      };
-    });
+    packages =
+      forEachSystem (sys:
+        import ./scripts {pkgs = nixpkgs.legacyPackages.${sys};});
 
     devShells = forEachSystem (sys: {
       default = nixpkgs.legacyPackages.${sys}.mkShell {
