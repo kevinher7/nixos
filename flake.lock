@@ -336,11 +336,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793854923,
-        "narHash": "sha256-02hG1DT8hFfpb+syIXFw4rIkkPk2n5rcr0ofLGcS64A=",
+        "lastModified": 1793855346,
+        "narHash": "sha256-0Lniqa7SxSUNes/ES7+XAJuPZ6Kc5SfVCD53uhpSZGM=",
         "owner": "kevinher7",
         "repo": "mail-bean",
-        "rev": "c90e5b4384d0fe95e0093f72559630b7c0c4ef03",
+        "rev": "a0afc6943eefcb4c7ce73332cfe471995d0bab95",
         "type": "github"
       },
       "original": {

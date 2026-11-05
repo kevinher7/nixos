@@ -33,6 +33,15 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion =
+          lib.versions.majorMinor cfg.package.actualApiVersion
+          == lib.versions.majorMinor config.services.actual.package.version;
+        message = "mail-bean bundles @actual-app/api ${cfg.package.actualApiVersion} but the Actual server is ${config.services.actual.package.version}. Bump @actual-app/api in mail-bean and update the mail-bean input.";
+      }
+    ];
+
     users.users.mail-bean = {
       isSystemUser = true;
       group = "mail-bean";
