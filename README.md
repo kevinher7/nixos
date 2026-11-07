@@ -261,29 +261,40 @@ declared values win on every `home-manager switch`. Both harnesses run
 without approval prompts and with full filesystem access by default. Codex has no MCP servers
 or plugins declared; the desktop app may add its own to the writable file.
 
-Declare independent Codex accounts through `myPrograms.agents.codex.accounts`:
+Declare independent accounts under `myPrograms.agents`:
 
 ```nix
+claude-code.accounts = {
+  default.home = ".claude";
+};
 codex.accounts = {
   default.home = ".codex";
   nikola.home = ".codex-nikola";
 };
+pi.accounts = {
+  default.home = ".pi/agent";
+};
 ```
 
 Account homes are relative to the user's home directory. Home Manager links
-`AGENTS.md` from the shared `CONTEXT.md` into each declared home. Authentication,
-settings, sessions, caches, and other files remain account-local. Select the
-home in T3's provider settings or with `CODEX_HOME` when launching Codex, then
-log in interactively. T3 shadow homes should remain managed by T3; declare only
-independent homes here. An account-local `AGENTS.override.md` takes precedence
-over the shared instructions.
+instructions into each declared home: `CLAUDE.md` and its `RTK.md` import for
+Claude Code, `AGENTS.md` for Codex, and `AGENTS.md` including pi-specific guidance
+for pi. Authentication, settings, sessions, caches, and other files remain
+account-local. Select the home in T3's provider settings or with `CODEX_HOME`,
+`CLAUDE_CONFIG_DIR`, or `PI_CODING_AGENT_DIR` when launching the corresponding
+agent, then log in interactively. T3 shadow homes should remain managed by T3;
+declare only independent homes here. An account-local Codex `AGENTS.override.md`
+takes precedence over its shared instructions.
 
-The `default` account is registered at `.codex` whenever Codex is enabled.
-Its instructions and configuration remain managed by `programs.codex`.
+Each enabled agent registers its `default` account at the path shown above.
+Default-home instructions and configuration remain managed by the built-in
+Home Manager program modules. Additional account entries share instructions
+only, without installing settings, skills, hooks, or plugins.
 
-Back up conflicting `AGENTS.md` files before activation. Removing an account
+Back up conflicting instruction files before activation. Removing an account
 declaration for an additional account removes its managed instruction link,
-preserving other account files. Restart the Codex session after deploying instruction changes.
+preserving other account files. Restart agent sessions after deploying
+instruction changes.
 
 The [agent-toolkit](https://github.com/kevinher7/agent-toolkit) repository supplies
 reusable content through a pinned non-flake input. Its shared skills are installed

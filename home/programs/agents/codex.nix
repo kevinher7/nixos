@@ -7,19 +7,7 @@
 }: let
   cfg = config.myPrograms.agents;
 in {
-  options.myPrograms.agents.codex.accounts = lib.mkOption {
-    type = lib.types.attrsOf (lib.types.submodule {
-      options.home = lib.mkOption {
-        type = lib.types.addCheck lib.types.str (home:
-          home
-          != ""
-          && lib.all (part: part != "" && part != "." && part != "..") (lib.splitString "/" home));
-        description = "Home-relative directory for an independent Codex account, excluding T3 shadow homes.";
-      };
-    });
-    default = {};
-    description = "Codex accounts receiving shared global instructions.";
-  };
+  options.myPrograms.agents.codex.accounts = import ./accounts.nix {inherit lib;};
 
   config = lib.mkIf cfg.codex.enable {
     myPrograms.agents.codex.accounts.default.home = lib.mkDefault ".codex";
