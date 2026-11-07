@@ -1,4 +1,4 @@
-_: {
+{lib, ...}: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/desktop/qtile
@@ -12,6 +12,9 @@ _: {
     ../../modules/audio
     ../../modules/t3code
   ];
+
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    lib.getName pkg == "widevine-cdm";
 
   myModules = {
     power.profile = "laptop";

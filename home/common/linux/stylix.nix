@@ -13,7 +13,6 @@
       alacritty.enable = false;
       btop.enable = true;
       zathura.enable = true;
-      qutebrowser.enable = true;
       zen-browser.enable = false;
       nixvim.enable = false;
       opencode.enable = false;

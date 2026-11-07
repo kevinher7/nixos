@@ -4,7 +4,7 @@
     ./ghostty.nix
     ./alacritty.nix
     ./betterlockscreen.nix
-    ./qutebrowser.nix
+    ./qutebrowser
     ./rquickshare.nix
     ./rofi.nix
     ./skim.nix
