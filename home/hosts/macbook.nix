@@ -11,11 +11,25 @@
     ghostty.enable = true;
     nixvim.enable = true;
     agents = {
-      claude-code.enable = true;
-      codex.enable = true;
+      claude-code = {
+        enable = true;
+        accounts = {
+          default.home = ".claude";
+        };
+      };
+      codex = {
+        enable = true;
+        accounts = {
+          default.home = ".codex";
+          nikola.home = ".codex-nikola";
+        };
+      };
       opencode.enable = true;
       pi = {
         enable = true;
+        accounts = {
+          default.home = ".pi/agent";
+        };
         useOpenrouter = true;
       };
       work-toolkit.enable = true;
