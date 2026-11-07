@@ -10,22 +10,12 @@ _: {
 
     greedyCasks = true;
 
-    brews = [
-      "ansible"
-      "openvpn"
-      "sshpass"
-      "tfenv"
-    ];
-
     casks = [
       "1password"
       "1password-cli"
       "cap"
-      "dbeaver-community"
-      "ghostty"
       "docker-desktop"
       "google-chrome"
-      "postman"
       "raycast"
       "secretive"
       "skim"
