@@ -7,10 +7,32 @@
 }: let
   cfg = config.myPrograms.agents;
 in {
+  options.myPrograms.agents.codex.accounts = lib.mkOption {
+    type = lib.types.attrsOf (lib.types.submodule {
+      options.home = lib.mkOption {
+        type = lib.types.addCheck lib.types.str (home:
+          home
+          != ""
+          && lib.all (part: part != "" && part != "." && part != "..") (lib.splitString "/" home));
+        description = "Home-relative directory for an independent Codex account, excluding T3 shadow homes.";
+      };
+    });
+    default = {};
+    description = "Codex accounts receiving shared global instructions.";
+  };
+
   config = lib.mkIf cfg.codex.enable {
     home.packages = [pkgs.jq];
 
-    home.file.".codex/hooks/format-on-stop.sh".source = ./codex-hooks/format-on-stop.sh;
+    home.file =
+      {
+        ".codex/hooks/format-on-stop.sh".source = ./codex-hooks/format-on-stop.sh;
+      }
+      // lib.mapAttrs' (_: account:
+        lib.nameValuePair "${account.home}/AGENTS.md" {
+          source = ./CONTEXT.md;
+        })
+      cfg.codex.accounts;
 
     programs.codex = {
       enable = true;

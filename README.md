@@ -261,6 +261,24 @@ declared values win on every `home-manager switch`. Both harnesses run
 without approval prompts and with full filesystem access by default. Codex has no MCP servers
 or plugins declared; the desktop app may add its own to the writable file.
 
+Declare independent Codex accounts through `myPrograms.agents.codex.accounts`:
+
+```nix
+codex.accounts.nikola.home = ".codex-nikola";
+```
+
+Account homes are relative to the user's home directory. Home Manager links
+`AGENTS.md` from the shared `CONTEXT.md` into each declared home. Authentication,
+settings, sessions, caches, and other files remain account-local. Select the
+home in T3's provider settings or with `CODEX_HOME` when launching Codex, then
+log in interactively. T3 shadow homes should remain managed by T3; declare only
+independent homes here. An account-local `AGENTS.override.md` takes precedence
+over the shared instructions.
+
+Back up conflicting `AGENTS.md` files before activation. Removing an account
+declaration removes its managed instruction link, preserving other account
+files. Restart the Codex session after deploying instruction changes.
+
 The [agent-toolkit](https://github.com/kevinher7/agent-toolkit) repository supplies
 reusable content through a pinned non-flake input. Its shared skills are installed
 for every enabled harness. Claude and OpenCode also get `/nix-lint`.
