@@ -7,6 +7,7 @@
 
   myPrograms = {
     aerospace.enable = true;
+    dbeaver.enable = true;
     ghostty.enable = true;
     nixvim.enable = true;
     agents = {
