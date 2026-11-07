@@ -264,7 +264,10 @@ or plugins declared; the desktop app may add its own to the writable file.
 Declare independent Codex accounts through `myPrograms.agents.codex.accounts`:
 
 ```nix
-codex.accounts.nikola.home = ".codex-nikola";
+codex.accounts = {
+  default.home = ".codex";
+  nikola.home = ".codex-nikola";
+};
 ```
 
 Account homes are relative to the user's home directory. Home Manager links
@@ -275,9 +278,12 @@ log in interactively. T3 shadow homes should remain managed by T3; declare only
 independent homes here. An account-local `AGENTS.override.md` takes precedence
 over the shared instructions.
 
+The `default` account is registered at `.codex` whenever Codex is enabled.
+Its instructions and configuration remain managed by `programs.codex`.
+
 Back up conflicting `AGENTS.md` files before activation. Removing an account
-declaration removes its managed instruction link, preserving other account
-files. Restart the Codex session after deploying instruction changes.
+declaration for an additional account removes its managed instruction link,
+preserving other account files. Restart the Codex session after deploying instruction changes.
 
 The [agent-toolkit](https://github.com/kevinher7/agent-toolkit) repository supplies
 reusable content through a pinned non-flake input. Its shared skills are installed

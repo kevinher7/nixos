@@ -22,6 +22,8 @@ in {
   };
 
   config = lib.mkIf cfg.codex.enable {
+    myPrograms.agents.codex.accounts.default.home = lib.mkDefault ".codex";
+
     home.packages = [pkgs.jq];
 
     home.file =
@@ -32,7 +34,7 @@ in {
         lib.nameValuePair "${account.home}/AGENTS.md" {
           source = ./CONTEXT.md;
         })
-      cfg.codex.accounts;
+      (lib.filterAttrs (_: account: account.home != ".codex") cfg.codex.accounts);
 
     programs.codex = {
       enable = true;
