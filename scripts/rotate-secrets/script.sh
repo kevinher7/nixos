@@ -16,6 +16,7 @@ set -euo pipefail
 SECRET_IDS=(
   github_runner_token
   pihole_password
+  vaultwarden_admin_token
   cloudflare_dns_api_token
   harmonia_signing_key
   actual_server_password
@@ -43,6 +44,13 @@ WHAT[pihole_password]="Pi-hole web admin password hash, written to webserver.api
 URL[pihole_password]=https://pihole.beanhaven.net
 HOWTO[pihole_password]="This secret is the pwhash, not the password. Save a new password in Vaultwarden, set it on a scratch Pi-hole v6 with 'pihole setpassword', and paste webserver.api.pwhash from its pihole.toml."
 VERIFY[pihole_password]="Log in at https://pihole.beanhaven.net with the new password"
+
+FILE[vaultwarden_admin_token]=secrets/hosts/uribo-btw.yaml
+KIND[vaultwarden_admin_token]=external
+WHAT[vaultwarden_admin_token]="Vaultwarden admin password Argon2id hash"
+URL[vaultwarden_admin_token]=https://vault.beanhaven.net/admin
+HOWTO[vaultwarden_admin_token]="Save a new admin password in your password manager. Run 'nix shell nixpkgs#vaultwarden --command vaultwarden hash' on kebean and enter it at the prompts. Paste only the generated Argon2id PHC string, not the password or ADMIN_TOKEN= prefix."
+VERIFY[vaultwarden_admin_token]="Log in at https://vault.beanhaven.net/admin with the new password. Check that the admin token field in the saved admin configuration does not override the environment."
 
 FILE[cloudflare_dns_api_token]=secrets/hosts/uribo-btw.yaml
 KIND[cloudflare_dns_api_token]=external
