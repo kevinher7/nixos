@@ -24,14 +24,23 @@ in {
   config = lib.mkIf cfg.vaultwarden.enable {
     myHomelab.supervision.units = ["vaultwarden"];
 
+    sops.secrets.vaultwarden_admin_token = {
+      restartUnits = ["vaultwarden.service"];
+    };
+
+    sops.templates."vaultwarden.env".content = ''
+      ADMIN_TOKEN=${config.sops.placeholder.vaultwarden_admin_token}
+    '';
+
     services.vaultwarden = {
       enable = true;
+      environmentFile = config.sops.templates."vaultwarden.env".path;
       config = {
         DOMAIN = cfg.vaultwarden.domain;
         ROCKET_ADDRESS = "127.0.0.1";
         ROCKET_PORT = cfg.vaultwarden.port;
         WEB_VAULT_ENABLED = true;
-        SIGNUPS_ALLOWED = false; # Set to true initially to create admin account, then disable
+        SIGNUPS_ALLOWED = false;
       };
     };
   };

@@ -84,7 +84,7 @@ sudo sed -i '' "\%$OVPN_PIN_BEGIN%,\%$OVPN_PIN_END%d" /etc/hosts || true
 
 # Ignore the pushed full-tunnel redirect + DNS so we coexist with other VPNs.
 rc=0
-sudo openvpn --config "$cfg" --auth-user-pass "$auth" \
+sudo @openvpn@ --config "$cfg" --auth-user-pass "$auth" \
   --pull-filter ignore "redirect-gateway" \
   --pull-filter ignore "dhcp-option DNS" \
   --pull-filter ignore "dhcp-option DOMAIN-ROUTE" \

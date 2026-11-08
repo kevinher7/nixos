@@ -6,6 +6,7 @@
   ];
 
   home.packages = with pkgs; [
+    ansible
     aws-vault
     bun
     cmake
@@ -18,9 +19,11 @@
     lefthook
     pnpm
     python312
+    sshpass
     terraform-docs
     terraform-ls
     tflint
+    tfenv
     uv
   ];
 }
