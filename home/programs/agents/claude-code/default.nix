@@ -8,9 +8,9 @@
   cfg = config.myPrograms.agents;
   claudeDir = "${config.home.homeDirectory}/.claude";
   agentPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
-  rtk = pkgs.callPackage ./rtk-oss.nix {};
+  rtk = pkgs.callPackage ../rtk-oss.nix {};
 in {
-  options.myPrograms.agents.claude-code.accounts = import ./accounts.nix {inherit lib;};
+  options.myPrograms.agents.claude-code.accounts = import ../accounts.nix {inherit lib;};
 
   config = lib.mkIf cfg.claude-code.enable {
     myPrograms.agents.claude-code.accounts.default.home = lib.mkDefault ".claude";
@@ -31,7 +31,7 @@ in {
     programs.claude-code = {
       enable = true;
       package = agentPkgs.claude-code;
-      context = builtins.readFile ./CONTEXT.md + "\n@RTK.md\n";
+      context = builtins.readFile ../CONTEXT.md + "\n@RTK.md\n";
       hooksDir = ./hooks;
       skills = "${inputs.agent-toolkit}/skills";
       commandsDir = "${inputs.agent-toolkit}/commands";

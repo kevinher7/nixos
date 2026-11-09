@@ -2,8 +2,8 @@
   cfg = config.myPrograms.agents;
 in {
   imports = [
-    ./claude-code.nix
-    ./codex.nix
+    ./claude-code
+    ./codex
     ./opencode.nix
     ./pi
   ];
