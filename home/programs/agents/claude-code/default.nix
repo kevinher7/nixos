@@ -10,23 +10,23 @@
   agentPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
   rtk = pkgs.callPackage ../rtk-oss.nix {};
 in {
-  options.myPrograms.agents.claude-code.accounts = import ../accounts.nix {inherit lib;};
-
   config = lib.mkIf cfg.claude-code.enable {
     myPrograms.agents.claude-code.accounts.default.home = lib.mkDefault ".claude";
 
     home.packages = [pkgs.jq rtk];
 
-    home.file =
-      {
-        ".claude/RTK.md".source = ./RTK.md;
-        ".claude/statusline-context.sh".source = ./statusline-context.sh;
-      }
-      // lib.mergeAttrsList (lib.mapAttrsToList (_: account: {
-          "${account.home}/CLAUDE.md".text = config.programs.claude-code.context;
-          "${account.home}/RTK.md".source = ./RTK.md;
-        })
-        (lib.filterAttrs (_: account: account.home != ".claude") cfg.claude-code.accounts));
+    home.file = lib.mkMerge (
+      [
+        {
+          ".claude/RTK.md".source = ./RTK.md;
+          ".claude/statusline-context.sh".source = ./statusline-context.sh;
+        }
+      ]
+      ++ lib.mapAttrsToList (_: account: {
+        "${account.home}/CLAUDE.md".text = config.programs.claude-code.context;
+        "${account.home}/RTK.md".source = ./RTK.md;
+      }) (builtins.removeAttrs cfg.claude-code.accounts ["default"])
+    );
 
     programs.claude-code = {
       enable = true;

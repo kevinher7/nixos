@@ -7,22 +7,19 @@
 }: let
   cfg = config.myPrograms.agents;
 in {
-  options.myPrograms.agents.codex.accounts = import ../accounts.nix {inherit lib;};
-
   config = lib.mkIf cfg.codex.enable {
     myPrograms.agents.codex.accounts.default.home = lib.mkDefault ".codex";
 
     home.packages = [pkgs.jq];
 
-    home.file =
-      {
-        ".codex/hooks/format-on-stop.sh".source = ./hooks/format-on-stop.sh;
-      }
-      // lib.mapAttrs' (_: account:
-        lib.nameValuePair "${account.home}/AGENTS.md" {
-          source = ../CONTEXT.md;
-        })
-      (lib.filterAttrs (_: account: account.home != ".codex") cfg.codex.accounts);
+    home.file = lib.mkMerge (
+      [
+        {".codex/hooks/format-on-stop.sh".source = ./hooks/format-on-stop.sh;}
+      ]
+      ++ lib.mapAttrsToList (_: account: {
+        "${account.home}/AGENTS.md".source = ../CONTEXT.md;
+      }) (builtins.removeAttrs cfg.codex.accounts ["default"])
+    );
 
     programs.codex = {
       enable = true;
