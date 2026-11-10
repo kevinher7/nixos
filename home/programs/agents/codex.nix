@@ -6,15 +6,16 @@
   ...
 }: let
   cfg = config.myPrograms.agents;
-  rtk = pkgs.callPackage ../rtk-oss.nix {};
 in {
   config = lib.mkIf cfg.codex.enable {
-    home.packages = [pkgs.jq rtk];
+    home.packages = [pkgs.jq];
+
+    home.file.".codex/hooks/format-on-stop.sh".source = ./codex-hooks/format-on-stop.sh;
 
     programs.codex = {
       enable = true;
       package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex;
-      context = ../CONTEXT.md;
+      context = ./CONTEXT.md;
       skills = "${inputs.agent-toolkit}/skills";
       mutableSettings = true;
 
@@ -35,23 +36,12 @@ in {
       };
 
       hooks = {
-        PreToolUse = [
-          {
-            matcher = "Bash";
-            hooks = [
-              {
-                type = "command";
-                command = "${lib.getExe rtk} hook codex";
-              }
-            ];
-          }
-        ];
         Stop = [
           {
             hooks = [
               {
                 type = "command";
-                command = "${lib.getExe pkgs.bash} ${./hooks/format-on-stop.sh}";
+                command = "${lib.getExe pkgs.bash} ${lib.escapeShellArg "${config.home.homeDirectory}/.codex/hooks/format-on-stop.sh"}";
                 statusMessage = "Running auto-format hook";
                 timeout = 120;
               }

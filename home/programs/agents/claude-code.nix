@@ -6,17 +6,22 @@
   ...
 }: let
   cfg = config.myPrograms.agents;
+  claudeDir = "${config.home.homeDirectory}/.claude";
   agentPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
-  rtk = pkgs.callPackage ../rtk-oss.nix {};
+  rtk = pkgs.callPackage ./rtk-oss.nix {};
 in {
   config = lib.mkIf cfg.claude-code.enable {
     home.packages = [pkgs.jq rtk];
 
+    home.file = {
+      ".claude/RTK.md".source = ./RTK.md;
+      ".claude/statusline-context.sh".source = ./statusline-context.sh;
+    };
+
     programs.claude-code = {
       enable = true;
-      mutableSettings = true;
       package = agentPkgs.claude-code;
-      context = builtins.readFile ../CONTEXT.md + "\n" + builtins.readFile ./RTK.md;
+      context = builtins.readFile ./CONTEXT.md + "\n@RTK.md\n";
       hooksDir = ./hooks;
       skills = "${inputs.agent-toolkit}/skills";
       commandsDir = "${inputs.agent-toolkit}/commands";
@@ -73,7 +78,7 @@ in {
         theme = "light-daltonized";
         statusLine = {
           type = "command";
-          command = "${lib.getExe pkgs.bash} ${./statusline-context.sh}";
+          command = "${lib.getExe pkgs.bash} ${lib.escapeShellArg "${claudeDir}/statusline-context.sh"}";
         };
         hooks = {
           PostToolUse = [
@@ -82,7 +87,7 @@ in {
               hooks = [
                 {
                   type = "command";
-                  command = "${lib.getExe pkgs.python3} ${./hooks/format-on-save.py}";
+                  command = "${lib.getExe pkgs.python3} ${lib.escapeShellArg "${claudeDir}/hooks/format-on-save.py"}";
                 }
               ];
             }
