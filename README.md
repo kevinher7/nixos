@@ -261,11 +261,11 @@ declared values win on every `home-manager switch`. Both harnesses run
 without approval prompts and with full filesystem access by default. Codex has no MCP servers
 or plugins declared; the desktop app may add its own to the writable file.
 
-Codex's default home uses the native `rtk hook codex` PreToolUse hook to rewrite
+Every managed Codex home uses the native `rtk hook codex` PreToolUse hook to rewrite
 supported shell commands and reduce their output. The existing Stop formatting
 hook remains enabled. Review and trust the updated hooks in Codex after
-activation. Additional Codex account homes receive instructions only; their
-hooks are not configured by the account registry.
+activation. Hook scripts are referenced directly in the Nix store, so no
+account depends on another account's home directory.
 
 Declare independent accounts under `myPrograms.agents`:
 
@@ -285,8 +285,13 @@ pi.accounts = {
 Account homes are relative to the user's home directory. Home Manager links
 instructions into each declared home: `CLAUDE.md` and its `RTK.md` import for
 Claude Code, `AGENTS.md` for Codex, and `AGENTS.md` including pi-specific guidance
-for pi. Authentication, settings, sessions, caches, and other files remain
-account-local. Select the home in T3's provider settings or with `CODEX_HOME`,
+for pi. Each account also receives the agent's declared settings, hooks, skills,
+and assets. Claude accounts receive declared commands and the personal work
+plugin when enabled; pi accounts receive the format/RTK extensions and model
+definitions. Skill directories use individual managed links so local additions
+can coexist. Authentication, sessions, caches, runtime plugin installations, and
+other account state remain account-local. Select the home in T3's provider
+settings or with `CODEX_HOME`,
 `CLAUDE_CONFIG_DIR`, or `PI_CODING_AGENT_DIR` when launching the corresponding
 agent, then log in interactively. T3 shadow homes should remain managed by T3;
 declare only independent homes here. An account-local Codex `AGENTS.override.md`
@@ -294,13 +299,27 @@ takes precedence over its shared instructions.
 
 Each enabled agent registers its `default` account at the path shown above.
 Default-home instructions and configuration remain managed by the built-in
-Home Manager program modules. Additional account entries share instructions
-only, without installing settings, skills, hooks, or plugins.
+Home Manager program modules. The shared `setupAccount` function installs
+assets and merges settings for additional homes using Home Manager's config
+merger. Every account retains its own writable settings file. Declared values
+win on activation; undeclared local settings remain. Removing a declared
+setting does not remove its previous value from an existing mutable file.
+Codex MCP transport changes discard incompatible transport fields, and pi
+uses Home Manager's package-aware settings merge.
 
-Back up conflicting instruction files before activation. Removing an account
-declaration for an additional account removes its managed instruction link,
-preserving other account files. Restart agent sessions after deploying
-instruction changes.
+Stop agent sessions and back up existing account configuration before the
+first activation. Additional homes now receive managed hooks and assets, so
+review conflicting files rather than overwriting them. The declared settings,
+including model, permissions, and sandbox defaults, will apply to every
+managed account. Claude and pi settings become writable; back up and remove
+any old settings symlinks into the Nix store before making that transition,
+since the config merger refuses to replace Nix-store targets.
+
+Removing an additional account declaration removes its managed asset links
+but preserves its mutable settings, credentials, sessions, and caches. Keep
+independent homes separate: do not symlink their settings to another account
+or enroll a T3 shadow home. Restart agent sessions after deployment and
+review/trust Codex hooks separately in each home.
 
 The [agent-toolkit](https://github.com/kevinher7/agent-toolkit) repository supplies
 reusable content through a pinned non-flake input. Its shared skills are installed

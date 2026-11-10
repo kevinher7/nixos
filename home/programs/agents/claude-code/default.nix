@@ -3,33 +3,69 @@
   inputs,
   pkgs,
   lib,
+  setupAccount,
   ...
 }: let
   cfg = config.myPrograms.agents;
-  claudeDir = "${config.home.homeDirectory}/.claude";
   agentPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
   rtk = pkgs.callPackage ../rtk-oss.nix {};
+  pluginHelpers = (import "${inputs.home-manager}/modules/programs/claude-code/lib.nix" {inherit lib pkgs;}).mkHelpers {
+    configDir = config.programs.claude-code.configDir;
+  };
+  shared = {
+    agent = "claude";
+    files =
+      {
+        "CLAUDE.md".text = config.programs.claude-code.context;
+        "RTK.md".source = ./RTK.md;
+        "statusline-context.sh".source = ./statusline-context.sh;
+        hooks = {
+          source = ./hooks;
+          recursive = true;
+        };
+        skills = {
+          source = config.programs.claude-code.skills;
+          recursive = true;
+        };
+        commands = {
+          source = config.programs.claude-code.commandsDir;
+          recursive = true;
+        };
+      }
+      // lib.mapAttrs' (name: plugin:
+        lib.nameValuePair "skills/${name}" {
+          inherit (pluginHelpers.mkPluginEntry name plugin) source;
+        })
+      config.programs.claude-code.plugins;
+    settings = {
+      file = "settings.json";
+      format = "json";
+      value = config.programs.claude-code.settings;
+      jqOperation = ''if ($dynamic | type) == "object" and ($static | type) == "object" then $dynamic * $static else error("expected JSON objects") end'';
+    };
+  };
 in {
   config = lib.mkIf cfg.claude-code.enable {
     myPrograms.agents.claude-code.accounts.default.home = lib.mkDefault ".claude";
 
-    home.packages = [pkgs.jq rtk];
-
-    home.file = lib.mkMerge (
+    home = lib.mkMerge (
       [
         {
-          ".claude/RTK.md".source = ./RTK.md;
-          ".claude/statusline-context.sh".source = ./statusline-context.sh;
+          packages = [pkgs.jq rtk];
+          file = {
+            ".claude/RTK.md".source = ./RTK.md;
+            ".claude/statusline-context.sh".source = ./statusline-context.sh;
+          };
         }
       ]
-      ++ lib.mapAttrsToList (_: account: {
-        "${account.home}/CLAUDE.md".text = config.programs.claude-code.context;
-        "${account.home}/RTK.md".source = ./RTK.md;
-      }) (builtins.removeAttrs cfg.claude-code.accounts ["default"])
+      ++ lib.mapAttrsToList
+      (name: account: setupAccount name account shared)
+      (builtins.removeAttrs cfg.claude-code.accounts ["default"])
     );
 
     programs.claude-code = {
       enable = true;
+      mutableSettings = true;
       package = agentPkgs.claude-code;
       context = builtins.readFile ../CONTEXT.md + "\n@RTK.md\n";
       hooksDir = ./hooks;
@@ -88,7 +124,7 @@ in {
         theme = "light-daltonized";
         statusLine = {
           type = "command";
-          command = "${lib.getExe pkgs.bash} ${lib.escapeShellArg "${claudeDir}/statusline-context.sh"}";
+          command = "${lib.getExe pkgs.bash} ${./statusline-context.sh}";
         };
         hooks = {
           PostToolUse = [
@@ -97,7 +133,7 @@ in {
               hooks = [
                 {
                   type = "command";
-                  command = "${lib.getExe pkgs.python3} ${lib.escapeShellArg "${claudeDir}/hooks/format-on-save.py"}";
+                  command = "${lib.getExe pkgs.python3} ${./hooks/format-on-save.py}";
                 }
               ];
             }

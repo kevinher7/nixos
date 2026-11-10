@@ -3,23 +3,53 @@
   inputs,
   pkgs,
   lib,
+  setupAccount,
   ...
 }: let
   cfg = config.myPrograms.agents;
   rtk = pkgs.callPackage ../rtk-oss.nix {};
+  shared = {
+    agent = "codex";
+    files = {
+      "AGENTS.md".source = config.programs.codex.context;
+      "hooks.json".source = (pkgs.formats.json {}).generate "codex-account-hooks" {
+        hooks = config.programs.codex.hooks;
+      };
+      "hooks/format-on-stop.sh".source = ./hooks/format-on-stop.sh;
+      skills = {
+        source = config.programs.codex.skills;
+        recursive = true;
+      };
+    };
+    settings = {
+      file = "config.toml";
+      format = "toml";
+      value = config.programs.codex.settings;
+      jqOperation = ''
+        ($dynamic * $static)
+        | reduce (($static.mcp_servers // {}) | to_entries[]) as $server (.;
+            if $server.value | has("url") then
+              .mcp_servers[$server.key] |= del(.command, .args, .env, .env_vars, .cwd)
+            elif $server.value | has("command") then
+              .mcp_servers[$server.key] |= del(.url, .bearer_token, .bearer_token_env_var, .http_headers, .env_http_headers, .http_headers_helper, .oauth, .oauth_resource, .auth)
+            else . end)
+      '';
+    };
+  };
 in {
   config = lib.mkIf cfg.codex.enable {
     myPrograms.agents.codex.accounts.default.home = lib.mkDefault ".codex";
 
-    home.packages = [pkgs.jq rtk];
-
-    home.file = lib.mkMerge (
+    home = lib.mkMerge (
       [
-        {".codex/hooks/format-on-stop.sh".source = ./hooks/format-on-stop.sh;}
+        {
+          packages = [pkgs.jq rtk];
+          file.".codex/hooks/format-on-stop.sh".source = ./hooks/format-on-stop.sh;
+        }
       ]
-      ++ lib.mapAttrsToList (_: account: {
-        "${account.home}/AGENTS.md".source = ../CONTEXT.md;
-      }) (builtins.removeAttrs cfg.codex.accounts ["default"])
+      ++ lib.mapAttrsToList
+      (name: account: setupAccount name account shared)
+      (builtins.removeAttrs cfg.codex.accounts ["default"])
     );
 
     programs.codex = {
@@ -62,7 +92,7 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "${lib.getExe pkgs.bash} ${lib.escapeShellArg "${config.home.homeDirectory}/.codex/hooks/format-on-stop.sh"}";
+                command = "${lib.getExe pkgs.bash} ${./hooks/format-on-stop.sh}";
                 statusMessage = "Running auto-format hook";
                 timeout = 120;
               }
