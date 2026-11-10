@@ -158,11 +158,15 @@ before loading, so use it only when you intend to discard session changes.
   These choices can affect website behavior.
 - Content blocking is enabled. Inspect `:messages` before assuming a broken
   website needs weaker privacy settings globally.
-- Default font size is forced to `10pt`, with `12pt` tab labels.
-- The Gruvbox dark palette lives in
+- Browser UI uses CaskaydiaCove Nerd Font, installed by the qutebrowser module.
+  Default font size is forced to `10pt`, with `12pt` tab labels.
+- The Tokyo Night dark palette lives in
   [`home/programs/qutebrowser/theme.nix`](../home/programs/qutebrowser/theme.nix).
   It sets browser colors through Home Manager and disables the qutebrowser
-  Stylix target on Linux and macOS.
+  Stylix target on Linux and macOS. A Qt stylesheet adds a one-pixel divider
+  along the right edge of the tab sidebar. The sidebar has a Tokyo Night
+  background at 70% opacity, with transparent inactive tabs. Restart the browser
+  after changing the stylesheet.
 - Search shortcuts are `g` for Google, `k` for Kagi, and `n` for MyNixOS.
   Unprefixed searches use DuckDuckGo.
 - Bitwarden integration is Linux only. Google sign-in uses the built-in

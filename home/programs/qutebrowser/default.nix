@@ -44,6 +44,8 @@ in {
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
+      home.packages = [pkgs.nerd-fonts.caskaydia-cove];
+
       programs.qutebrowser = {
         enable = true;
         package =
@@ -90,7 +92,7 @@ in {
             then "~/Downloads"
             else "~/downloads";
 
-          #Styles
+          fonts.default_family = ["CaskaydiaCove Nerd Font"];
           fonts.default_size = lib.mkForce "10pt";
           fonts.tabs.selected = lib.mkForce "12pt default_family";
           fonts.tabs.unselected = lib.mkForce "12pt default_family";

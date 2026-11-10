@@ -1,34 +1,43 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
-  gruvbox = {
-    background = "#1d2021";
-    backgroundSoft = "#282828";
-    raised = "#3c3836";
-    selected = "#504945";
-    muted = "#928374";
-    foreground = "#ebdbb2";
-    red = "#fb4934";
-    green = "#b8bb26";
-    yellow = "#fabd2f";
-    blue = "#83a598";
-    purple = "#d3869b";
-    aqua = "#8ec07c";
-    orange = "#fe8019";
+  tokyoNight = {
+    background = "#1a1b26";
+    backgroundSoft = "#16161e";
+    raised = "#24283b";
+    selected = "#283457";
+    muted = "#565f89";
+    foreground = "#c0caf5";
+    red = "#f7768e";
+    green = "#9ece6a";
+    yellow = "#e0af68";
+    blue = "#7aa2f7";
+    purple = "#bb9af7";
+    aqua = "#7dcfff";
+    orange = "#ff9e64";
   };
 in {
   config = lib.mkIf config.myPrograms.qutebrowser.enable {
     stylix.targets.qutebrowser.enable = false;
 
-    programs.qutebrowser.settings.colors = with gruvbox; {
+    programs.qutebrowser.settings.qt.args = [
+      "stylesheet=${pkgs.writeText "qutebrowser-tabs.qss" ''
+        TabBar {
+          border-right: 1px solid ${tokyoNight.muted};
+        }
+      ''}"
+    ];
+
+    programs.qutebrowser.settings.colors = with tokyoNight; {
       completion = {
         fg = foreground;
         odd.bg = background;
         even.bg = backgroundSoft;
         category = {
-          fg = yellow;
+          fg = blue;
           bg = raised;
           border.top = raised;
           border.bottom = raised;
@@ -38,9 +47,9 @@ in {
           bg = selected;
           border.top = selected;
           border.bottom = selected;
-          match.fg = orange;
+          match.fg = aqua;
         };
-        match.fg = yellow;
+        match.fg = blue;
         scrollbar.fg = muted;
         scrollbar.bg = background;
       };
@@ -126,27 +135,27 @@ in {
       };
 
       tabs = {
-        bar.bg = background;
+        bar.bg = "#b31a1b26";
         indicator.start = blue;
         indicator.stop = green;
         indicator.error = red;
         indicator.system = "rgb";
         odd.fg = foreground;
-        odd.bg = backgroundSoft;
+        odd.bg = "transparent";
         even.fg = foreground;
-        even.bg = raised;
-        selected.odd.fg = yellow;
-        selected.odd.bg = selected;
-        selected.even.fg = yellow;
-        selected.even.bg = selected;
+        even.bg = "transparent";
+        selected.odd.fg = background;
+        selected.odd.bg = blue;
+        selected.even.fg = background;
+        selected.even.bg = blue;
         pinned.odd.fg = aqua;
-        pinned.odd.bg = backgroundSoft;
+        pinned.odd.bg = "transparent";
         pinned.even.fg = aqua;
-        pinned.even.bg = raised;
-        pinned.selected.odd.fg = yellow;
-        pinned.selected.odd.bg = selected;
-        pinned.selected.even.fg = yellow;
-        pinned.selected.even.bg = selected;
+        pinned.even.bg = "transparent";
+        pinned.selected.odd.fg = background;
+        pinned.selected.odd.bg = aqua;
+        pinned.selected.even.fg = background;
+        pinned.selected.even.bg = aqua;
       };
 
       webpage.bg = background;
