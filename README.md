@@ -283,13 +283,14 @@ pi.accounts = {
 ```
 
 Account homes are relative to the user's home directory. Home Manager links
-instructions into each declared home: `CLAUDE.md` and its `RTK.md` import for
+instructions into each declared home: `CLAUDE.md` including RTK guidance for
 Claude Code, `AGENTS.md` for Codex, and `AGENTS.md` including pi-specific guidance
 for pi. Each account also receives the agent's declared settings, hooks, skills,
 and assets. Claude accounts receive declared commands and the personal work
 plugin when enabled; pi accounts receive the format/RTK extensions and model
-definitions. Skill directories use individual managed links so local additions
-can coexist. Authentication, sessions, caches, runtime plugin installations, and
+definitions. pi extensions and shared skills are referenced by their Nix-store
+paths in settings; other managed assets use the native module's file handling.
+Local resource directories remain available for account-specific additions. Authentication, sessions, caches, runtime plugin installations, and
 other account state remain account-local. Select the home in T3's provider
 settings or with `CODEX_HOME`,
 `CLAUDE_CONFIG_DIR`, or `PI_CODING_AGENT_DIR` when launching the corresponding
@@ -298,14 +299,23 @@ declare only independent homes here. An account-local Codex `AGENTS.override.md`
 takes precedence over its shared instructions.
 
 Each enabled agent registers its `default` account at the path shown above.
-Default-home instructions and configuration remain managed by the built-in
-Home Manager program modules. The shared `setupAccount` function installs
-assets and merges settings for additional homes using Home Manager's config
-merger. Every account retains its own writable settings file. Declared values
+The `myPrograms.agents` account options alias the native Home Manager
+`programs.codex.accounts`, `programs.claude-code.accounts`, and
+`programs.pi-coding-agent.accounts` options. Those modules render their existing
+configuration and activation logic for every account; this repository adds no
+account-specific file generator or merge implementation. Every account
+retains its own writable settings file. Declared values
 win on activation; undeclared local settings remain. Removing a declared
 setting does not remove its previous value from an existing mutable file.
 Codex MCP transport changes discard incompatible transport fields, and pi
-uses Home Manager's package-aware settings merge.
+uses Home Manager's package-aware settings merge. Codex's user-level `.agents`
+marketplace remains shared across accounts and is generated once from the
+default account.
+
+The Home Manager input temporarily tracks `kevinher7/home-manager` on
+`agent-account-homes` for the native account options, proposed in
+[Home Manager PR #10163](https://github.com/nix-community/home-manager/pull/10163).
+Return the input to upstream after that support is merged.
 
 Stop agent sessions and back up existing account configuration before the
 first activation. Additional homes now receive managed hooks and assets, so

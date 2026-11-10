@@ -10,7 +10,7 @@
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:kevinher7/home-manager/agent-account-homes";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

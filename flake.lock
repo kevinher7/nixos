@@ -293,16 +293,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1793757180,
-        "narHash": "sha256-gyV7AtCwLnOImcrfSETP4J3Ie96bz19DY47B7m7Y3HM=",
-        "owner": "nix-community",
+        "lastModified": 1794326634,
+        "narHash": "sha256-BviwqomGul7cLtcxm+NvhvGLofKzbPhMDUy6YUBZ3Ug=",
+        "owner": "kevinher7",
         "repo": "home-manager",
-        "rev": "b787c48e2ec57a9d098f5c2721882a3bc1e16f97",
+        "rev": "e9909c33b8e3174cda7db0e16f26fabe5e582e0a",
         "type": "github"
       },
       "original": {
-        "owner": "nix-community",
-        "ref": "master",
+        "owner": "kevinher7",
+        "ref": "agent-account-homes",
         "repo": "home-manager",
         "type": "github"
       }
