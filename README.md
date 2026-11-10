@@ -261,6 +261,12 @@ declared values win on every `home-manager switch`. Both harnesses run
 without approval prompts and with full filesystem access by default. Codex has no MCP servers
 or plugins declared; the desktop app may add its own to the writable file.
 
+Codex's default home uses the native `rtk hook codex` PreToolUse hook to rewrite
+supported shell commands and reduce their output. The existing Stop formatting
+hook remains enabled. Review and trust the updated hooks in Codex after
+activation. Additional Codex account homes receive instructions only; their
+hooks are not configured by the account registry.
+
 Declare independent accounts under `myPrograms.agents`:
 
 ```nix

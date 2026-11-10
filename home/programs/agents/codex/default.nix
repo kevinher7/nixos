@@ -6,11 +6,12 @@
   ...
 }: let
   cfg = config.myPrograms.agents;
+  rtk = pkgs.callPackage ../rtk-oss.nix {};
 in {
   config = lib.mkIf cfg.codex.enable {
     myPrograms.agents.codex.accounts.default.home = lib.mkDefault ".codex";
 
-    home.packages = [pkgs.jq];
+    home.packages = [pkgs.jq rtk];
 
     home.file = lib.mkMerge (
       [
@@ -45,6 +46,17 @@ in {
       };
 
       hooks = {
+        PreToolUse = [
+          {
+            matcher = "Bash";
+            hooks = [
+              {
+                type = "command";
+                command = "${lib.getExe rtk} hook codex";
+              }
+            ];
+          }
+        ];
         Stop = [
           {
             hooks = [
