@@ -46,7 +46,7 @@ in {
       package = agentPkgs.claude-code;
       context = builtins.readFile cfg.context + "\n@RTK.md\n";
       hooksDir = ./hooks;
-      skills = cfg.skills;
+      inherit (cfg) skills;
       mutableSettings = false;
       commandsDir = "${inputs.agent-toolkit}/commands";
       plugins = lib.mkIf cfg.work-toolkit.enable {

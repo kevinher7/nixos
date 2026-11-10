@@ -42,8 +42,8 @@ in {
     programs.codex = {
       enable = true;
       package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex;
-      context = cfg.context;
-      skills = cfg.skills;
+      inherit (cfg) context;
+      inherit (cfg) skills;
       mutableSettings = false;
 
       settings =
