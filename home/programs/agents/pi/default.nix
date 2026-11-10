@@ -7,7 +7,6 @@
   ...
 }: let
   cfg = config.myPrograms.agents;
-  piDir = config.programs.pi-coding-agent.configDir;
   extensions = pkgs.callPackage ./extensions/package.nix {};
   rtk = pkgs.callPackage ../rtk-oss.nix {};
 in {
@@ -33,20 +32,20 @@ in {
 
     home.file =
       {
-        "${piDir}/extensions/format.js".source = "${extensions}/share/pi-extensions/format.js";
-        "${piDir}/extensions/rtk.js".source = "${extensions}/share/pi-extensions/rtk.js";
-        "${piDir}/skills".source = cfg.skills;
+        ".pi/agent/extensions/format.js".source = "${extensions}/share/pi-extensions/format.js";
+        ".pi/agent/extensions/rtk.js".source = "${extensions}/share/pi-extensions/rtk.js";
+        ".pi/agent/skills".source = cfg.skills;
       }
       // lib.mergeAttrsList (map (home:
         {
-          "${home}/settings.json".source = config.home.file."${piDir}/settings.json".source;
-          "${home}/AGENTS.md".source = config.home.file."${piDir}/AGENTS.md".source;
+          "${home}/settings.json".source = config.home.file."${config.home.homeDirectory}/.pi/agent/settings.json".source;
+          "${home}/AGENTS.md".source = config.home.file."${config.home.homeDirectory}/.pi/agent/AGENTS.md".source;
           "${home}/extensions/format.js".source = "${extensions}/share/pi-extensions/format.js";
           "${home}/extensions/rtk.js".source = "${extensions}/share/pi-extensions/rtk.js";
           "${home}/skills".source = cfg.skills;
         }
         // lib.optionalAttrs (config.programs.pi-coding-agent.models != {}) {
-          "${home}/models.json".source = config.home.file."${piDir}/models.json".source;
+          "${home}/models.json".source = config.home.file."${config.home.homeDirectory}/.pi/agent/models.json".source;
         })
       cfg.pi.additionalHomes);
   };
