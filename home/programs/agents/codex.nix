@@ -30,7 +30,7 @@ in {
       }
       // lib.mergeAttrsList (map (home: {
           "${home}/config.toml".source = settingsFile;
-          "${home}/AGENTS.md".source = ./CONTEXT.md;
+          "${home}/AGENTS.md".source = config.home.file.".codex/AGENTS.md".source;
           "${home}/hooks.json".source = config.home.file.".codex/hooks.json".source;
           "${home}/hooks/format-on-stop.sh".source = ./codex-hooks/format-on-stop.sh;
           "${home}/skills" = {
@@ -42,8 +42,8 @@ in {
     programs.codex = {
       enable = true;
       package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex;
-      context = ./CONTEXT.md;
-      skills = "${inputs.agent-toolkit}/skills";
+      context = cfg.context;
+      skills = cfg.skills;
       mutableSettings = false;
 
       settings =

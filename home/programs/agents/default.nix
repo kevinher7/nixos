@@ -1,4 +1,9 @@
-{config, ...}: let
+{
+  config,
+  inputs,
+  lib,
+  ...
+}: let
   cfg = config.myPrograms.agents;
 in {
   imports = [
@@ -7,6 +12,11 @@ in {
     ./opencode.nix
     ./pi
   ];
+
+  myPrograms.agents = {
+    context = lib.mkDefault ./CONTEXT.md;
+    skills = lib.mkDefault "${inputs.agent-toolkit}/skills";
+  };
 
   assertions = [
     {

@@ -35,7 +35,22 @@
     };
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     agents = {
-      claude-code.enable = lib.mkEnableOption "Claude Code CLI";
+      context = lib.mkOption {
+        type = lib.types.path;
+        description = "Canonical instructions shared by the coding agents.";
+      };
+      skills = lib.mkOption {
+        type = lib.types.path;
+        description = "Directory of skills shared by the coding agents.";
+      };
+      claude-code = {
+        enable = lib.mkEnableOption "Claude Code CLI";
+        additionalHomes = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [];
+          description = "Additional home-relative Claude directories receiving declared settings and assets.";
+        };
+      };
       codex = {
         enable = lib.mkEnableOption "Codex CLI";
         additionalHomes = lib.mkOption {
@@ -47,6 +62,11 @@
       opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
       pi = {
         enable = lib.mkEnableOption "Pi coding agent";
+        additionalHomes = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [];
+          description = "Additional home-relative pi agent directories receiving declared settings and assets.";
+        };
         useOpenrouter = lib.mkEnableOption "the OpenRouter provider in pi, keyed by the host's sops openrouter_api_key secret";
       };
       work-toolkit.enable = lib.mkEnableOption "Claude-only work toolkit on the macbook";
