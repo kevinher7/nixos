@@ -36,7 +36,14 @@
     nixvim.enable = lib.mkEnableOption "nixvim (neovim) editor";
     agents = {
       claude-code.enable = lib.mkEnableOption "Claude Code CLI";
-      codex.enable = lib.mkEnableOption "Codex CLI";
+      codex = {
+        enable = lib.mkEnableOption "Codex CLI";
+        additionalHomes = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [];
+          description = "Additional home-relative Codex directories receiving immutable settings, instructions, hooks and skills.";
+        };
+      };
       opencode.enable = lib.mkEnableOption "OpenCode AI assistant";
       pi = {
         enable = lib.mkEnableOption "Pi coding agent";
