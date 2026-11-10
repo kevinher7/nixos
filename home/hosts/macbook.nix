@@ -11,7 +11,10 @@
     nixvim.enable = true;
     agents = {
       claude-code.enable = true;
-      codex.enable = true;
+      codex = {
+        enable = true;
+        additionalHomes = [".codex-nikola"];
+      };
       opencode.enable = true;
       pi = {
         enable = true;

@@ -16,8 +16,8 @@ in {
     programs.opencode = {
       enable = true;
       package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
-      context = ./CONTEXT.md;
-      skills = "${inputs.agent-toolkit}/skills";
+      inherit (cfg) context;
+      inherit (cfg) skills;
 
       commands = {
         nix-lint = builtins.readFile "${inputs.agent-toolkit}/commands/nix-lint.md";
