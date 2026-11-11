@@ -5,18 +5,6 @@
   ...
 }: let
   cfg = config.myModules.virtualisation;
-  privateNetworks = [
-    "0.0.0.0/8"
-    "10.0.0.0/8"
-    "100.64.0.0/10"
-    "127.0.0.0/8"
-    "169.254.0.0/16"
-    "172.16.0.0/12"
-    "192.168.0.0/16"
-    "224.0.0.0/4"
-    "240.0.0.0/4"
-    "::/0"
-  ];
 in {
   imports = [inputs.microvm.nixosModules.host];
 
@@ -24,36 +12,15 @@ in {
     enable = lib.mkEnableOption "the personal coding VM";
     autostart = lib.mkOption {
       type = lib.types.bool;
-      default = false;
       description = "Start agent-dev at boot after host capacity has been verified.";
     };
     allowedDomains = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [
-        "github.com"
-        "api.github.com"
-        "raw.githubusercontent.com"
-        "codeload.github.com"
-        "objects.githubusercontent.com"
-        "release-assets.githubusercontent.com"
-        "registry.npmjs.org"
-        "pypi.org"
-        "files.pythonhosted.org"
-        "cache.nixos.org"
-        "channels.nixos.org"
-        "releases.nixos.org"
-        "cache.numtide.com"
-        "kevinher7-nixos.cachix.org"
-        "api.openai.com"
-        "auth.openai.com"
-        "chatgpt.com"
-        "api.anthropic.com"
-        "claude.ai"
-        "console.anthropic.com"
-        "platform.claude.com"
-        "openrouter.ai"
-      ];
+      type = lib.types.nonEmptyListOf lib.types.str;
       description = "Exact destinations reachable through the guest HTTP proxy.";
+    };
+    deniedNetworks = lib.mkOption {
+      type = lib.types.nonEmptyListOf lib.types.str;
+      description = "Destination CIDRs denied by both Squid and its systemd service.";
     };
   };
 
@@ -70,7 +37,6 @@ in {
     systemd.services."microvm@agent-dev" = {
       requires = ["nftables.service"];
       after = ["nftables.service" "systemd-networkd.service"];
-      serviceConfig.CPUWeight = 20;
     };
 
     networking.networkmanager.unmanaged = ["vm-agent-dev"];
@@ -118,17 +84,17 @@ in {
       extraConfig = ''
         acl agent_guest src 172.31.255.2/32
         acl agent_destinations dstdomain -n ${lib.concatStringsSep " " cfg.allowedDomains}
-        acl private_destinations dst ${lib.concatStringsSep " " privateNetworks}
+        acl denied_destinations dst ${lib.concatStringsSep " " cfg.deniedNetworks}
         acl web_ports port 80 443
         http_access deny !agent_guest
         http_access deny !web_ports
-        http_access deny private_destinations
+        http_access deny denied_destinations
         http_access allow agent_guest agent_destinations
         http_access deny all
         cache deny all
       '';
     };
-    systemd.services.squid.serviceConfig.IPAddressDeny = privateNetworks;
+    systemd.services.squid.serviceConfig.IPAddressDeny = cfg.deniedNetworks;
 
     security.acme.certs.${config.myVars.domain}.extraDomainNames = ["agent-dev.${config.myVars.domain}"];
     services.nginx.virtualHosts."agent-dev.${config.myVars.domain}" = {

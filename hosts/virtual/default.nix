@@ -1,6 +1,4 @@
-{lib, ...}: {
-  microvm.hypervisor = lib.mkDefault "qemu";
-
+_: {
   networking = {
     useDHCP = false;
     enableIPv6 = false;

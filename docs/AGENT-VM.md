@@ -8,9 +8,11 @@ migration.
 ## Configuration
 
 - `hosts/virtual/default.nix` contains common guest settings.
-- `hosts/virtual/agent-dev.nix` defines the agent account, tools, T3 and storage.
+- `hosts/virtual/agent-dev.nix` defines the agent account, tools, T3 and store overlay.
 - `modules/virtualisation/default.nix` manages the VM and its network boundary.
-- `hosts/server/default.nix` enables the host module.
+- `hosts/server/default.nix` enables the host module and explicitly supplies the
+  domain allowlist, denied destination CIDRs, autostart choice and native
+  microvm/systemd resource settings. The policy options have no defaults.
 
 The provisional allocation is 2 virtual CPUs, 3072 MiB RAM and a 40 GiB ext4 root
 disk. CPU weight is 20. The persistent root holds project checkouts, T3 history,
@@ -33,8 +35,8 @@ management connections remain permitted.
 
 Squid resolves destinations on the host. Its access rules allow the guest to
 reach exact names in `myModules.virtualisation.allowedDomains` on ports 80 and
-443, refuse private/reserved addresses, and deny everything else. The proxy
-service also has host-enforced private-address restrictions. Proxy environment
+443, refuse the caller-supplied destination CIDRs, and deny everything else. The
+proxy service enforces the same CIDR restrictions through systemd. Proxy environment
 variables are supplied to shells, T3 and the guest Nix daemon. Programs ignoring
 them cannot use direct internet connections. Git remotes must use HTTPS, not SSH.
 
@@ -51,8 +53,8 @@ Chromium's sandbox. Local development servers should use loopback.
 
 ## First deployment
 
-Autostart defaults to false. No host capacity measurements or guest runtime
-checks have been performed as part of writing this configuration.
+The server explicitly sets autostart to false. No host capacity measurements or
+guest runtime checks have been performed as part of writing this configuration.
 
 Before deploying, verify CPU, available RAM and free disk on `uribo-btw`, including
 CI and local-model workloads. Review the provisional allocation and confirm that

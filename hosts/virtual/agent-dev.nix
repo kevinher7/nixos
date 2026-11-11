@@ -20,16 +20,7 @@ in {
   ];
 
   microvm = {
-    vcpu = 2;
-    mem = 3072;
     writableStoreOverlay = "/nix/.rw-store";
-    volumes = [
-      {
-        image = "root.img";
-        mountPoint = "/";
-        size = 40 * 1024;
-      }
-    ];
     interfaces = [
       {
         type = "tap";
