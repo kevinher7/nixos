@@ -18,6 +18,7 @@ in {
     ../../modules/secrets
     ../../modules/services
     ../../modules/t3code
+    ../../modules/virtualisation
     ../../modules/agent-user
   ];
 
@@ -77,6 +78,8 @@ in {
       };
       ssh.authorizedClients = ["kebee" "kebean"];
     };
+
+    virtualisation.enable = true;
 
     agentUser.enable = true;
 
