@@ -30,6 +30,11 @@
       exec ${alacritty}
     '';
   });
+  toggleBluetooth = lib.getExe (pkgs.writeShellApplication {
+    name = "toggle-bluetooth";
+    runtimeInputs = [pkgs.bluez pkgs.libnotify];
+    text = builtins.readFile ./scripts/toggle-bluetooth.sh;
+  });
   launcher = "${lib.getExe config.programs.rofi.finalPackage} -show drun";
   lock = "${lib.getExe pkgs.swaylock} -f";
   wallpaper = config.stylix.image;
@@ -95,13 +100,20 @@ in {
       window = {
         border = 2;
         titlebar = false;
-        commands = lib.optionals config.programs.vicinae.enable [
-          {
-            criteria.app_id = "^vicinae$";
-            criteria.title = "^Vicinae Launcher$";
-            command = "floating enable, move position center";
-          }
-        ];
+        commands =
+          [
+            {
+              criteria.app_id = "^org\\.qutebrowser\\.qutebrowser$";
+              command = "inhibit_idle fullscreen";
+            }
+          ]
+          ++ lib.optionals config.programs.vicinae.enable [
+            {
+              criteria.app_id = "^vicinae$";
+              criteria.title = "^Vicinae Launcher$";
+              command = "floating enable, move position center";
+            }
+          ];
       };
 
       floating = {
@@ -133,10 +145,12 @@ in {
           "${mod}+Return" = "exec ${terminal}";
           "${mod}+d" = "exec ${launcher}";
           "${mod}+b" = "exec qutebrowser";
+          "${mod}+a" = "exec ${toggleBluetooth} 'Echo Dot-1AJ'";
           "${mod}+Shift+f" = "exec pcmanfm";
           "${mod}+Ctrl+x" = "exec ${lock}";
 
           # Window management
+          "${mod}+r" = "reload";
           "${mod}+q" = "kill";
           "${mod}+f" = "fullscreen toggle";
           "${mod}+t" = "floating toggle";

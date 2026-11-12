@@ -28,6 +28,7 @@
     };
     skim.enable = true;
     sops.enable = true;
+    qutebrowser.enable = true;
     zen-browser.enable = true;
 
     openvpn.enable = true;
