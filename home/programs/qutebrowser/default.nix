@@ -6,6 +6,7 @@
   ...
 }: let
   cfg = config.myPrograms.qutebrowser;
+  bitwardenPython = pkgs.python3.withPackages (ps: [ps.tldextract ps.pyperclip]);
   qute-bitwarden = pkgs.runCommand "qute-bitwarden" {} ''
     substitute ${config.programs.qutebrowser.package}/share/qutebrowser/userscripts/qute-bitwarden "$out" \
       --replace-fail "totp = selection['login']['totp']" "totp = selection['login'].get('totp')"
@@ -20,7 +21,7 @@
       pkgs.wl-clipboard
     ]}:"$PATH"
     ${pkgs.keyutils}/bin/keyctl link @u @s 2>/dev/null || true
-    exec ${qute-bitwarden} "$@"
+    exec ${bitwardenPython}/bin/python3 ${qute-bitwarden} "$@"
   '';
 
   qutebrowser-darwin = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
