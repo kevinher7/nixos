@@ -16,6 +16,8 @@
   nixpkgs.config.allowUnfreePredicate = pkg:
     lib.getName pkg == "widevine-cdm";
 
+  nixpkgs.config.permittedInsecurePackages = ["qutebrowser-3.7.0"];
+
   myModules = {
     power.profile = "laptop";
 
