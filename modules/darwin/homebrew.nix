@@ -14,6 +14,7 @@ _: {
       "1password"
       "1password-cli"
       "cap"
+      "dbeaver-community"
       "docker-desktop"
       "google-chrome"
       "raycast"
