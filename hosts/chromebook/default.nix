@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/desktop/qtile
@@ -15,6 +19,11 @@
 
   nixpkgs.config.allowUnfreePredicate = pkg:
     lib.getName pkg == "widevine-cdm";
+
+  nixpkgs.config.permittedInsecurePackages =
+    lib.optionals
+    config.home-manager.users.kevin.myPrograms.qutebrowser.enable
+    ["qutebrowser-3.7.0"];
 
   myModules = {
     power.profile = "laptop";

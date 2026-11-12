@@ -29,6 +29,11 @@
       "widevine-cdm"
     ];
 
+  nixpkgs.config.permittedInsecurePackages =
+    lib.optionals
+    config.home-manager.users.kevin.myPrograms.qutebrowser.enable
+    ["qutebrowser-3.7.0"];
+
   myModules = {
     power.profile = "laptop";
 
