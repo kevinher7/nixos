@@ -18,6 +18,7 @@ in {
     ../../modules/secrets
     ../../modules/services
     ../../modules/t3code
+    ../../modules/virtualisation
     ../../modules/agent-user
   ];
 
@@ -78,6 +79,47 @@ in {
       ssh.authorizedClients = ["kebee" "kebean"];
     };
 
+    virtualisation = {
+      enable = true;
+      autostart = false;
+      allowedDomains = [
+        "github.com"
+        "api.github.com"
+        "raw.githubusercontent.com"
+        "codeload.github.com"
+        "objects.githubusercontent.com"
+        "release-assets.githubusercontent.com"
+        "registry.npmjs.org"
+        "pypi.org"
+        "files.pythonhosted.org"
+        "cache.nixos.org"
+        "channels.nixos.org"
+        "releases.nixos.org"
+        "cache.numtide.com"
+        "kevinher7-nixos.cachix.org"
+        "api.openai.com"
+        "auth.openai.com"
+        "chatgpt.com"
+        "api.anthropic.com"
+        "claude.ai"
+        "console.anthropic.com"
+        "platform.claude.com"
+        "openrouter.ai"
+      ];
+      deniedNetworks = [
+        "0.0.0.0/8"
+        "10.0.0.0/8"
+        "100.64.0.0/10"
+        "127.0.0.0/8"
+        "169.254.0.0/16"
+        "172.16.0.0/12"
+        "192.168.0.0/16"
+        "224.0.0.0/4"
+        "240.0.0.0/4"
+        "::/0"
+      ];
+    };
+
     agentUser.enable = true;
 
     t3code = {
@@ -85,6 +127,21 @@ in {
       user = config.myModules.agentUser.name;
     };
   };
+
+  microvm.vms.agent-dev.config.microvm = {
+    hypervisor = "qemu";
+    vcpu = 2;
+    mem = 3072;
+    volumes = [
+      {
+        image = "root.img";
+        mountPoint = "/";
+        size = 40 * 1024;
+      }
+    ];
+  };
+
+  systemd.services."microvm@agent-dev".serviceConfig.CPUWeight = 20;
 
   myHomelab = {
     nginxProxy.enable = true;
