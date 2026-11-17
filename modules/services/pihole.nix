@@ -242,6 +242,13 @@ in {
     environment.etc."pihole/pihole.toml".source =
       lib.mkForce config.sops.templates."pihole.toml".path;
 
+    environment.etc."pihole/versions" = lib.mkForce {
+      text = ''
+        CORE_VERSION=v${lib.getVersion config.services.pihole-ftl.piholePackage}
+        FTL_VERSION=v${lib.getVersion config.services.pihole-ftl.package}
+      '';
+    };
+
     systemd.services.pihole-ftl.restartTriggers = [
       config.sops.templates."pihole.toml".file
     ];
