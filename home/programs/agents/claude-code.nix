@@ -69,7 +69,6 @@ in {
             "ExitPlanMode"
             "DesignSync"
             "NotebookEdit"
-            "SendMessage"
             "PushNotification"
             "RemoteTrigger"
             "ReportFindings"
