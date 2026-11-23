@@ -71,6 +71,7 @@ in {
           ]
           ++ lib.optionals cfg.actual.enable [cfg.actual.domain]
           ++ lib.optionals cfg.actualHttpApi.enable [cfg.actualHttpApi.domain]
+          ++ lib.optionals cfg.beanBudget.enable [cfg.beanBudget.domain]
           ++ lib.optionals cfg.harmonia.enable [cfg.harmonia.domain];
         dnsProvider = "cloudflare";
         environmentFile = config.sops.templates."acme-cloudflare.env".path;

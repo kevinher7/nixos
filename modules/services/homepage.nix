@@ -110,6 +110,15 @@ in {
                 };
               }
             ]
+            ++ lib.optionals cfg.beanBudget.enable [
+              {
+                "Bean Budget" = {
+                  icon = "mdi-piggy-bank";
+                  description = "Ledger server for the Bean Budget app";
+                  siteMonitor = "http://127.0.0.1:${toString cfg.beanBudget.port}/health";
+                };
+              }
+            ]
             ++ lib.optionals cfg.supervision.enable [
               {
                 "Failures" = {

@@ -41,11 +41,12 @@ This guide assumes you already have NixOS installed.
    │   ├── kebee.yaml
    │   └── uribo-btw.yaml
    └── services/
+       ├── bean-budget.yaml
        ├── mail-bean.yaml
        └── t3code.yaml
    ```
 
-   Each host decrypts `secrets/hosts/<hostname>.yaml`, which `modules/secrets` sets as the default sops file, plus the files in `secrets/services/` for the services it runs. Each service file goes to the hosts running that service: `secrets/services/t3code.yaml` to every host running the T3 Code server, `secrets/services/mail-bean.yaml` to the server. The modules that read them set `sopsFile` explicitly. Hosts decrypt at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file sits in any home directory.
+   Each host decrypts `secrets/hosts/<hostname>.yaml`, which `modules/secrets` sets as the default sops file, plus the files in `secrets/services/` for the services it runs. Each service file goes to the hosts running that service: `secrets/services/t3code.yaml` to every host running the T3 Code server, `secrets/services/mail-bean.yaml` and `secrets/services/bean-budget.yaml` to the server. The modules that read them set `sopsFile` explicitly. Hosts decrypt at activation with the age key that sops-nix derives from `/etc/ssh/ssh_host_ed25519_key`, which only root can read, so no age key file sits in any home directory.
 
    A dedicated admin age key is a recipient of every file, and it is the only key meant for editing. It is protected by a passphrase, lives on kebean, and is backed up in Vaultwarden with the passphrase stored separately. YubiKeys can join later as extra admin recipients. No other user-readable key may decrypt secrets. Anything running as that user, coding agents included, could read every secret it can decrypt, the Harmonia signing key among them.
 
@@ -183,6 +184,7 @@ The server host (`uribo-btw`) acts as a lightweight home lab running native NixO
 - **🗝️ Vaultwarden** — Self-hosted Bitwarden-compatible password manager.
 - **🛑 Pi-hole** — Network-wide ad blocking and local DNS.
 - **🌐 Nginx** — Native reverse proxy with automatic HTTPS via Let's Encrypt (DNS-01 challenge).
+- **🫘 Bean Budget** — Ledger server for the Bean Budget app at `bean.beanhaven.net`. SQLite lives in `/var/lib/bean-budget`, with a verified backup there every day. Gmail ingestion is off until `myHomelab.beanBudget.mail.enable` is set.
 - **📦 Harmonia** — Binary cache serving the server's Nix store at `cache.beanhaven.net`. Every push to `main` roots the freshly built host closures there, so other hosts substitute from the LAN instead of downloading from Cachix.
 - **🏗️ CI runner** — A self-hosted GitHub Actions runner runs in a fenced NixOS container. It builds the Linux hosts for pushes to `main` and for PRs from branches in this repository; PRs from forks stay on GitHub-hosted runners.
 
@@ -210,6 +212,7 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
   - `vault.beanhaven.net` → Vaultwarden
   - `pihole.beanhaven.net` → Pi-hole
   - `budget.beanhaven.net` → Actual Budget
+  - `bean.beanhaven.net` → Bean Budget server
 - **DNS-01 Challenge**: Let's Encrypt certificates are obtained through Cloudflare DNS validation. No public firewall ports 80 or 443 need to be opened.
 
 ### Setting Up the Cloudflare Token

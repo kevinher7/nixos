@@ -22,6 +22,7 @@ SECRET_IDS=(
   actual_server_password
   actual_http_api_key
   mail_bean_env
+  bean_budget_env
   t3_github_token
   openrouter_api_key@kebean
   openrouter_api_key@kebee
@@ -93,6 +94,15 @@ HOWTO[mail_bean_env]="Add a new secret on mail-bean's OAuth client and leave the
 VERIFY[mail_bean_env]="On uribo-btw: sudo systemctl start mail-bean && journalctl -u mail-bean -n 20"
 REVOKE[mail_bean_env]="Disable, then delete, the old secret on mail-bean's OAuth client at https://console.cloud.google.com/auth/clients
 Revoke the old refresh token by POSTing it to https://oauth2.googleapis.com/revoke (decrypt it from the commit before the rotation). Don't remove the app under your Google account's third-party connections, that revokes the new token too."
+
+FILE[bean_budget_env]=secrets/services/bean-budget.yaml
+KIND[bean_budget_env]=edit
+WHAT[bean_budget_env]="Bean Budget server env file: BEAN_TOKEN, plus Gmail OAuth client and refresh token and BEAN_MAIL_CONFIG when mail is enabled"
+URL[bean_budget_env]=https://console.cloud.google.com/auth/clients
+HOWTO[bean_budget_env]="For BEAN_TOKEN, replace it with the output of 'openssl rand -hex 32' and save it in Vaultwarden. The Bean Budget app needs the new token after the deploy. For Gmail, add a new secret on the OAuth client and leave the old one enabled, get a new refresh token with the gmail.readonly scope, and replace BEAN_GMAIL_CLIENT_SECRET and BEAN_GMAIL_REFRESH_TOKEN. Keep the connectionId in BEAN_MAIL_CONFIG unchanged."
+VERIFY[bean_budget_env]="On uribo-btw, prints 200: sudo sed -n 's/^BEAN_TOKEN=/Authorization: Bearer /p' /run/secrets/bean_budget_env | curl -sS -o /dev/null -w '%{http_code}\n' -H @- https://bean.beanhaven.net/accounts
+On uribo-btw, when mail is enabled: journalctl -u bean-budget -n 20"
+REVOKE[bean_budget_env]="Disable, then delete, the old secret on the Gmail OAuth client at https://console.cloud.google.com/auth/clients"
 
 FILE[t3_github_token]=secrets/services/t3code.yaml
 KIND[t3_github_token]=external

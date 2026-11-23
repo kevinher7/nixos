@@ -25,6 +25,11 @@ creation_rules:
       - age:
           - *admin
           - *server_age
+  - path_regex: secrets/services/bean-budget\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *server_age
   - path_regex: secrets/services/t3code\.yaml$
     key_groups:
       - age:

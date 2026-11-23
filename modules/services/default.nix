@@ -7,6 +7,7 @@ _: {
     ./actual.nix
     ./actual-http-api.nix
     ./mail-bean.nix
+    ./bean-budget.nix
     ./llm.nix
     ./ci-runner.nix
     ./harmonia.nix
