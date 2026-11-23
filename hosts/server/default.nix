@@ -6,6 +6,7 @@
   vaultDomain = "vault.${config.myVars.domain}";
   budgetDomain = "budget.${config.myVars.domain}";
   actualApiDomain = "actual-api.${config.myVars.domain}";
+  beanBudgetDomain = "bean-budget.${config.myVars.domain}";
   cacheDomain = "cache.${config.myVars.domain}";
 in {
   imports = [
@@ -111,6 +112,11 @@ in {
     };
 
     mailBean.enable = true;
+
+    beanBudget = {
+      enable = true;
+      domain = beanBudgetDomain;
+    };
 
     llm.enable = true;
 

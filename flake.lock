@@ -101,6 +101,28 @@
         "type": "github"
       }
     },
+    "bean-budget": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "nix",
+        "lastModified": 1795417204,
+        "narHash": "sha256-uMrwzfmV9as6M2P09Pz/nNZR1dEsemTlxAmrgrFrREY=",
+        "owner": "kevinher7",
+        "repo": "bean-budget",
+        "rev": "cce8ae7e26b018925f0e85b19140d0b135d45f8d",
+        "type": "github"
+      },
+      "original": {
+        "dir": "nix",
+        "owner": "kevinher7",
+        "repo": "bean-budget",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": [
@@ -467,6 +489,7 @@
       "inputs": {
         "actual-http-api": "actual-http-api",
         "agent-toolkit": "agent-toolkit",
+        "bean-budget": "bean-budget",
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
