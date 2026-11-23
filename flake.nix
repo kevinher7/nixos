@@ -65,7 +65,7 @@
     };
 
     bean-budget = {
-      url = "github:kevinher7/bean-budget/feat/nix-server-package?dir=nix";
+      url = "github:kevinher7/bean-budget?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
