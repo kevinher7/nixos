@@ -6,7 +6,7 @@
   vaultDomain = "vault.${config.myVars.domain}";
   budgetDomain = "budget.${config.myVars.domain}";
   actualApiDomain = "actual-api.${config.myVars.domain}";
-  beanBudgetDomain = "bean.${config.myVars.domain}";
+  beanBudgetDomain = "bean-budget.${config.myVars.domain}";
   cacheDomain = "cache.${config.myVars.domain}";
 in {
   imports = [

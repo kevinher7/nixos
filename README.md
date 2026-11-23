@@ -184,7 +184,7 @@ The server host (`uribo-btw`) acts as a lightweight home lab running native NixO
 - **🗝️ Vaultwarden** — Self-hosted Bitwarden-compatible password manager.
 - **🛑 Pi-hole** — Network-wide ad blocking and local DNS.
 - **🌐 Nginx** — Native reverse proxy with automatic HTTPS via Let's Encrypt (DNS-01 challenge).
-- **🫘 Bean Budget** — Ledger server for the Bean Budget app at `bean.beanhaven.net`. SQLite lives in `/var/lib/bean-budget`, with a verified backup there every day. Gmail ingestion is off until `myHomelab.beanBudget.mail.enable` is set.
+- **🫘 Bean Budget** — Ledger server for the Bean Budget app at `bean-budget.beanhaven.net`. SQLite lives in `/var/lib/bean-budget`, with a verified backup there every day. Gmail ingestion is off until `myHomelab.beanBudget.mail.enable` is set.
 - **📦 Harmonia** — Binary cache serving the server's Nix store at `cache.beanhaven.net`. Every push to `main` roots the freshly built host closures there, so other hosts substitute from the LAN instead of downloading from Cachix.
 - **🏗️ CI runner** — A self-hosted GitHub Actions runner runs in a fenced NixOS container. It builds the Linux hosts for pushes to `main` and for PRs from branches in this repository; PRs from forks stay on GitHub-hosted runners.
 
@@ -212,7 +212,7 @@ The home lab uses the personally owned domain `beanhaven.net`, with DNS hosted b
   - `vault.beanhaven.net` → Vaultwarden
   - `pihole.beanhaven.net` → Pi-hole
   - `budget.beanhaven.net` → Actual Budget
-  - `bean.beanhaven.net` → Bean Budget server
+  - `bean-budget.beanhaven.net` → Bean Budget server
 - **DNS-01 Challenge**: Let's Encrypt certificates are obtained through Cloudflare DNS validation. No public firewall ports 80 or 443 need to be opened.
 
 ### Setting Up the Cloudflare Token
