@@ -35,6 +35,18 @@ in {
       description = "Port the T3 Code server listens on over the tailnet.";
     };
 
+    openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Open the T3 port on the host Tailscale interface.";
+    };
+
+    githubToken.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Supply the host-managed GitHub token to T3.";
+    };
+
     baseDir = lib.mkOption {
       type = lib.types.str;
       default = "/var/lib/t3code";
@@ -49,7 +61,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    sops = {
+    sops = lib.mkIf cfg.githubToken.enable {
       secrets.t3_github_token.sopsFile = ../../secrets/services/t3code.yaml;
       templates."t3code-github.env" = {
         mode = "0400";
@@ -59,7 +71,7 @@ in {
       };
     };
 
-    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [cfg.port];
+    networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.mkIf cfg.openFirewall [cfg.port];
 
     systemd.services.t3code = {
       description = "T3 Code headless server";
@@ -86,7 +98,7 @@ in {
           "--port ${toString cfg.port}"
           "--base-dir ${cfg.baseDir}"
         ];
-        EnvironmentFile = config.sops.templates."t3code-github.env".path;
+        EnvironmentFile = lib.mkIf cfg.githubToken.enable config.sops.templates."t3code-github.env".path;
         Restart = "on-failure";
         RestartSec = 5;
       };
